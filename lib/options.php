@@ -16,21 +16,23 @@ class Options implements \Serializable, \ArrayAccess {
     /**
      * @param string $path
      * @param mixed $default
+     *
      * @throws \Exception
      * @return mixed
      */
     public function get($path, $default = null) {
 
         $usesAliases = array();
-        $rPath = preg_replace_callback('/\[.*?\]/', function ($matches) use (& $usesAliases){
+        $rPath = preg_replace_callback('/\[.*?\]/', function ($matches) use (& $usesAliases) {
             $key = trim($matches[0], '[]');
             $alias = str_replace('.', '_', $key);
             $usesAliases[$alias] = $key;
-            return '.'.$alias;
+
+            return '.' . $alias;
         }, $path);
 
-        $arPath   = explode('.', $rPath);
-        $data     = $this->_data;
+        $arPath = explode('.', $rPath);
+        $data = $this->_data;
         while (($pathItem = array_shift($arPath)) !== null) {
             if ($usesAliases[$pathItem]) {
                 $pathItem = $usesAliases[$pathItem];
@@ -40,20 +42,22 @@ class Options implements \Serializable, \ArrayAccess {
             if ($data instanceof self) {
                 $data = $data->toArray();
             }
-            if ( ! isset($data[$pathItem])) {
-                if ( ! is_null($default)) {
+            if (!isset($data[$pathItem])) {
+                if (!is_null($default)) {
                     return $default;
                 }
                 throw new \Exception("Value by path `$path` not exist");
             }
             $data = $data[$pathItem];
         }
+
         return $data;
     }
 
     /**
      * @param string $path
      * @param null|mixed $default
+     *
      * @throws \Exception
      * @return $this
      */
@@ -62,11 +66,13 @@ class Options implements \Serializable, \ArrayAccess {
         if (!is_array($res)) {
             throw new \Exception("Return value as object not available");
         }
+
         return new static($this->get($path));
     }
 
     /**
      * @param \ArrayAccess|array $mergedOptions
+     *
      * @return Options
      */
     public function merge($mergedOptions) {
@@ -76,31 +82,34 @@ class Options implements \Serializable, \ArrayAccess {
         foreach ($mergedOptions as $path => $value) {
             $this->set($path, $value);
         }
+
         return $this;
     }
 
     /**
      * @param string $path
      * @param mixed $value
+     *
      * @throws \Exception
      * @return Options
      */
     public function set($path, $value) {
         $arPath = explode('.', $path);
-        $data   = & $this->_data;
-        while (($key    = array_shift($arPath)) !== null) {
+        $data = &$this->_data;
+        while (($key = array_shift($arPath)) !== null) {
             if (empty($arPath)) {
-                $key ? $data[$key] = $value : $data[]     = $value;
+                $key ? $data[$key] = $value : $data[] = $value;
             } else {
-                if ( ! $key) {
+                if (!$key) {
                     throw new \Exception('Need last iterated by path. Available: ' . $path);
                 }
-                if ( ! isset($data[$key])) {
+                if (!isset($data[$key])) {
                     $data[$key] = array();
                 }
-                $data = & $data[$key];
+                $data = &$data[$key];
             }
         }
+
         return $this;
     }
 
@@ -143,6 +152,7 @@ class Options implements \Serializable, \ArrayAccess {
 
     public function offsetSet($offset, $value) {
         $this->set($offset, $value);
+
         return $value;
     }
 

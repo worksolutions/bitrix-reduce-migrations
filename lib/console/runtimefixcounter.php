@@ -2,7 +2,6 @@
 
 namespace WS\ReduceMigrations\Console;
 
-use WS\ReduceMigrations\ChangeDataCollector\CollectorFix;
 use WS\ReduceMigrations\Entities\AppliedChangesLogModel;
 use WS\ReduceMigrations\Module;
 
@@ -19,17 +18,6 @@ class RuntimeFixCounter {
         $this->fixNames = array();
         $this->fixNumber = 0;
         $this->migrationCount = 0;
-    }
-
-    public function setFixNameByFixes($fixes) {
-        /** @var CollectorFix $fix */
-        foreach ($fixes as $fix) {
-            if ($this->activeFixName != $fix->getName()) {
-                $this->fixNumber++;
-                $this->activeFixName = $fix->getName();
-            }
-            $this->fixNames[$this->activeFixName . $this->fixNumber]++;
-        }
     }
 
     /**

@@ -11,7 +11,6 @@ if ($_POST['save'] != "" && $_POST['name']) {
     $name = $_POST['name'];
     $description = $_POST['description'];
 
-    // �������� ������
     $templateContent = file_get_contents(__DIR__.'/../data/scenarioTemplate.tpl');
     $arReplace = array(
         '#class_name#' => $className = 'ws_m_'.time().'_'.CUtil::translit($name, LANGUAGE_ID),
@@ -34,7 +33,7 @@ if ($_POST['save'] != "" && !$_POST['name']) {
 }
 $APPLICATION->SetTitle($localization->getDataByPath('title'));
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
-// ��������� ���������
+
 $fileName && CAdminMessage::ShowNote($localization->message('path-to-file', array('#path#' => $fileName)));
 $hasError && CAdminMessage::ShowMessage(array("MESSAGE" => $localization->message('save-file-error'), "TYPE" => "ERROR"));
 ?><form method="POST" action="<?=$APPLICATION->GetCurUri()?>" ENCTYPE="multipart/form-data" name="save"><?

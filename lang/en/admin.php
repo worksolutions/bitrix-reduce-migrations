@@ -44,39 +44,12 @@ return array(
             'tab' => 'Other versions of the project'
         )
     ),
-    'newChangesList' => array(
-        'fields' => array(
-            'date' => 'Date create',
-            'description' => 'Description',
-            'source' => 'Source',
-        ),
-        'message' => array(
-            "ago" => 'back',
-            'view' => 'detail'
-        )
-    ),
     'applyError' => array(
         'message' => 'Message',
         'data' => 'Data',
         'trace' => 'Call stack',
         'error' => array(
             'modelNotExists' => 'Data for record id =: id: does not exist'
-        )
-    ),
-    'entitiesVersions' => array(
-        'title' => 'References list',
-        'fields' => array(
-            'reference' => 'HASH',
-            'versions' => 'Other versions Ids',
-            'destination' => 'Reference'
-        ),
-        'messages' => array(
-            'pages' => 'Pages'
-        ),
-        'subjects' => array(
-            'iblock' => 'Information block',
-            'iblockProperty' => 'Information block property',
-            'iblockSection' => 'Information block section',
         )
     ),
     'createScenario' => array(

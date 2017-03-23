@@ -49,46 +49,8 @@ $form->BeginCustomField('version', 'vv');
         <td width="30%"><?=$localization->getDataByPath('last.description')?>:</td>
         <td width="60%">
 <?php
-        $fCreateUrlFromEntity = function ($type, $id) {
-            $urlTemplate = '';
-            switch ($type) {
-                case 'iblock':
-                    $arIblock = CIBlock::GetArrayByID($id);
-                    $type = $arIblock['IBLOCK_TYPE_ID'];
-                    $urlTemplate = '/bitrix/admin/iblock_edit.php?type='.$type.'&ID='.$id . '&lang=' . LANGUAGE_ID;
-                    break;
-                case 'iblockProperty':
-                    $arProperty = CIBlockProperty::GetByID($id)->Fetch();
-                    $iblockId = $arProperty['IBLOCK_ID'];
-                    $arIblock = CIBlock::GetArrayByID($iblockId);
-                    $type = $arIblock['IBLOCK_TYPE_ID'];
-                    $urlTemplate = '/bitrix/admin/iblock_edit.php?type='.$type.'&ID='.$iblockId . '&lang=' . LANGUAGE_ID;
-                    break;
-                case 'iblockPropertyListValues':
-                    $arValue = \Bitrix\Iblock\PropertyEnumerationTable::getList(array('filter' => array('=ID' => $id)))->Fetch();
-                    $arProperty = CIBlockProperty::GetByID($arValue['PROPERTY_ID'])->Fetch();
-                    $iblockId = $arProperty['IBLOCK_ID'];
-                    $arIblock = CIBlock::GetArrayByID($iblockId);
-                    $type = $arIblock['IBLOCK_TYPE_ID'];
-                    $urlTemplate = '/bitrix/admin/iblock_edit.php?type='.$type.'&ID='.$iblockId . '&lang=' . LANGUAGE_ID;
-                    break;
-                case 'iblockSection':
-                    $arSection = CIBlockSection::GetByID($id)->Fetch();
-                    $iblockId = $arSection['IBLOCK_ID'];
-                    $urlTemplate = '/bitrix/admin/iblock_section_edit.php?IBLOCK_ID='.$iblockId.'&ID='.$id . '&lang=' . LANGUAGE_ID;
-                    break;
-            }
-            return $urlTemplate;
-        };
         $strings = array();
         foreach ($lastResult->getMessages() as $message) {
-            if ($message->getType() == \WS\ReduceMigrations\Diagnostic\ErrorMessage::TYPE_ITEM_HAS_NOT_REFERENCE) {
-                $url = $fCreateUrlFromEntity($message->getGroup(), $message->getItem());
-                if ($url) {
-                    $strings[] = '<a href="'.$url.'">'.$message->getText().'</a>';
-                    continue;
-                }
-            }
             $strings[] = $message->getText();
         }
         echo implode('<br />', $strings);

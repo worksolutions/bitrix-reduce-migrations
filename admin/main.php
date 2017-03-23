@@ -27,14 +27,6 @@ $isDiagnosticValid = $diagnosticTester
 $apply && LocalRedirect($APPLICATION->GetCurUri());
 
 $fixes = array();
-$notAppliedFixes = $module->getNotAppliedFixes();
-foreach ($notAppliedFixes as $fix) {
-    $name = $fix->getName();
-    if ($name == 'Reference fix') {
-        $name = $localization->message('common.reference-fix');
-    }
-    $fixes[$name]++;
-}
 $scenarios = array();
 foreach ($module->getNotAppliedScenarios() as $notAppliedScenarioClassName) {
     $scenarios[] = $notAppliedScenarioClassName::name();
@@ -65,7 +57,7 @@ $module = \WS\ReduceMigrations\Module::getInstance();
 
 CAdminMessage::ShowMessage(array(
     'MESSAGE' => $localization->getDataByPath('platformVersion.'.($platformVersion->isValid() ? 'ok' : 'error'))
-        .' <a href="/bitrix/admin/ws_migrations.php?q=changeversion&lang=' . LANGUAGE_ID . '">'.($platformVersion->getOwner() ?: $platformVersion->getValue()).'</a>',
+        .' <a href="/bitrix/admin/ws.reducemigrations.php?q=changeversion&lang=' . LANGUAGE_ID . '">'.($platformVersion->getOwner() ?: $platformVersion->getValue()).'</a>',
     'TYPE' => $platformVersion->isValid() ? 'OK' : 'ERROR',
     'HTML' => true,
 ));
@@ -84,7 +76,7 @@ $form->SetShowSettings(false);
 if (!$isDiagnosticValid) {
     $form->BeginPrologContent();
     $mess =  $localization->message('diagnostic', array(
-        ':url:' => '/bitrix/admin/ws_migrations.php?q=diagnostic&lang=' . LANGUAGE_ID
+        ':url:' => '/bitrix/admin/ws.reducemigrations.php?q=diagnostic&lang=' . LANGUAGE_ID
     ));
     $adminMessage = new CAdminMessage(array('HTML' => "Y", 'MESSAGE' => $mess));
     echo $adminMessage->Show();
@@ -96,41 +88,19 @@ $form->Begin(array(
 $form->BeginNextFormTab();
 if ($fixes || $scenarios) {
     $form->BeginCustomField('list', 'vv');
-    if ($fixes) {
-        ?>
-        <tr style="color: #3591ff; font-size: 14px;">
-            <td width="30%" valign="top"><b><?= $localization->getDataByPath('list.auto') ?>:</b></td>
-            <td width="70%">
-                <? if ($fixes): ?>
-                    <ol style="margin-top: 0px; list-style-type: none; padding-left: 0px;">
-                        <? foreach ($fixes as $fixName => $fixCount): ?>
-                            <li><?= $fixName ?> [<?= $fixCount ?>]</li>
-                        <? endforeach; ?>
-                        <li><a href="#" style="color: #242E32; text-decoration: none; border-bottom: 1px dashed #242E32" id="newChangesViewLink"><?= $localization->getDataByPath('newChangesDetail') ?></a></li>
-                    </ol>
-                    <?
-                else: ?>
-                    <b><?= $localization->message('common.listEmpty') ?></b>
-                <? endif; ?>
-            </td>
-        </tr>
-    <?php
-    }
+
     if ($scenarios) {
     ?>
         <tr style="color: #3591ff; font-size: 14px;">
             <td width="30%" valign="top"><b><?= $localization->getDataByPath('list.scenarios') ?>:</b></td>
             <td width="70%">
-                <? if ($scenarios): ?>
-                    <ol style="margin-top: 0px; list-style-type: none; padding-left: 0px;">
-                        <? foreach ($scenarios as $scenario): ?>
-                            <li><?= $scenario ?></li>
-                        <? endforeach; ?>
-                    </ol>
-                    <?
-                else: ?>
-                    <b><?= $localization->message('common.listEmpty') ?></b>
-                <? endif; ?>
+
+                <ol style="margin-top: 0px; list-style-type: none; padding-left: 0px;">
+                    <? foreach ($scenarios as $scenario): ?>
+                        <li><?= $scenario ?></li>
+                    <? endforeach; ?>
+                </ol>
+
             </td>
         </tr>
             <?
@@ -151,9 +121,6 @@ if ($lastSetupLog) {
         <td width="70%">
             <ol style="list-style-type: none; padding-left: 0px; margin-top: 0px;">
                 <? foreach ($appliedFixes as $fixName => $fixCount):
-                    if ($fixName == 'Insert reference' || $fixName == 'References updates') {
-                        $fixName = $localization->message('common.reference-fix');
-                    }
                 ?>
                     <li><?= $fixName ?> <?= $fixCount > 1 ? '['.$fixCount.']' : '' ?></li>
                 <?endforeach; ?>
@@ -178,11 +145,6 @@ if ($lastSetupLog) {
                             ?>
                             <li><?= $errorData ?></li><?
                         }
-                        if (is_array($errorData)) {
-                            ?>
-                            <li><a href="#" class="apply-error-link"
-                                      data-id="<?= $errorApply->id ?>"><?= $errorData['message'] ?></a></li><?
-                        }
                         ?>
                     <?endforeach; ?>
                 </ol>
@@ -203,32 +165,3 @@ $lastSetupLog
         '<input type="submit" name="rollback" value="'.$localization->getDataByPath('btnRollback').'" title="'.$localization->getDataByPath('btnRollback').'"/>';
     $form->Show();
 ?></form>
-<script type="text/javascript">
-    $(function () {
-        var $chLink = $(document.getElementById('newChangesViewLink'));
-        var $applyErrorLinks = $('a.apply-error-link');
-        $($chLink, $applyErrorLinks).click(function (e) {e.preventDefault();});
-
-        $chLink.on("click", function () {
-            (new BX.CDialog({
-                'title': "<?=$localization->message("newChangesTitle")?>",
-                'content_url': '/bitrix/admin/ws_migrations.php?q=newChangesList&lang=<?=LANGUAGE_ID;?>',
-                'width': 900,
-                'height': 130,
-                'buttons': [BX.CAdminDialog.btnClose],
-                'resizable': false
-            })).Show();
-        });
-
-        $applyErrorLinks.on("click", function () {
-            var id = $(this).data('id');
-            (new BX.CDialog({
-                'title': "<?=$localization->message("errorWindow")?>",
-                'content_url': '/bitrix/admin/ws_migrations.php?q=applyError&id='+id + '&lang=<?=LANGUAGE_ID;?>',
-                'width': 900,
-                'buttons': [BX.CAdminDialog.btnClose],
-                'resizable': false
-            })).Show();
-        });
-    });
-</script>

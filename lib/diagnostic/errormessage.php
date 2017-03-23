@@ -6,14 +6,12 @@
 namespace WS\ReduceMigrations\Diagnostic;
 
 /**
- * Class ErrorMessage is container for errors handle
+ * Class ErrorMessage
  *
- * @package WS\Migrations\Diagnostic
+ * @package WS\ReduceMigrations\Diagnostic
  */
 class ErrorMessage {
 
-    const TYPE_ITEM_HAS_NOT_REFERENCE = 'item-has-not-reference';
-    const TYPE_REFERENCE_WITHOUT_ITEM = 'reference-without-item';
 
     private $group;
     private $item;

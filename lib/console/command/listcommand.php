@@ -15,10 +15,6 @@ class ListCommand extends BaseCommand{
 
     public function execute($callback = false) {
         $has = false;
-        foreach ($this->module->getNotAppliedFixes() as $notAppliedFix) {
-            $this->registerFix($notAppliedFix->getName());
-            $has = true;
-        }
         foreach ($this->module->getNotAppliedScenarios() as $notAppliedScenario) {
             $this->registerFix($notAppliedScenario::name());
             $has = true;

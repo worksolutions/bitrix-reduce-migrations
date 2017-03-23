@@ -49,7 +49,6 @@ try {
     $console->printLine("");
     $command = $console->getCommand();
     $command->execute($getShowProgress());
-    $module->commitDutyChanges();
 } catch (\WS\ReduceMigrations\Console\ConsoleException $e) {
     $console->printLine($e->getMessage());
 }

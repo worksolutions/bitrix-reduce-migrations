@@ -7,8 +7,7 @@ if (!$USER->isAdmin()) {
     return ;
 }
 
-CModule::IncludeModule('ws.migrations');
-CModule::IncludeModule('iblock');
+CModule::IncludeModule('ws.reducemigrations');
 
 $request = $_REQUEST;
 $action = $request['q'];

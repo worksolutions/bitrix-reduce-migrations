@@ -2,13 +2,10 @@
 
 namespace WS\ReduceMigrations;
 
-use WS\ReduceMigrations\Reference\ReferenceController;
-
 /**
  * Class ScriptScenario
- * Base class for handle code scenarios
  *
- * @package WS\Migrations
+ * @package WS\ReduceMigrations
  */
 abstract class ScriptScenario
 {
@@ -19,24 +16,10 @@ abstract class ScriptScenario
     private $_data;
 
     /**
-     * @var ReferenceController
-     */
-    private $_referenceController;
-
-    /**
      * @param array $data
-     * @param Reference\ReferenceController $controller
      */
-    public function __construct(array $data = array(), ReferenceController $controller) {
+    public function __construct(array $data = array()) {
         $this->setData($data);
-        $this->_referenceController = $controller;
-    }
-
-    /**
-     * @return Reference\ReferenceController
-     */
-    public function getReferenceController() {
-        return $this->_referenceController;
     }
 
     /**

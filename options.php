@@ -45,14 +45,6 @@ $fSave = function ($data) use (& $errors, $module, $options, $localization, $fCr
     }
 
     $options->useAutotests = (bool)$data['tests'];
-
-    foreach ($module->getSubjectHandlers() as $handler) {
-        $handlerClass = get_class($handler);
-
-        $handlerClassValue = (bool)$data['handlers'][$handlerClass];
-        $handlerClassValue && $module->enableSubjectHandler($handlerClass);
-        !$handlerClassValue && $module->disableSubjectHandler($handlerClass);
-    }
 };
 
 $_POST['data'] && $fSave($_POST['data']);
@@ -76,12 +68,7 @@ $form->Begin(array(
     'FORM_ACTION' => $APPLICATION->GetCurUri()
 ));
 $form->BeginNextFormTab();
-$form->AddEditField('data[catalog]', $localization->getDataByPath('fields.catalog'), true, array(), $options->catalogPath ?: '/migrations');
-$form->AddSection('disableHandlers', $localization->getDataByPath('section.disableHandlers'));
-
-foreach ($module->getSubjectHandlers() as $handler) {
-    $form->AddCheckBoxField('data[handlers]['.get_class($handler).']', $handler->getName(), true, '1', $options->isEnableSubjectHandler(get_class($handler)));
-}
+$form->AddEditField('data[catalog]', $localization->getDataByPath('fields.catalog'), true, array(), $options->catalogPath ?: '/reducemigrations');
 
 $form->Buttons(array('btnSave' => false, 'btnApply' => true));
 $form->Show();

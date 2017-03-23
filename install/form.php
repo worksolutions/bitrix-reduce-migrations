@@ -26,12 +26,8 @@ $form->Begin(array(
     'FORM_ACTION' => $APPLICATION->GetCurUri()
 ));
 $form->BeginNextFormTab();
-$form->AddEditField('data[catalog]', $localization->getDataByPath('fields.catalog'), true, array(), $options->catalogPath ?: '/migrations');
-$form->AddSection('disableHandlers', $localization->getDataByPath('section.disableHandlers'));
+$form->AddEditField('data[catalog]', $localization->getDataByPath('fields.catalog'), true, array(), $options->catalogPath ?: '/reducemigrations');
 
-foreach ($module->getSubjectHandlers() as $handler) {
-    $form->AddCheckBoxField('data[handlers]['.get_class($handler).']', $handler->getName(), true, '1', $options->isEnableSubjectHandler(get_class($handler)));
-}
 
 $form->Buttons(array('btnSave' => false, 'btnApply' => true));
 $form->Show();

@@ -7,7 +7,6 @@ namespace WS\ReduceMigrations\Entities;
 
 
 use Bitrix\Main\Entity\DataManager;
-use Bitrix\Main;
 
 class SetupLogTable extends DataManager {
 
@@ -16,12 +15,11 @@ class SetupLogTable extends DataManager {
     }
 
     public static function getTableName() {
-        return 'ws_migrations_setups_log';
+        return 'ws_reducemigrations_setups_log';
     }
 
     /**
-     * fuck ))
-     * @return string|void
+     * @return string
      */
     public static function getFilePath() {
         return __FILE__;

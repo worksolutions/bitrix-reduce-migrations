@@ -9,13 +9,9 @@ namespace WS\ReduceMigrations\Tests;
 use WS\ReduceMigrations\Module;
 use WS\ReduceMigrations\Tests\Cases\AgentBuilderCase;
 use WS\ReduceMigrations\Tests\Cases\EventsBuilderCase;
-use WS\ReduceMigrations\Tests\Cases\FixTestCase;
 use WS\ReduceMigrations\Tests\Cases\FormBuilderCase;
 use WS\ReduceMigrations\Tests\Cases\HighLoadBlockBuilderCase;
 use WS\ReduceMigrations\Tests\Cases\IblockBuilderCase;
-use WS\ReduceMigrations\Tests\Cases\InstallTestCase;
-use WS\ReduceMigrations\Tests\Cases\RollbackTestCase;
-use WS\ReduceMigrations\Tests\Cases\UpdateTestCase;
 
 class Starter {
 

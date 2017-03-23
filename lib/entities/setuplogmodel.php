@@ -5,7 +5,6 @@
 
 namespace WS\ReduceMigrations\Entities;
 
-
 use Bitrix\Main\Type\DateTime;
 use Bitrix\Main\UserTable;
 use WS\ReduceMigrations\factories\DateTimeFactory;

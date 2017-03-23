@@ -5,9 +5,7 @@
 
 namespace WS\ReduceMigrations\Entities;
 
-
 use Bitrix\Main\Entity\DataManager;
-use Bitrix\Main;
 
 class AppliedChangesLogTable extends DataManager {
     public static function className() {
@@ -15,12 +13,11 @@ class AppliedChangesLogTable extends DataManager {
     }
 
     public static function getFilePath() {
-        // fuck )))
         return __FILE__;
     }
 
     public static function getTableName() {
-        return 'ws_migrations_apply_changes_log';
+        return 'ws_reducemigrations_apply_changes_log';
     }
 
     public static function getMap() {

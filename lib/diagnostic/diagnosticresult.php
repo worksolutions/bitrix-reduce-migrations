@@ -8,7 +8,7 @@ namespace WS\ReduceMigrations\Diagnostic;
 /**
  * Class DiagnosticResult
  *
- * @package WS\Migrations\Diagnostic
+ * @package WS\ReduceMigrations\Diagnostic
  */
 class DiagnosticResult {
 

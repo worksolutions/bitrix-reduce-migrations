@@ -6,16 +6,12 @@
 namespace WS\ReduceMigrations\Diagnostic;
 
 use WS\ReduceMigrations\Module;
-use WS\ReduceMigrations\SubjectHandlers\BaseSubjectHandler;
+
 
 class DiagnosticTester {
 
     const LOG_TYPE = 'WS_MIGRATIONS_DIAGNOSTIC';
 
-    /**
-     * @var BaseSubjectHandler[]
-     */
-    private $handlers;
     /**
      * @var Module
      */
@@ -27,11 +23,9 @@ class DiagnosticTester {
     private $lastRun;
 
     /**
-     * @param BaseSubjectHandler[] $handlers
      * @param Module $module
      */
-    public function __construct(array $handlers, Module $module) {
-        $this->handlers = $handlers;
+    public function __construct( Module $module) {
         $this->module = $module;
     }
 
@@ -43,13 +37,7 @@ class DiagnosticTester {
         $messages = array();
         if (!$this->module->getPlatformVersion()->isValid()) {
             $messages[] = new ErrorMessage('module', '', '', 'Module has not valid version');
-        }
-        foreach ($this->handlers as $handler) {
-            $handlerResult = $handler->diagnostic();
-            if (!$handlerResult->isSuccess()) {
-                $success = false;
-                $messages = array_merge($messages, $handlerResult->getMessages());
-            }
+            $success = false;
         }
 
         $this->lastRun = $success;
@@ -59,7 +47,7 @@ class DiagnosticTester {
                 return $message->toArray();
             }, $messages)
         ));
-        \CEventLog::Log('INFO', self::LOG_TYPE, 'ws.migrations', null, $jsonData);
+        \CEventLog::Log('INFO', self::LOG_TYPE, 'ws.reducemigrations', null, $jsonData);
         return $success;
     }
 

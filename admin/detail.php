@@ -1,6 +1,5 @@
 <?php
 
-use WS\ReduceMigrations\ChangeDataCollector\CollectorFix;
 use WS\ReduceMigrations\Entities\AppliedChangesLogModel;
 
 $fDiff = function ($array1, $array2) use (& $fDiff) {
@@ -58,38 +57,12 @@ switch ($type) {
         }, $models);
         break;
     case 'new':
-        $module->applyAnotherReferences();
-        $allFixes = $module->getNotAppliedFixes();
-        $fixes = array();
-        /** @var CollectorFix $fix */
-        foreach ($allFixes as $fix) {
-            if ($fix->getLabel() != $label) {
-                continue;
-            }
-            $fixes[] = $fix;
-        }
-        if ($fix) {
-            $time = str_replace(".json", "", $label);
-            $fDate = FormatDate("d.m.Y", $time);
-            $arTitle = array(
-                '#date' => $fDate,
-                '#source' => $fix->getOwner(),
-                '#deployer' => $localization->message("message.nobody")
-            );
-        }
-        foreach ($fixes as $fix) {
-            $data[] = array(
-                'description' => $fix->getName(),
-                'updateData' => $fix->getUpdateData(),
-                'originalData' => $module->getSnapshotDataByFix($fix)
-            );
-        }
         break;
     default:
         throw new HttpRequestException;
 }
 /** @var CMain $APPLICATION */
-$APPLICATION->SetTitle($localization->message('title',$arTitle));
+$APPLICATION->SetTitle($localization->message('title', $arTitle));
 
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
 $tabs = array(

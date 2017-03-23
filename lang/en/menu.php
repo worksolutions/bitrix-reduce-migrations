@@ -5,7 +5,6 @@ return array(
     'apply' => 'Update',
     'automigrations' => 'Auto migrations',
     'log' => 'Log',
-    'entitiesVersions' => 'References',
     'createScenario' => 'Scenario',
     'diagnostic' => 'Diagnostic'
 );

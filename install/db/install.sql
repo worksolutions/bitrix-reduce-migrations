@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `ws_migrations_apply_changes_log` (
+CREATE TABLE IF NOT EXISTS `ws_reducemigrations_apply_changes_log` (
   `ID` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `SETUP_LOG_ID` INT (11),
   `GROUP_LABEL` VARCHAR (128),
@@ -11,16 +11,8 @@ CREATE TABLE IF NOT EXISTS `ws_migrations_apply_changes_log` (
   `SUCCESS` INT (1),
   `DESCRIPTION` TEXT NOT NULL
 );
-CREATE TABLE IF NOT EXISTS `ws_migrations_setups_log` (
+CREATE TABLE IF NOT EXISTS `ws_reducemigrations_setups_log` (
   `ID` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `USER_ID` INT,
   `DATE` DATETIME NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS `ws_migrations_db_version_references` (
-  `ID` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `REFERENCE` VARCHAR (40),
-  `DB_VERSION` VARCHAR(64),
-  `GROUP` VARCHAR (64),
-  `ITEM_ID` VARCHAR (32)
 );

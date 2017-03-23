@@ -2,7 +2,6 @@
 
 namespace WS\ReduceMigrations\Console\Formatter;
 
-use WS\ReduceMigrations\Module;
 
 class Output {
 

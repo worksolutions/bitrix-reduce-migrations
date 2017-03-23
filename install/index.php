@@ -1,11 +1,11 @@
-<?
+<?php
 use Bitrix\Main\Application;
 
-include __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'include.php';
+include __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'include.php';
 
-Class ws_migrations extends CModule {
-    const MODULE_ID = 'ws.migrations';
-    var $MODULE_ID = 'ws.migrations';
+class ws_reducemigrations extends CModule{
+    const MODULE_ID = 'ws.reducemigrations';
+    var $MODULE_ID = 'ws.reducemigrations';
     var $MODULE_VERSION;
     var $MODULE_VERSION_DATE;
     var $MODULE_NAME;
@@ -30,32 +30,32 @@ Class ws_migrations extends CModule {
     }
 
     function InstallDB($arParams = array()) {
-        RegisterModuleDependences('main', 'OnPageStart', self::MODULE_ID, 'WS\Migrations\Module', 'listen');
-        RegisterModuleDependences('main', 'OnAfterEpilog', self::MODULE_ID, 'WS\Migrations\Module', 'commitDutyChanges');
         global $DB;
-        $DB->RunSQLBatch(Application::getDocumentRoot().'/'.Application::getPersonalRoot() . "/modules/".$this->MODULE_ID."/install/db/install.sql");
+        $DB->RunSQLBatch(Application::getDocumentRoot() . '/' . Application::getPersonalRoot() . "/modules/" . $this->MODULE_ID . "/install/db/install.sql");
+
         return true;
     }
 
     function UnInstallDB($arParams = array()) {
-        UnRegisterModuleDependences('main', 'OnPageStart', self::MODULE_ID, 'WS\Migrations\Module', 'listen');
-        UnRegisterModuleDependences('main', 'OnAfterEpilog', self::MODULE_ID, 'WS\Migrations\Module', 'commitDutyChanges');
         global $DB;
-        $DB->RunSQLBatch(Application::getDocumentRoot().'/'.Application::getPersonalRoot()."/modules/".$this->MODULE_ID."/install/db/uninstall.sql");
+        $DB->RunSQLBatch(Application::getDocumentRoot() . '/' . Application::getPersonalRoot() . "/modules/" . $this->MODULE_ID . "/install/db/uninstall.sql");
+
         return true;
     }
 
     function InstallFiles() {
-        $rootDir = Application::getDocumentRoot().'/'.Application::getPersonalRoot();
-        $adminGatewayFile = '/admin/ws_migrations.php';
-        copy(__DIR__. $adminGatewayFile, $rootDir . $adminGatewayFile);
+        $rootDir = Application::getDocumentRoot() . '/' . Application::getPersonalRoot();
+        $adminGatewayFile = '/admin/ws_reducemigrations.php';
+        copy(__DIR__ . $adminGatewayFile, $rootDir . $adminGatewayFile);
+
         return true;
     }
 
     function UnInstallFiles() {
-        $rootDir = Application::getDocumentRoot().'/'.Application::getPersonalRoot();
-        $adminGatewayFile = '/admin/ws_migrations.php';
+        $rootDir = Application::getDocumentRoot() . '/' . Application::getPersonalRoot();
+        $adminGatewayFile = '/admin/ws_reducemigrations.php';
         unlink($rootDir . $adminGatewayFile);
+
         return true;
     }
 
@@ -80,17 +80,12 @@ Class ws_migrations extends CModule {
                 \Bitrix\Main\Loader::includeModule('iblock');
                 $this->module()->install();
 
-                foreach ($this->module()->getSubjectHandlers() as $handler) {
-                    $handlerClass = get_class($handler);
-                    $handlerClassValue = (bool)$data['handlers'][$handlerClass];
-                    $handlerClassValue && $this->module()->enableSubjectHandler($handlerClass);
-                    !$handlerClassValue && $this->module()->disableSubjectHandler($handlerClass);
-                }
                 $this->createCli();
             }
         }
         if (!$data || $errors) {
-            $APPLICATION->IncludeAdminFile($loc->getDataByPath('title'), __DIR__.'/form.php');
+            $APPLICATION->IncludeAdminFile($loc->getDataByPath('title'), __DIR__ . '/form.php');
+
             return;
         }
     }
@@ -102,7 +97,8 @@ Class ws_migrations extends CModule {
         $loc = $this->module()->getLocalization('uninstall');
 
         if (!$data || $errors) {
-            $APPLICATION->IncludeAdminFile($loc->getDataByPath('title'), __DIR__.'/uninstall.php');
+            $APPLICATION->IncludeAdminFile($loc->getDataByPath('title'), __DIR__ . '/uninstall.php');
+
             return;
         }
         if ($data['removeAll'] == "Y") {
@@ -124,42 +120,42 @@ Class ws_migrations extends CModule {
 
     private function removeFiles() {
         $options = $this->module()->getOptions();
-        $dir = $this->docRoot() .($options->catalogPath ?: 'migrations');
+        $dir = $this->docRoot() . ($options->catalogPath ?: 'reducemigrations');
         is_dir($dir) && \Bitrix\Main\IO\Directory::deleteDirectory($dir);
         $this->removeCli();
     }
 
     private function removeOptions() {
-        COption::RemoveOption("ws.migrations");
+        COption::RemoveOption("ws.reducemigrations");
     }
 
     private function createCli() {
-        $dest = Application::getDocumentRoot().'/'.Application::getPersonalRoot().'/tools';
-        CopyDirFiles(__DIR__.'/tools', $dest, false, true);
+        $dest = Application::getDocumentRoot() . '/' . Application::getPersonalRoot() . '/tools';
+        CopyDirFiles(__DIR__ . '/tools', $dest, false, true);
     }
 
     private function removeCli() {
-        unlink(Application::getDocumentRoot().Application::getPersonalRoot().'/tools/ws_migrations.php');
+        unlink(Application::getDocumentRoot() . Application::getPersonalRoot() . '/tools/ws_reducemigrations.php');
     }
 
     private function createPlatformDirIfNotExists() {
         $uploadDir = $this->docRoot() . \COption::GetOptionString("main", "upload_dir", "upload");
-        if (is_dir($uploadDir.'/ws.migrations')) {
+        if (is_dir($uploadDir . '/ws.reducemigrations')) {
             return;
         }
-        CopyDirFiles(__DIR__.'/upload', $uploadDir, false, true);
+        CopyDirFiles(__DIR__ . '/upload', $uploadDir, false, true);
     }
 
     private function removePlatformDir() {
         $uploadDir = $this->docRoot() . \COption::GetOptionString("main", "upload_dir", "upload");
-        \Bitrix\Main\IO\Directory::deleteDirectory($uploadDir.'/ws.migrations');
+        \Bitrix\Main\IO\Directory::deleteDirectory($uploadDir . '/ws.reducemigrations');
     }
 
     /**
      * @return mixed
      */
     private function docRoot() {
-        return rtrim($_SERVER['DOCUMENT_ROOT'], '/').'/';
+        return rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/';
     }
 
     private function createDir($dir) {
@@ -169,12 +165,13 @@ Class ws_migrations extends CModule {
             if (!$part) {
                 continue;
             }
-            $dir .= '/'.$part;
+            $dir .= '/' . $part;
             if (!mkdir($dir)) {
                 return false;
             }
             chmod($dir, 0777);
         }
+
         return true;
     }
 }

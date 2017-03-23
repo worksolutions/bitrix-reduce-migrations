@@ -1,17 +1,15 @@
 <?php
 namespace WS\ReduceMigrations;
-use Bitrix\Main\Config\Configuration;
 
 /**
  * @property string $catalogPath
  * @property array $otherVersions
  * @property string $useAutotests
- * @property string $enabledSubjectHandlers
  * @property string $dbPlatformVersion
  * @author <sokolovsky@worksolutions.ru>
  */
 final class ModuleOptions {
-    private $_moduleName = 'ws.migrations';
+    private $_moduleName = 'ws.reducemigrations';
 
     private $_cache = array();
 
@@ -52,28 +50,6 @@ final class ModuleOptions {
             $this->_setToCache($name, $value);
         }
         return $value;
-    }
-
-    /**
-     * @param $class
-     */
-    public function disableSubjectHandler($class) {
-        $this->enabledSubjectHandlers = array_diff($this->enabledSubjectHandlers ?: array(), array($class));
-    }
-
-    /**
-     * @param $class
-     */
-    public function enableSubjectHandler($class) {
-        $this->enabledSubjectHandlers = array_unique(array_merge($this->enabledSubjectHandlers ?: array(), array($class)));
-    }
-
-    /**
-     * @param $class
-     * @return bool
-     */
-    public function isEnableSubjectHandler($class) {
-        return in_array($class, $this->enabledSubjectHandlers);
     }
 
     /**
