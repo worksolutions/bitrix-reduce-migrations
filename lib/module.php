@@ -337,16 +337,15 @@ class Module {
     }
 
     /**
-     * @param string $dbVersion
      * @param string $owner
      */
-    private function _useVersion($dbVersion, $owner) {
+    private function _useVersion($owner) {
         if (!$owner) {
             return;
         }
         $this->_versions = $this->_versions ?: $this->getOptions()->getOtherVersions();
-        if (!$this->_versions[$dbVersion] || $this->_versions[$dbVersion] != $owner) {
-            $this->_versions[$dbVersion] = $owner;
+        if (array_search($owner, $this->_versions) !== false) {
+            $this->_versions[] = $owner;
             $this->getOptions()->otherVersions = $this->_versions;
         }
     }
@@ -411,9 +410,10 @@ class Module {
             $applyFixLog->setSetupLog($setupLog);
             $applyFixLog->groupLabel = $class . '.php';
             $applyFixLog->description = $object->name();
-            list($dbVersion, $versionOwner) = $object->version();
-            $applyFixLog->source = $dbVersion;
-            $this->_useVersion($dbVersion, $versionOwner);
+            list($hash, $owner) = $object->version();
+            $applyFixLog->hash = $hash;
+            $applyFixLog->owner = $owner;
+            $this->_useVersion($owner);
             $error = '';
             try {
                 $this->_usingScenarioCount = 0;
