@@ -23,7 +23,7 @@ class #class_name# extends \WS\ReduceMigrations\ScriptScenario {
      * @return array First element is hash, second is owner name
      */
     public function version() {
-        return array("#db_version#", "#owner#");
+        return array("#hash#", "#owner#");
     }
 
     /**
