@@ -16,7 +16,7 @@ if ($_POST['save'] != "" && $_POST['name']) {
         '#class_name#' => $className = 'ws_m_'.time().'_'.CUtil::translit($name, LANGUAGE_ID),
         '#name#' => addslashes($name),
         '#description#' => addslashes($description),
-        '#db_version#' => $module->getPlatformVersion()->getValue(),
+        '#db_version#' => '',
         '#owner#' => $module->getPlatformVersion()->getOwner()
     );
     $classContent = str_replace(array_keys($arReplace), array_values($arReplace), $templateContent);
