@@ -6,23 +6,17 @@ $localization;
 $module = \WS\ReduceMigrations\Module::getInstance();
 /** @var \WS\ReduceMigrations\PlatformVersion $platformVersion */
 $platformVersion = \WS\ReduceMigrations\Module::getInstance()->getPlatformVersion();
-
+$isDiagnosticValid = $module->getPlatformVersion()->isValid();
 $apply = false;
 if ($_POST['rollback']) {
     $module->rollbackLastChanges();
     $apply = true;
 }
 
-$diagnosticTester = $module->useDiagnostic();
-
-if ($_POST['apply'] && $diagnosticTester->run()) {
+if ($_POST['apply'] && $isDiagnosticValid) {
     $module->applyNewFixes();
     $apply = true;
 }
-
-$isDiagnosticValid = $diagnosticTester
-    ->getLastResult()
-    ->isSuccess();
 
 $apply && LocalRedirect($APPLICATION->GetCurUri());
 
@@ -73,15 +67,6 @@ $form = new CAdminForm('ws_maigrations_main', array(
 
 $form->SetShowSettings(false);
 
-if (!$isDiagnosticValid) {
-    $form->BeginPrologContent();
-    $mess =  $localization->message('diagnostic', array(
-        ':url:' => '/bitrix/admin/ws_reducemigrations.php?q=diagnostic&lang=' . LANGUAGE_ID
-    ));
-    $adminMessage = new CAdminMessage(array('HTML' => "Y", 'MESSAGE' => $mess));
-    echo $adminMessage->Show();
-    $form->EndPrologContent();
-}
 $form->Begin(array(
     'FORM_ACTION' => $APPLICATION->GetCurUri()
 ));

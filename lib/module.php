@@ -7,7 +7,6 @@ use Bitrix\Main\IO\Directory;
 use Bitrix\Main\IO\File;
 use Bitrix\Main\IO\Path;
 use WS\ReduceMigrations\Console\RuntimeFixCounter;
-use WS\ReduceMigrations\Diagnostic\DiagnosticTester;
 use WS\ReduceMigrations\Entities\AppliedChangesLogModel;
 use WS\ReduceMigrations\Entities\AppliedChangesLogTable;
 use WS\ReduceMigrations\Entities\SetupLogModel;
@@ -54,10 +53,6 @@ class Module {
      */
     private $version;
 
-    /**
-     * @var DiagnosticTester
-     */
-    private $diagnostic;
     /**
      * @var RuntimeFixCounter
      */
@@ -127,17 +122,6 @@ class Module {
         }
 
         return $this->localizations[$path];
-    }
-
-    /**
-     * @return DiagnosticTester
-     */
-    public function useDiagnostic() {
-        if (!$this->diagnostic) {
-            $this->diagnostic = new DiagnosticTester($this);
-        }
-
-        return $this->diagnostic;
     }
 
     /**
@@ -329,11 +313,6 @@ class Module {
         }
 
         return $this->version;
-    }
-
-
-    public function install() {
-        $this->useDiagnostic()->run();
     }
 
     /**

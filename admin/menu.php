@@ -29,10 +29,6 @@ return array(
                 'url' => $inputUri.'createScenario'
             ),
             array(
-                'text' => $loc->getDataByPath('diagnostic'),
-                'url' => $inputUri.'diagnostic'
-            ),
-            array(
                 'text' => $loc->getDataByPath('log'),
                 'url' => $inputUri.'log',
                 'more_url' => array($inputUri.'detail')

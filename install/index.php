@@ -78,7 +78,6 @@ class ws_reducemigrations extends CModule{
                 RegisterModule(self::MODULE_ID);
                 \Bitrix\Main\Loader::includeModule(self::MODULE_ID);
                 \Bitrix\Main\Loader::includeModule('iblock');
-                $this->module()->install();
 
                 $this->createCli();
             }

@@ -22,10 +22,8 @@ class ApplyCommand extends BaseCommand{
                 exit();
             }
         }
-        $diagnosticTester = $this->module
-            ->useDiagnostic();
 
-        if (!$diagnosticTester->run()) {
+        if (!$this->module->getPlatformVersion()->isValid()) {
             $this->console
                 ->printLine("Diagnostic is not valid");
             exit();
