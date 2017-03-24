@@ -11,8 +11,8 @@ use WS\ReduceMigrations\factories\DateTimeFactory;
 class AppliedChangesLogModel extends BaseEntity {
     public
         $id, $groupLabel, $date, $success,
-        $processName, $subjectName, $source, $updateData,
-        $originalData, $description, $setupLogId;
+        $processName, $subjectName, $hash, $updateData,
+        $owner, $description, $setupLogId;
 
     private $_setupLog;
 
@@ -32,7 +32,7 @@ class AppliedChangesLogModel extends BaseEntity {
                     $value = DateTimeFactory::createBase($value);
                 }
             }
-            if (in_array($name, array('originalData', 'updateData'))) {
+            if (in_array($name, array('updateData'))) {
                 $value = \WS\ReduceMigrations\jsonToArray($value);
             }
             $result[$name] = $value;
@@ -46,7 +46,7 @@ class AppliedChangesLogModel extends BaseEntity {
             if ($name == 'date' && $value instanceof \DateTime) {
                 $value = DateTimeFactory::createBitrix($value);
             }
-            if (in_array($name, array('originalData', 'updateData'))) {
+            if (in_array($name, array('updateData'))) {
                 $value = \WS\ReduceMigrations\arrayToJson($value);
             }
             $result[$name] = $value;
@@ -62,9 +62,9 @@ class AppliedChangesLogModel extends BaseEntity {
             'date' => 'DATE',
             'processName' => 'PROCESS',
             'subjectName' => 'SUBJECT',
-            'source' => 'SOURCE',
+            'hash' => 'HASH',
+            'owner' => 'OWNER',
             'updateData' => 'UPDATE_DATA',
-            'originalData' => 'ORIGINAL_DATA',
             'success' => 'SUCCESS',
             'description' => 'DESCRIPTION'
         );

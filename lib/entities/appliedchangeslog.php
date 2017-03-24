@@ -50,10 +50,6 @@ class AppliedChangesLogTable extends DataManager {
                 'data_type' => 'string',
                 'required' => true,
             ),
-            'ORIGINAL_DATA' => array(
-                'data_type' => 'string',
-                'required' => true,
-            ),
             'SUCCESS' => array(
                 'data_type' => 'boolean',
                 'values' => array(false,true)
@@ -62,9 +58,12 @@ class AppliedChangesLogTable extends DataManager {
                 'data_type' => 'string',
                 'required' => true,
             ),
-            'SOURCE' => array(
+            'HASH' => array(
                 'data_type' => 'string'
-            )
+            ),
+            'OWNER' => array(
+                'data_type' => 'string'
+            ),
         );
     }
 }
