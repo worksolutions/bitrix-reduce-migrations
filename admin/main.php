@@ -76,7 +76,7 @@ $form->SetShowSettings(false);
 if (!$isDiagnosticValid) {
     $form->BeginPrologContent();
     $mess =  $localization->message('diagnostic', array(
-        ':url:' => '/bitrix/admin/ws.reducemigrations.php?q=diagnostic&lang=' . LANGUAGE_ID
+        ':url:' => '/bitrix/admin/ws_reducemigrations.php?q=diagnostic&lang=' . LANGUAGE_ID
     ));
     $adminMessage = new CAdminMessage(array('HTML' => "Y", 'MESSAGE' => $mess));
     echo $adminMessage->Show();
