@@ -57,7 +57,7 @@ $module = \WS\ReduceMigrations\Module::getInstance();
 
 CAdminMessage::ShowMessage(array(
     'MESSAGE' => $localization->getDataByPath('platformVersion.'.($platformVersion->isValid() ? 'ok' : 'error'))
-        .' <a href="/bitrix/admin/ws.reducemigrations.php?q=changeversion&lang=' . LANGUAGE_ID . '">'.($platformVersion->getOwner() ?: $platformVersion->getValue()).'</a>',
+        .' <a href="/bitrix/admin/ws_reducemigrations.php?q=changeversion&lang=' . LANGUAGE_ID . '">'.($platformVersion->getOwner() ?: $platformVersion->getValue()).'</a>',
     'TYPE' => $platformVersion->isValid() ? 'OK' : 'ERROR',
     'HTML' => true,
 ));
