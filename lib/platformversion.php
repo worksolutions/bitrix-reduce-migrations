@@ -11,54 +11,29 @@ class PlatformVersion
     /**
      * @var string
      */
-    private $version;
-
-    /**
-     * @var string
-     */
-    private $checkSum;
-
-    /**
-     * @var string
-     */
     private $owner;
 
     /**
-     * @var array ["asfdsgs" => "Vasiliy Dubinin"]
+     * @var array ["Vasiliy Dubinin"]
      */
     private $mapOtherVersions;
 
     public function __construct($mapOtherVersions) {
         $this->mapOtherVersions = $mapOtherVersions ?: array();
         $filePath = $this->filePath();
-        file_exists($filePath) ? $this->initFromFile() : $this->generate();
+        file_exists($filePath) ? $this->initFromFile() : $this->save();
     }
 
     private function initFromFile() {
-        $raw = explode(':#:', file_get_contents($this->filePath()));
-        $this->version = $raw[0];
-        $this->checkSum = $raw[1];
-        $this->owner = $raw[2];
+        $this->owner = trim(file_get_contents($this->filePath()));
     }
 
-    private function generate() {
-        $this->version = md5(time());
-        $this->checkSum = md5($this->version . __FILE__);
-        $this->save();
-    }
-
-    /**
-     * @return string
-     */
-    public function getValue() {
-        return $this->version;
-    }
 
     /**
      * @return bool
      */
     public function isValid() {
-        return $this->checkSum == md5($this->version . __FILE__);
+        return !empty($this->getOwner());
     }
 
     /**
@@ -73,9 +48,7 @@ class PlatformVersion
      */
     public function getMapVersions() {
         return array_merge(
-            array(
-                $this->getValue() => $this->getOwner(),
-            ),
+            array($this->getOwner()),
             $this->mapOtherVersions
         );
     }
@@ -98,7 +71,7 @@ class PlatformVersion
      * @throws \Exception
      */
     private function save() {
-        $raw = $this->version . ':#:' . md5($this->version . __FILE__) . ':#:' . $this->owner;
+        $raw = $this->owner;
         $r = fopen($this->filePath(), 'w');
         $writeRes = fwrite($r, $raw);
         if ($writeRes === false) {
@@ -106,7 +79,4 @@ class PlatformVersion
         }
     }
 
-    public function refresh() {
-        $this->generate();
-    }
 }

@@ -9,9 +9,6 @@ $platformVersion = \WS\ReduceMigrations\Module::getInstance()->getPlatformVersio
 if ($request->isPost()) {
     $post = $request->getPostList()->toArray();
     $post = \Bitrix\Main\Text\Encoding::convertEncodingArray($post, "UTF-8", $context->getCulture()->getCharset());
-    if ($post['changeversion']) {
-        \WS\ReduceMigrations\Module::getInstance()->runRefreshVersion();
-    }
     if ($post['ownersetup']) {
         $platformVersion->setOwner($post['ownersetup']['owner']);
         $options = \WS\ReduceMigrations\Module::getInstance()->getOptions();
@@ -39,9 +36,7 @@ $form = new CAdminForm('ws_maigrations_import', array(
     )
 ));
 $module = \WS\ReduceMigrations\Module::getInstance();
-$form->BeginPrologContent();
-    CAdminMessage::ShowNote($localization->getDataByPath('description'));
-$form->EndPrologContent();
+
 $form->Begin(array(
     'FORM_ACTION' => $APPLICATION->GetCurUri()
 ));
@@ -49,27 +44,18 @@ $form->Begin(array(
 $form->BeginNextFormTab();
 $form->BeginCustomField('version', 'vv');
 $color = "green";
-!$platformVersion->isValid() && $color = "red";
 ?>
-    <tr style="color: <?=$color?>;">
-        <td width="45%"><?=$localization->getDataByPath('version')?>:</td>
-        <td width="50%"><b><?=$platformVersion->getValue()?></b></td>
-    </tr>
     <tr style="color: <?=$color?>;">
         <td width="45%"><?=$localization->getDataByPath('owner')?>:</td>
         <td width="55%"><b><?=$platformVersion->getOwner()?></b> [<a id="ownerSetupLink" href="#"><?=$localization->getDataByPath('setup')?></a>]</td>
-    </tr>
-    <tr>
-        <td style="padding-top: 10px;" colspan="2" align="center"><input type="submit" name="changeversion" value="<?=$localization->getDataByPath('button_change')?>"></td>
     </tr><?
 $form->EndCustomField('version');
 $form->BeginNextFormTab();
 $form->BeginCustomField('owner', 'ww');
-foreach ($module->getOptions()->getOtherVersions() as $version => $owner) {
+foreach ($module->getOptions()->getOtherVersions() as $owner) {
     ?>
-        <tr>
-            <td width="30%"><?=$owner?>:</td>
-            <td width="60%"><b><?=$version?></b></td>
+        <tr style="text-align: center">
+            <td colspan="2"><?=$owner?></td>
         </tr>
     <?
 }

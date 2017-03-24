@@ -134,12 +134,6 @@ class Module {
     public function useDiagnostic() {
         if (!$this->diagnostic) {
             $this->diagnostic = new DiagnosticTester($this);
-
-            $dbVersion = $this->getOptions()->dbPlatformVersion;
-            if ($dbVersion && $dbVersion != $this->getPlatformVersion()->getValue()) {
-                $this->getOptions()->dbPlatformVersion = $this->getPlatformVersion()->getValue();
-            }
-            !$dbVersion && ($this->getOptions()->dbPlatformVersion = $this->getPlatformVersion()->getValue());
         }
 
         return $this->diagnostic;
@@ -336,25 +330,6 @@ class Module {
         return $this->version;
     }
 
-    /**
-     * Return owner db version
-     *
-     * @return string
-     */
-    public function getVersionOwner() {
-        return $this->getPlatformVersion()->getValue();
-    }
-
-    /**
-     * Refresh current DB version, copy references links
-     */
-    public function runRefreshVersion() {
-        $platformVersion = $this->getPlatformVersion();
-        $platformVersion->refresh();
-        $this->getOptions()->dbPlatformVersion = $platformVersion->getValue();
-
-        return true;
-    }
 
     public function install() {
         $this->useDiagnostic()->run();

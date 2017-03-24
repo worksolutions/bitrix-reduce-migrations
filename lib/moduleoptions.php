@@ -5,7 +5,6 @@ namespace WS\ReduceMigrations;
  * @property string $catalogPath
  * @property array $otherVersions
  * @property string $useAutotests
- * @property string $dbPlatformVersion
  * @author <sokolovsky@worksolutions.ru>
  */
 final class ModuleOptions {
