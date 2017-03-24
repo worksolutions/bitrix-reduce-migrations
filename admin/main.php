@@ -6,24 +6,28 @@ $localization;
 $module = \WS\ReduceMigrations\Module::getInstance();
 /** @var \WS\ReduceMigrations\PlatformVersion $platformVersion */
 $platformVersion = \WS\ReduceMigrations\Module::getInstance()->getPlatformVersion();
-$isDiagnosticValid = $module->getPlatformVersion()->isValid();
+$isDiagnosticValid = $platformVersion->isValid();
+
 $apply = false;
+
 if ($_POST['rollback']) {
     $module->rollbackLastChanges();
     $apply = true;
 }
-
+$skipOptional = false;
 if ($_POST['apply'] && $isDiagnosticValid) {
-    $module->applyNewFixes();
+    $module->applyNewMigrations($skipOptional);
     $apply = true;
 }
 
 $apply && LocalRedirect($APPLICATION->GetCurUri());
 
-$fixes = array();
 $scenarios = array();
-foreach ($module->getNotAppliedScenarios() as $notAppliedScenarioClassName) {
-    $scenarios[] = $notAppliedScenarioClassName::name();
+/** @var \WS\ReduceMigrations\ScriptScenario $notAppliedScenarioClassName */
+foreach ($module->getNotAppliedScenarios() as $priority => $scenarioList) {
+    foreach ($scenarioList as $notAppliedScenarioClassName) {
+        $scenarios[$priority][] = $notAppliedScenarioClassName::name();
+    }
 }
 
 $lastSetupLog = \WS\ReduceMigrations\Module::getInstance()->getLastSetupLog();
@@ -42,17 +46,17 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_aft
 // 1C-Bitrix override variable!!
 $module = \WS\ReduceMigrations\Module::getInstance();
 
-!$fixes && !$scenarios && !$lastSetupLog && CAdminMessage::ShowMessage(
+!$scenarios && !$lastSetupLog && CAdminMessage::ShowMessage(
     array(
         "MESSAGE" => $localization->message('common.pageEmpty'),
-        "TYPE" => "OK"
+        "TYPE" => "OK",
     )
 );
 
 CAdminMessage::ShowMessage(array(
-    'MESSAGE' => $localization->getDataByPath('platformVersion.'.($platformVersion->isValid() ? 'ok' : 'error'))
+    'MESSAGE' => $localization->getDataByPath('platformVersion.'.($isDiagnosticValid ? 'ok' : 'error'))
         .' <a href="/bitrix/admin/ws_reducemigrations.php?q=changeversion&lang=' . LANGUAGE_ID . '">'.($platformVersion->getOwner() ? : $localization->getDataByPath('platformVersion.setup')).'</a>',
-    'TYPE' => $platformVersion->isValid() ? 'OK' : 'ERROR',
+    'TYPE' => $isDiagnosticValid ? 'OK' : 'ERROR',
     'HTML' => true,
 ));
 ?><form method="POST" action="<?=$APPLICATION->GetCurUri()?>" ENCTYPE="multipart/form-data" name="apply"><?
@@ -68,35 +72,46 @@ $form = new CAdminForm('ws_maigrations_main', array(
 $form->SetShowSettings(false);
 
 $form->Begin(array(
-    'FORM_ACTION' => $APPLICATION->GetCurUri()
+    'FORM_ACTION' => $APPLICATION->GetCurUri(),
 ));
 $form->BeginNextFormTab();
-if ($fixes || $scenarios) {
-    $form->BeginCustomField('list', 'vv');
+if ($scenarios) {
 
-    if ($scenarios) {
+    $form->AddSection('migrationList', $localization->message('newChangesTitle'));
+    $form->BeginCustomField('listDescription', '');
     ?>
-        <tr style="color: #3591ff; font-size: 14px;">
-            <td width="30%" valign="top"><b><?= $localization->getDataByPath('list.scenarios') ?>:</b></td>
-            <td width="70%">
-
-                <ol style="margin-top: 0px; list-style-type: none; padding-left: 0px;">
-                    <? foreach ($scenarios as $scenario): ?>
-                        <li><?= $scenario ?></li>
-                    <? endforeach; ?>
-                </ol>
-
-            </td>
+        <tr style="font-size: 14px;">
+            <td width="30%" style="padding-top: 4px;"><strong><?=$localization->message('priority.priority');?></strong></td>
+            <td><?=$localization->message('list.scenarios');?></td>
         </tr>
-            <?
-    }
-    $form->EndCustomField('list');
+    <?php
+    $form->EndCustomField('listDescription');
+    foreach ($scenarios as $priority => $list) :
+        $form->BeginCustomField('list' . $priority, 'vv');
+        ?>
+            <tr style="font-size: 14px;">
+                <td width="30%"><strong><?=$localization->message('priority.' . $priority);?></strong></td>
+                <td style="color: #3591ff;">
+                    <ol style="margin:1px;list-style-type: none; padding-left: 0;">
+                        <?php
+                        foreach ($list as $scenario) :
+                            ?>
+                            <li><?= $scenario ?></li>
+                        <?php
+                        endforeach;
+                        ?>
+                    </ol>
+                </td>
+            </tr>
+        <?
+        $form->EndCustomField('list' . $priority);
+    endforeach;
 }
 //--------------------
 if ($lastSetupLog) {
     $form->AddSection('lastSetup', $localization->message('lastSetup.sectionName', array(
         ':time:' => $lastSetupLog->date->format('d.m.Y H:i:s'),
-        ':user:' => $lastSetupLog->shortUserInfo()
+        ':user:' => $lastSetupLog->shortUserInfo(),
     )));
     if ($appliedFixes) {
         $form->BeginCustomField('appliedList', 'vv');
@@ -140,9 +155,9 @@ if ($lastSetupLog) {
     }
 }
 $form->EndTab();
-!$fixes && !$scenarios && !$lastSetupLog && $form->bPublicMode = true;
+!$scenarios && !$lastSetupLog && $form->bPublicMode = true;
 $form->Buttons(array('btnSave' => false, 'btnApply' => false));
-$isDiagnosticValid && ($fixes || $scenarios)
+$isDiagnosticValid && $scenarios
     && $form->sButtonsContent .=
         '<input type="submit" class="adm-btn-save" name="apply" value="'.$localization->getDataByPath('btnApply').'" title="'.$localization->getDataByPath('btnApply').'"/>';
 $lastSetupLog

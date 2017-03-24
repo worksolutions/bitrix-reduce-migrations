@@ -28,15 +28,6 @@ class Module {
     private static $name = 'ws.reducemigrations';
 
     /**
-     * @var bool
-     */
-    private $_isUsingScenariosUpdate = false;
-
-    private $_usingScenarioName = null;
-
-    private $_usingScenarioCount = 0;
-
-    /**
      * Versions options Cache
      *
      * @var array
@@ -57,18 +48,6 @@ class Module {
      * @var RuntimeFixCounter
      */
     private $runtimeFixCounter;
-
-
-    public function isUsingScenariosUpdate() {
-        return $this->_isUsingScenariosUpdate;
-    }
-
-    /**
-     * @return string
-     */
-    public function createUsingScenarioId() {
-        return $this->_usingScenarioName . ($this->_usingScenarioCount++);
-    }
 
     private function __construct() {
         $this->localizePath = __DIR__ . '/../lang/' . LANGUAGE_ID;
@@ -151,16 +130,22 @@ class Module {
     }
 
     /**
-     * Gets class not applied scenarios
+     * Return list of not applied migration classes
      *
      * @return array
      */
     public function getNotAppliedScenarios() {
+        $scenarioList = array();
+        $priorities = ScriptScenario::getPriorities();
+        foreach ($priorities as $priority) {
+            $scenarioList[$priority] = array();
+        }
+
         /** @var File[] $files */
         $files = $this->_getNotAppliedFiles($this->_getScenariosDir());
 
-        $res = array();
         foreach ($files as $file) {
+            /** @var ScriptScenario $fileClass */
             $fileClass = str_replace(".php", "", $file->getName());
             if (!class_exists($fileClass)) {
                 include $file->getPath();
@@ -172,27 +157,10 @@ class Module {
             if (!$fileClass::isValid()) {
                 continue;
             }
-            $res[] = $fileClass;
+            $scenarioList[$fileClass::priority()][] = $fileClass;
         }
 
-        return $res;
-    }
-
-    /**
-     * Applies all fixes
-     *
-     * @param callable|bool $callback
-     *
-     * @return int
-     * @throws \Exception
-     */
-    public function applyNewFixes($callback = false) {
-        if (is_callable($callback)) {
-            $callback(count($this->getNotAppliedScenarios()), 'setCount');
-        }
-        $count = $this->applyNewScenarios($callback) ?: 0;
-
-        return $count;
+        return array_filter($scenarioList);
     }
 
     /**
@@ -282,14 +250,8 @@ class Module {
                 $data = $log->updateData;
                 /** @var ScriptScenario $object */
                 $object = new $class($data);
-
-                $this->_usingScenarioCount = 0;
-                $this->_isUsingScenariosUpdate = true;
-                $this->_usingScenarioName = get_class($object);
-
                 $object->rollback();
 
-                $this->_isUsingScenariosUpdate = false;
             } catch (\Exception $e) {
                 $error = "Exception:" . $e->getMessage();
             }
@@ -341,13 +303,17 @@ class Module {
             'select' => array('GROUP_LABEL'),
             'group' => array('GROUP_LABEL'),
         ));
+
         $usesGroups = array_map(function ($row) {
             return $row['GROUP_LABEL'];
         }, $result->fetchAll());
+
         $dir = new Directory($dir);
+
         if (!$dir->isExists()) {
             return array();
         }
+
         $files = array();
         foreach ($dir->getChildren() as $file) {
             if ($file->isDirectory()) {
@@ -368,58 +334,57 @@ class Module {
      *
      * @return int
      */
-    public function applyNewScenarios($callback = false) {
-        $classes = $this->getNotAppliedScenarios();
-        if (!$classes) {
+    public function applyNewMigrations($callback = false) {
+        $list = $this->getNotAppliedScenarios();
+        if (!$list) {
             return 0;
         }
+        $count = 0;
         $setupLog = $this->_useSetupLog();
-        foreach ($classes as $class) {
-            $time = microtime(true);
-            /** @var ScriptScenario $object */
-            $object = new $class(array());
-            $data = array(
-                'name' => $object->name(),
-            );
-            is_callable($callback) && $callback($data, 'start');
+        foreach ($list as $classes) {
+            foreach ($classes as $class) {
+                $count++;
+                $time = microtime(true);
+                /** @var ScriptScenario $object */
+                $object = new $class(array());
+                $data = array(
+                    'name' => $object->name(),
+                );
+                is_callable($callback) && $callback($data, 'start');
 
-            $applyFixLog = new AppliedChangesLogModel();
-            $applyFixLog->processName = self::SPECIAL_PROCESS_SCENARIO;
-            $applyFixLog->subjectName = $class;
-            $applyFixLog->setSetupLog($setupLog);
-            $applyFixLog->groupLabel = $class . '.php';
-            $applyFixLog->description = $object->name();
-            list($hash, $owner) = $object->version();
-            $applyFixLog->hash = $hash;
-            $applyFixLog->owner = $owner;
-            $this->_useVersion($owner);
-            $error = '';
-            try {
-                $this->_usingScenarioCount = 0;
-                $this->_isUsingScenariosUpdate = true;
-                $this->_usingScenarioName = get_class($object);
+                $applyFixLog = new AppliedChangesLogModel();
+                $applyFixLog->processName = self::SPECIAL_PROCESS_SCENARIO;
+                $applyFixLog->subjectName = $class;
+                $applyFixLog->setSetupLog($setupLog);
+                $applyFixLog->groupLabel = $class . '.php';
+                $applyFixLog->description = $object->name();
+                list($hash, $owner) = $object->version();
+                $applyFixLog->hash = $hash;
+                $applyFixLog->owner = $owner;
+                $this->_useVersion($owner);
+                $error = '';
+                try {
 
-                $object->commit();
-                $applyFixLog->updateData = $object->getData();
-                $applyFixLog->success = true;
+                    $object->commit();
+                    $applyFixLog->updateData = $object->getData();
+                    $applyFixLog->success = true;
 
-                $this->_isUsingScenariosUpdate = false;
-            } catch (\Exception $e) {
-                $this->_isUsingScenariosUpdate = false;
-                $applyFixLog->success = false;
-                $applyFixLog->description .= " Exception:" . $e->getMessage();
-                $error = "Exception:" . $e->getMessage();
+                } catch (\Exception $e) {
+                    $applyFixLog->success = false;
+                    $applyFixLog->description .= " Exception:" . $e->getMessage();
+                    $error = "Exception:" . $e->getMessage();
+                }
+                $applyFixLog->save();
+                $data = array(
+                    'time' => microtime(true) - $time,
+                    'log' => $applyFixLog,
+                    'error' => $error,
+                );
+                is_callable($callback) && $callback($data, 'end');
             }
-            $applyFixLog->save();
-            $data = array(
-                'time' => microtime(true) - $time,
-                'log' => $applyFixLog,
-                'error' => $error,
-            );
-            is_callable($callback) && $callback($data, 'end');
         }
 
-        return count($classes);
+        return $count;
     }
 
     /**

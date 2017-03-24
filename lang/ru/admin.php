@@ -3,8 +3,13 @@ return array(
     'main' => array(
         'title' => 'Обновление платформы',
         'list' => array(
-            'auto' => 'Автомиграции',
             'scenarios' => 'Сценарии'
+        ),
+        'priority' => array(
+            'priority' => 'Приоритет миграции:',
+            'high' => 'Высокий:',
+            'medium' => 'Средний:',
+            'optional' => 'Опциональный:',
         ),
         'errorList' => 'Ошибки',
         'appliedList' => 'Список обновлений',

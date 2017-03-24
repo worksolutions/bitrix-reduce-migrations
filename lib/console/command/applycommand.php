@@ -32,9 +32,9 @@ class ApplyCommand extends BaseCommand{
             ->printLine("Applying new fixes started....", Console::OUTPUT_PROGRESS);
 
         $time = microtime(true);
-
+        $skipOptional = false;
         $count = (int)$this->module
-            ->applyNewFixes($callback);
+            ->applyNewMigrations($skipOptional, $callback);
 
         $interval = round(microtime(true) - $time, 2);
 
