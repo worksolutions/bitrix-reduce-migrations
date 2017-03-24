@@ -424,17 +424,17 @@ class Module {
 
     /**
      * @param $name
-     * @param $description
+     * @param $priority
      *
      * @return string
      */
-    public function createScrenario($name, $description) {
+    public function createScrenario($name, $priority) {
         $templateContent = file_get_contents( $this->getModuleDir() . '/data/scenarioTemplate.tpl');
 
         $arReplace = array(
             '#class_name#' => $className = 'ws_m_' . time(). '_' . \CUtil::translit($name, LANGUAGE_ID),
             '#name#' => addslashes($name),
-            '#description#' => addslashes($description),
+            '#priority#' => $priority,
             '#hash#' => sha1($className),
             '#owner#' => $this->getPlatformVersion()->getOwner()
         );

@@ -52,24 +52,18 @@ return array(
         'title' => 'Сценарий обновления',
         'field' => array(
             'name' => 'Название',
-            'description' => 'Описание'
+            'priority' => 'Приоритет'
+        ),
+        'priority' => array(
+            'high' => 'Высокий',
+            'medium' => 'Средний',
+            'optional' => 'Опциональный',
         ),
         'path-to-file' => 'Класс миграции находится в файле #path#',
         'save-file-error' => 'Ошибка сохранения файла',
         'button' => array(
             'create' => 'Создать сценарий'
         )
-    ),
-    'diagnostic' => array(
-        'title' => 'Диагностика платформы',
-        'description' => 'Диагностика состояния, подсказки решения проблем',
-        'last' => array(
-            'description' => 'Описание',
-            'result' => 'Результат',
-            'success' => 'Успешно',
-            'fail' => 'Ошибка'
-        ),
-        'run' => 'Приступить к диагностике',
     ),
     'log' => array(
         'title' => 'Журнал обновлений',

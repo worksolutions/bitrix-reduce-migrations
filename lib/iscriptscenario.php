@@ -27,10 +27,10 @@ interface IScriptScenario {
      public function version();
 
     /**
-     * Returns description of migration
+     * Returns priority of migration
      *
      * @return string
      */
-    static public function description();
+    static public function priority();
 
 }

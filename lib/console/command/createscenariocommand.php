@@ -7,24 +7,24 @@ use WS\ReduceMigrations\Console\Console;
 class CreateScenarioCommand extends BaseCommand {
 
     private $name;
-    private $description;
+    private $priority;
 
     private function isParam($value) {
         $params = array(
             '-n',
-            '-d'
+            '-p'
         );
         return in_array(trim($value), $params);
     }
 
     protected function initParams($params) {
         $this->name = false;
-        $this->description = false;
+        $this->priority = false;
         if ($index = array_search('-n', $params)) {
             isset($params[$index + 1]) && !$this->isParam($params[$index + 1]) && $this->name = trim($params[$index + 1]);
         }
-        if ($index = array_search('-d', $params)) {
-            isset($params[$index + 1]) && !$this->isParam($params[$index + 1]) && $this->description = trim($params[$index + 1]);
+        if ($index = array_search('-p', $params)) {
+            isset($params[$index + 1]) && !$this->isParam($params[$index + 1]) && $this->priority = trim($params[$index + 1]);
         }
     }
 
@@ -45,19 +45,19 @@ class CreateScenarioCommand extends BaseCommand {
         return $name;
     }
 
-    private function getDescription() {
-        if ($this->description) {
-            return $this->description;
+    private function getPriority() {
+        if ($this->priority) {
+            return $this->priority;
         }
         $this->console
-            ->printLine('Enter description:');
+            ->printLine('Enter priority:');
         return $this->console
             ->readLine();
     }
 
     public function execute($callback = false) {
         try {
-            $fileName = $this->module->createScrenario($this->getName(), $this->getDescription());
+            $fileName = $this->module->createScrenario($this->getName(), $this->getPriority());
         } catch (\Exception $e) {
             $this->console->printLine("An error occurred saving file", Console::OUTPUT_ERROR);
             return;

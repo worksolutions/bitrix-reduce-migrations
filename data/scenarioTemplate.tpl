@@ -13,10 +13,10 @@ class #class_name# extends \WS\ReduceMigrations\ScriptScenario {
     }
 
     /**
-     * Description of scenario
+     * Priority of scenario
      **/
-    static public function description() {
-        return "#description#";
+    static public function priority() {
+        return "#priority#";
     }
 
     /**

@@ -9,6 +9,10 @@ namespace WS\ReduceMigrations;
  */
 abstract class ScriptScenario implements IScriptScenario {
 
+    const PRIORITY_HIGH = 'high';
+    const PRIORITY_MEDIUM = 'medium';
+    const PRIORITY_OPTIONAL = 'optional';
+
     /**
      * @var array
      */
@@ -42,5 +46,13 @@ abstract class ScriptScenario implements IScriptScenario {
      */
     static public function isValid() {
         return static::name();
+    }
+
+    public static function getPriorities() {
+        return array(
+            self::PRIORITY_HIGH,
+            self::PRIORITY_MEDIUM,
+            self::PRIORITY_OPTIONAL,
+        );
     }
 }
