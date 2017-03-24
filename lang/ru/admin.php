@@ -76,7 +76,8 @@ return array(
         'fields' => array(
             'updateDate' => 'Дата',
             'description' => 'Состав обновления',
-            'source' => 'Источник',
+            'hash' => 'Хэш миграции',
+            'owner' => 'Владелец',
             'dispatcher' => 'Обновил'
         ),
         'messages' => array(

@@ -17,7 +17,8 @@ $lAdmin = new CAdminList($sTableID, $oSort);
 $arHeaders = array(
     array("id" => "updateDate", "content" => $localization->getDataByPath('fields.updateDate'), "default"=>true),
     array("id" => "description", "content" => $localization->getDataByPath('fields.description'), "default" => true),
-    array("id" => "source", "content" => $localization->getDataByPath('fields.source'), "default" => true),
+    array("id" => "hash", "content" => $localization->getDataByPath('fields.hash'), "default" => true),
+    array("id" => "owner", "content" => $localization->getDataByPath('fields.owner'), "default" => true),
     array("id" => "dispatcher", "content" => $localization->getDataByPath('fields.dispatcher'), "default" => true)
 );
 $lAdmin->AddHeaders($arHeaders);
@@ -40,7 +41,8 @@ array_walk($models, function (AppliedChangesLogModel $model) use (& $rowsData, $
         $row = array(
             'label' => $model->groupLabel,
             'updateDate' => $model->date->format('d.m.Y H:i:s'),
-            'source' => $versions[$model->source] ?: $model->source,
+            'hash' => substr($model->hash, 0, 8),
+            'owner' => $model->owner,
             'dispatcher' => $model->getSetupLog() ? $model->getSetupLog()->shortUserInfo() : ''
         );
     }
