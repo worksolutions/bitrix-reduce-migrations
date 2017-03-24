@@ -5,6 +5,7 @@ namespace WS\ReduceMigrations;
 use Bitrix\Main\Application;
 use Bitrix\Main\IO\Directory;
 use Bitrix\Main\IO\File;
+use Bitrix\Main\IO\Path;
 use WS\ReduceMigrations\Console\RuntimeFixCounter;
 use WS\ReduceMigrations\Diagnostic\DiagnosticTester;
 use WS\ReduceMigrations\Entities\AppliedChangesLogModel;
@@ -440,6 +441,35 @@ class Module {
         }
 
         return count($classes);
+    }
+
+    /**
+     * @param $name
+     * @param $description
+     *
+     * @return string
+     */
+    public function createScrenario($name, $description) {
+        $templateContent = file_get_contents( $this->getModuleDir() . '/data/scenarioTemplate.tpl');
+
+        $arReplace = array(
+            '#class_name#' => $className = 'ws_m_' . time(). '_' . \CUtil::translit($name, LANGUAGE_ID),
+            '#name#' => addslashes($name),
+            '#description#' => addslashes($description),
+            '#hash#' => sha1($className),
+            '#owner#' => $this->getPlatformVersion()->getOwner()
+        );
+        $classContent = str_replace(array_keys($arReplace), array_values($arReplace), $templateContent);
+        $fileName = $className . '.php';
+
+        return $this->putScriptClass($fileName, $classContent);
+    }
+
+    /**
+     * @return string - module root directory
+     */
+    public function getModuleDir() {
+        return Path::getDirectory(__DIR__);
     }
 
 }

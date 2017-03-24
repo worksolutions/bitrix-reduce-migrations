@@ -54,23 +54,10 @@ class CreateScenarioCommand extends BaseCommand {
         return $this->console
             ->readLine();
     }
+
     public function execute($callback = false) {
-        $this->name = $this->getName();
-        $this->description = $this->getDescription();
-
-        $templateContent = file_get_contents(__DIR__.'/../../../data/scenarioTemplate.tpl');
-
-        $arReplace = array(
-            '#class_name#' => $className = 'ws_m_' . time(). '_' . \CUtil::translit($this->name, LANGUAGE_ID),
-            '#name#' => $this->name,
-            '#description#' => $this->description,
-            '#db_version#' => $this->module->getPlatformVersion()->getValue(),
-            '#owner#' => $this->module->getPlatformVersion()->getOwner()
-        );
-        $classContent = str_replace(array_keys($arReplace), array_values($arReplace), $templateContent);
-        $fileName = $className . '.php';
         try {
-            $fileName = $this->module->putScriptClass($fileName, $classContent);
+            $fileName = $this->module->createScrenario($this->getName(), $this->getDescription());
         } catch (\Exception $e) {
             $this->console->printLine("An error occurred saving file", Console::OUTPUT_ERROR);
             return;

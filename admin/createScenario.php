@@ -8,21 +8,11 @@ $module = \WS\ReduceMigrations\Module::getInstance();
 $fileName = '';
 $hasError = false;
 if ($_POST['save'] != "" && $_POST['name']) {
-    $name = $_POST['name'];
-    $description = $_POST['description'];
+    $name = trim($_POST['name']);
+    $description = trim($_POST['description']);
 
-    $templateContent = file_get_contents(__DIR__.'/../data/scenarioTemplate.tpl');
-    $arReplace = array(
-        '#class_name#' => $className = 'ws_m_'.time().'_'.CUtil::translit($name, LANGUAGE_ID),
-        '#name#' => addslashes($name),
-        '#description#' => addslashes($description),
-        '#db_version#' => '',
-        '#owner#' => $module->getPlatformVersion()->getOwner()
-    );
-    $classContent = str_replace(array_keys($arReplace), array_values($arReplace), $templateContent);
-    $fileName = $className.'.php';
     try {
-        $fileName = $module->putScriptClass($fileName, $classContent);
+        $fileName = $module->createScrenario($name, $description);
     } catch (Exception $e) {
         $hasError = true;
     }
