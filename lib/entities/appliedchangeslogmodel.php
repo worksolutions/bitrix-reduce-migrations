@@ -9,8 +9,11 @@ use Bitrix\Main\Type\DateTime;
 use WS\ReduceMigrations\factories\DateTimeFactory;
 
 class AppliedChangesLogModel extends BaseEntity {
+    const STATUS_SKIPPED = 2;
+    const STATUS_SUCCESS = 1;
+    const STATUS_NOT_APPLIED = 0;
     public
-        $id, $groupLabel, $date, $success,
+        $id, $groupLabel, $date, $status,
         $processName, $subjectName, $hash, $updateData,
         $owner, $description, $setupLogId;
 
@@ -65,7 +68,7 @@ class AppliedChangesLogModel extends BaseEntity {
             'hash' => 'HASH',
             'owner' => 'OWNER',
             'updateData' => 'UPDATE_DATA',
-            'success' => 'SUCCESS',
+            'status' => 'STATUS',
             'description' => 'DESCRIPTION'
         );
     }
@@ -91,5 +94,38 @@ class AppliedChangesLogModel extends BaseEntity {
 
     static protected function gatewayClass() {
         return AppliedChangesLogTable::className();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSuccessful() {
+        return $this->status == self::STATUS_SUCCESS;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isFailed() {
+        return $this->status == self::STATUS_NOT_APPLIED;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSkipped() {
+        return $this->status == self::STATUS_SKIPPED;
+    }
+
+    public function markAsFailed() {
+        $this->status = self::STATUS_NOT_APPLIED;
+    }
+
+    public function markSkipped() {
+        $this->status = self::STATUS_SKIPPED;
+    }
+
+    public function markAsSuccessful() {
+        $this->status = self::STATUS_SUCCESS;
     }
 }

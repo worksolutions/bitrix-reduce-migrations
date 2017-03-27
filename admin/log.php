@@ -47,7 +47,7 @@ array_walk($models, function (AppliedChangesLogModel $model) use (& $rowsData, $
         );
     }
     $row['description'] = $row['description'] ? implode("<br />", array($row['description'], $model->description)) : $model->description;
-    if (!$model->success) {
+    if ($model->isFailed()) {
         $row['error'][] = array(
             'data' => \WS\ReduceMigrations\jsonToArray($model->description) ?: array('message' => $model->description),
             'id' => $model->id

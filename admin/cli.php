@@ -41,7 +41,7 @@ $getShowProgress = function () use ($console) {
             }
             $overallTime = round(microtime(true) - $counter->start, 2);
             $message .= "$time sec ($overallTime sec)";
-            $console->printLine($message, $log->success ? Console::OUTPUT_SUCCESS: Console::OUTPUT_ERROR);
+            $console->printLine($message, $log->isFailed() ? Console::OUTPUT_ERROR : Console::OUTPUT_SUCCESS);
         }
     };
 };

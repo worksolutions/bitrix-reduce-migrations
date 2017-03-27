@@ -230,7 +230,7 @@ class Module {
                 continue;
             }
             $log->delete();
-            if (!$log->success) {
+            if ($log->isFailed()) {
                 continue;
             }
             $time = microtime(true);
@@ -330,11 +330,12 @@ class Module {
     }
 
     /**
+     * @param bool $skipOptional
      * @param bool|callable $callback
      *
      * @return int
      */
-    public function applyNewMigrations($callback = false) {
+    public function applyNewMigrations($skipOptional, $callback = false) {
         $list = $this->getNotAppliedScenarios();
         if (!$list) {
             return 0;
@@ -367,10 +368,10 @@ class Module {
 
                     $object->commit();
                     $applyFixLog->updateData = $object->getData();
-                    $applyFixLog->success = true;
+                    $applyFixLog->markAsSuccessful();
 
                 } catch (\Exception $e) {
-                    $applyFixLog->success = false;
+                    $applyFixLog->markAsFailed();
                     $applyFixLog->description .= " Exception:" . $e->getMessage();
                     $error = "Exception:" . $e->getMessage();
                 }

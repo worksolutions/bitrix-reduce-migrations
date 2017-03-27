@@ -36,8 +36,8 @@ if ($lastSetupLog) {
     $errorFixes = array();
 
     foreach ($lastSetupLog->getAppliedLogs() as $appliedLog) {
-        !$appliedLog->success && $errorFixes[] = $appliedLog;
-        $appliedLog->success && $appliedFixes[$appliedLog->description]++;
+        $appliedLog->isFailed() && $errorFixes[] = $appliedLog;
+        !$appliedLog->isFailed() && $appliedFixes[$appliedLog->description]++;
     }
 }
 //--------------------------------------------------------------------------

@@ -50,9 +50,8 @@ class AppliedChangesLogTable extends DataManager {
                 'data_type' => 'string',
                 'required' => true,
             ),
-            'SUCCESS' => array(
-                'data_type' => 'boolean',
-                'values' => array(false,true)
+            'STATUS' => array(
+                'data_type' => 'integer',
             ),
             'DESCRIPTION' => array(
                 'data_type' => 'string',

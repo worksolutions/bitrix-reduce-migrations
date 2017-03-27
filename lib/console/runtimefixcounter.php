@@ -25,7 +25,7 @@ class RuntimeFixCounter {
      */
     public function setFixNamesByLogs($list) {
         foreach ($list as $log) {
-            if (!$log->success) {
+            if ($log->isFailed()) {
                 continue;
             }
             $processName = $log->description;
