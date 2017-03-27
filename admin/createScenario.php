@@ -4,15 +4,16 @@
 /** @var $localization \WS\ReduceMigrations\Localization */
 $localization;
 $module = \WS\ReduceMigrations\Module::getInstance();
-
+$request = \Bitrix\Main\Application::getInstance()->getContext()->getRequest();
 $fileName = '';
 $hasError = false;
 if ($_POST['save'] != "" && $_POST['name']) {
-    $name = trim($_POST['name']);
-    $priority = trim($_POST['priority']);
+    $name = trim($request->get('name'));
+    $priority = trim($request->get('priority'));
+    $time = trim($request->get('time'));
 
     try {
-        $fileName = $module->createScrenario($name, $priority);
+        $fileName = $module->createScrenario($name, $priority, $time);
     } catch (Exception $e) {
         $hasError = true;
     }
@@ -49,6 +50,7 @@ foreach (\WS\ReduceMigrations\Scenario\ScriptScenario::getPriorities() as $prior
 }
 
 $form->AddDropDownField('priority', $localization->message('field.priority'), true, $priorities);
+$form->AddEditField('time', $localization->message('field.time'), false, array('size' => 3));
 
 $form->EndTab();
     $form->Buttons(array('btnSave' => false, 'btnApply' => false));
