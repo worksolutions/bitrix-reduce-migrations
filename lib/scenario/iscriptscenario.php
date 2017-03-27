@@ -19,12 +19,12 @@ interface IScriptScenario {
      *
      * @return string
      */
-    static public function name();
+    public static function name();
 
     /**
-     * @return string - is hash
-     */
-     public static function hash();
+    * @return string - is hash
+    */
+    public static function hash();
 
     /**
      * @return string - is owner name
@@ -32,10 +32,15 @@ interface IScriptScenario {
     public static function owner();
 
     /**
+     * @return string approximately time
+     */
+    public static function approximatelyTime();
+
+    /**
      * Returns priority of migration
      *
      * @return string
      */
-    static public function priority();
+    public static function priority();
 
 }

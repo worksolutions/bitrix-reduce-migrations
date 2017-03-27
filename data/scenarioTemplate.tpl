@@ -34,6 +34,13 @@ class #class_name# extends \WS\ReduceMigrations\Scenario\ScriptScenario {
     }
 
     /**
+     * @return string approximately time
+     */
+    static public function approximatelyTime() {
+        return "#time#";
+    }
+
+    /**
      * Write action by apply scenario. Use method `setData` for save need rollback data
      **/
     public function commit() {
