@@ -1,6 +1,6 @@
 <?php
 
-namespace WS\ReduceMigrations;
+namespace WS\ReduceMigrations\Scenario;
 
 interface IScriptScenario {
 
@@ -22,9 +22,14 @@ interface IScriptScenario {
     static public function name();
 
     /**
-     * @return array First element is hash, second is owner name
+     * @return string - is hash
      */
-     public function version();
+     public static function hash();
+
+    /**
+     * @return string - is owner name
+     */
+    public static function owner();
 
     /**
      * Returns priority of migration

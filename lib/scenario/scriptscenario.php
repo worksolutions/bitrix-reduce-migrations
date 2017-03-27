@@ -1,6 +1,6 @@
 <?php
 
-namespace WS\ReduceMigrations;
+namespace WS\ReduceMigrations\Scenario;
 
 /**
  * Class ScriptScenario
@@ -48,6 +48,9 @@ abstract class ScriptScenario implements IScriptScenario {
         return static::name();
     }
 
+    /**
+     * @return array
+     */
     public static function getPriorities() {
         return array(
             self::PRIORITY_HIGH,
@@ -55,4 +58,12 @@ abstract class ScriptScenario implements IScriptScenario {
             self::PRIORITY_OPTIONAL,
         );
     }
+
+    /**
+     * @return bool
+     */
+    public function isOptional() {
+        return $this->priority() == self::PRIORITY_OPTIONAL;
+    }
+
 }

@@ -10,6 +10,9 @@ use WS\ReduceMigrations\Console\RuntimeFixCounter;
 use WS\ReduceMigrations\Entities\AppliedChangesLogModel;
 use WS\ReduceMigrations\Entities\AppliedChangesLogTable;
 use WS\ReduceMigrations\Entities\SetupLogModel;
+use WS\ReduceMigrations\Scenario\Exceptions\ApplyScenarioException;
+use WS\ReduceMigrations\Scenario\Exceptions\SkipScenarioException;
+use WS\ReduceMigrations\Scenario\ScriptScenario;
 
 /**
  * Class Module
@@ -151,7 +154,7 @@ class Module {
                 include $file->getPath();
             }
 
-            if (!is_subclass_of($fileClass, '\WS\ReduceMigrations\ScriptScenario')) {
+            if (!is_subclass_of($fileClass, '\WS\ReduceMigrations\Scenario\ScriptScenario')) {
                 continue;
             }
             if (!$fileClass::isValid()) {
@@ -233,6 +236,9 @@ class Module {
             if ($log->isFailed()) {
                 continue;
             }
+            if ($log->isSkipped()) {
+                continue;
+            }
             $time = microtime(true);
             $callbackData = array(
                 'name' => $log->description,
@@ -244,7 +250,7 @@ class Module {
                 if (!class_exists($class)) {
                     include $this->_getScenariosDir() . DIRECTORY_SEPARATOR . $class . '.php';
                 }
-                if (!is_subclass_of($class, '\WS\ReduceMigrations\ScriptScenario')) {
+                if (!is_subclass_of($class, '\WS\ReduceMigrations\Scenario\ScriptScenario')) {
                     continue;
                 }
                 $data = $log->updateData;
@@ -343,34 +349,27 @@ class Module {
         $count = 0;
         $setupLog = $this->_useSetupLog();
         foreach ($list as $classes) {
+            /** @var ScriptScenario $class */
             foreach ($classes as $class) {
                 $count++;
                 $time = microtime(true);
-                /** @var ScriptScenario $object */
-                $object = new $class(array());
+
                 $data = array(
-                    'name' => $object->name(),
+                    'name' => $class::name(),
                 );
                 is_callable($callback) && $callback($data, 'start');
-
-                $applyFixLog = new AppliedChangesLogModel();
-                $applyFixLog->processName = self::SPECIAL_PROCESS_SCENARIO;
-                $applyFixLog->subjectName = $class;
-                $applyFixLog->setSetupLog($setupLog);
-                $applyFixLog->groupLabel = $class . '.php';
-                $applyFixLog->description = $object->name();
-                list($hash, $owner) = $object->version();
-                $applyFixLog->hash = $hash;
-                $applyFixLog->owner = $owner;
-                $this->_useVersion($owner);
-                $error = '';
+                /** @var ScriptScenario $object */
+                $applyFixLog = AppliedChangesLogModel::createByParams($setupLog, $class);
+                $this->_useVersion($class::owner());
+                $object = new $class(array());
                 try {
-
-                    $object->commit();
+                    $this->applyScenario($object, $skipOptional);
                     $applyFixLog->updateData = $object->getData();
                     $applyFixLog->markAsSuccessful();
-
-                } catch (\Exception $e) {
+                } catch (SkipScenarioException $e) {
+                    $applyFixLog->markSkipped();
+                }
+                catch (ApplyScenarioException $e) {
                     $applyFixLog->markAsFailed();
                     $applyFixLog->description .= " Exception:" . $e->getMessage();
                     $error = "Exception:" . $e->getMessage();
@@ -379,13 +378,24 @@ class Module {
                 $data = array(
                     'time' => microtime(true) - $time,
                     'log' => $applyFixLog,
-                    'error' => $error,
+                    'error' => $error ? : '',
                 );
                 is_callable($callback) && $callback($data, 'end');
             }
         }
 
         return $count;
+    }
+
+    private function applyScenario(ScriptScenario $scenario, $skipOptional) {
+        if ($skipOptional && $scenario->isOptional()) {
+            throw new SkipScenarioException();
+        }
+        try {
+            $scenario->commit();
+        } catch (\Exception $e) {
+            throw new ApplyScenarioException($e->getMessage());
+        }
     }
 
     /**
@@ -402,7 +412,7 @@ class Module {
             '#name#' => addslashes($name),
             '#priority#' => $priority,
             '#hash#' => sha1($className),
-            '#owner#' => $this->getPlatformVersion()->getOwner()
+            '#owner#' => $this->getPlatformVersion()->getOwner(),
         );
         $classContent = str_replace(array_keys($arReplace), array_values($arReplace), $templateContent);
         $fileName = $className . '.php';

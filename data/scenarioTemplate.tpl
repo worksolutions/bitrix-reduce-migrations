@@ -3,7 +3,7 @@
 /**
  * Class definition update migrations scenario actions
  **/
-class #class_name# extends \WS\ReduceMigrations\ScriptScenario {
+class #class_name# extends \WS\ReduceMigrations\Scenario\ScriptScenario {
 
     /**
      * Name of scenario
@@ -20,10 +20,17 @@ class #class_name# extends \WS\ReduceMigrations\ScriptScenario {
     }
 
     /**
-     * @return array First element is hash, second is owner name
+     * @return string hash
      */
-    public function version() {
-        return array("#hash#", "#owner#");
+    static public function hash() {
+        return "#hash#";
+    }
+
+    /**
+     * @return string is owner name
+     */
+    static public function owner() {
+        return "#owner#";
     }
 
     /**

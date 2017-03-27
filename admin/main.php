@@ -7,15 +7,17 @@ $module = \WS\ReduceMigrations\Module::getInstance();
 /** @var \WS\ReduceMigrations\PlatformVersion $platformVersion */
 $platformVersion = \WS\ReduceMigrations\Module::getInstance()->getPlatformVersion();
 $isDiagnosticValid = $platformVersion->isValid();
-
+$request = \Bitrix\Main\Application::getInstance()->getContext()->getRequest();
 $apply = false;
 
-if ($_POST['rollback']) {
+if ($request->get('rollback')) {
     $module->rollbackLastChanges();
     $apply = true;
 }
-$skipOptional = false;
-if ($_POST['apply'] && $isDiagnosticValid) {
+
+$skipOptional = $request->get('skipOptional') == 'Y';
+
+if ($request->get('apply') && $isDiagnosticValid) {
     $module->applyNewMigrations($skipOptional);
     $apply = true;
 }
@@ -23,7 +25,7 @@ if ($_POST['apply'] && $isDiagnosticValid) {
 $apply && LocalRedirect($APPLICATION->GetCurUri());
 
 $scenarios = array();
-/** @var \WS\ReduceMigrations\ScriptScenario $notAppliedScenarioClassName */
+/** @var \WS\ReduceMigrations\Scenario\ScriptScenario $notAppliedScenarioClassName */
 foreach ($module->getNotAppliedScenarios() as $priority => $scenarioList) {
     foreach ($scenarioList as $notAppliedScenarioClassName) {
         $scenarios[$priority][] = $notAppliedScenarioClassName::name();
@@ -106,6 +108,9 @@ if ($scenarios) {
         <?
         $form->EndCustomField('list' . $priority);
     endforeach;
+    if (isset($scenarios[\WS\ReduceMigrations\Scenario\ScriptScenario::PRIORITY_OPTIONAL])) {
+        $form->AddCheckBoxField('skipOptional', $localization->message('skipOptional'), false, 'Y', false);
+    }
 }
 //--------------------
 if ($lastSetupLog) {

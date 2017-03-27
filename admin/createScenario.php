@@ -44,7 +44,7 @@ $form->BeginNextFormTab();
 $form->AddEditField('name', $localization->message('field.name'), true, array('size' => 80));
 
 $priorities = array();
-foreach (\WS\ReduceMigrations\ScriptScenario::getPriorities() as $priority) {
+foreach (\WS\ReduceMigrations\Scenario\ScriptScenario::getPriorities() as $priority) {
     $priorities[$priority] = $localization->message('priority.' . $priority);
 }
 
