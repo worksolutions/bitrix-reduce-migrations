@@ -2,6 +2,8 @@
 
 namespace WS\ReduceMigrations\Console\Command;
 
+use WS\ReduceMigrations\Scenario\ScriptScenario;
+
 class ListCommand extends BaseCommand{
 
     private $registeredFixes;
@@ -15,27 +17,30 @@ class ListCommand extends BaseCommand{
 
     public function execute($callback = false) {
         $has = false;
+        $time = 0;
         foreach ($this->module->getNotAppliedScenarios() as $priority => $list) {
+            /** @var ScriptScenario $notAppliedScenario */
             foreach ($list as $notAppliedScenario) {
+                $time += (double)$notAppliedScenario::approximatelyTime();
                 $this->registerFix($notAppliedScenario::name());
                 $has = true;
             }
         }
         !$has && $this->console->printLine("Nothing to apply");
-        $has && $this->printRegisteredFixes();
+        $has && $this->printRegisteredFixes($time);
     }
 
     private function registerFix($name) {
-        if ($name == 'Reference fix') {
-            $name = $this->localization->message('common.reference-fix');
-        }
-        $this->registeredFixes[$name]++;
+        $this->registeredFixes[] = $name;
     }
 
-    private function printRegisteredFixes() {
-        foreach ($this->registeredFixes as $name => $count) {
-            $count = $count > 1 ? '['.$count.']' : '';
-            $this->console->printLine($name.' '.$count);
+    private function printRegisteredFixes($time) {
+        $this->console->printLine('List of migrations:');
+        foreach ($this->registeredFixes as $name) {
+            $this->console->printLine("   " . $name);
+        }
+        if ($time) {
+            $this->console->printLine("Approximately applying time: $time min");
         }
     }
 
