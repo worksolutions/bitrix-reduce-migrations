@@ -7,6 +7,7 @@ namespace WS\ReduceMigrations\Entities;
 
 use Bitrix\Main\Type\DateTime;
 use WS\ReduceMigrations\factories\DateTimeFactory;
+use WS\ReduceMigrations\Module;
 
 class AppliedChangesLogModel extends BaseEntity {
     const STATUS_SKIPPED = 2;
@@ -21,6 +22,19 @@ class AppliedChangesLogModel extends BaseEntity {
 
     public function __construct() {
         $this->date = DateTimeFactory::createBase();
+    }
+
+    public static function createByParams($setupLog, $class) {
+        $element = new self();
+        $element->processName = Module::SPECIAL_PROCESS_SCENARIO;
+        $element->subjectName = $class;
+        $element->setSetupLog($setupLog);
+        $element->groupLabel = $class . '.php';
+        $element->description = $class::name();
+        $element->hash = $class::hash();
+        $element->owner = $class::owner();
+
+        return $element;
     }
 
     static protected function modifyFromDb($data) {
