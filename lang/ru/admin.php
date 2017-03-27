@@ -14,6 +14,8 @@ return array(
         'skipOptional' => 'Пропустить миграции типа "Опциональный"',
         'errorList' => 'Ошибки',
         'appliedList' => 'Список обновлений',
+        'approximatelyTime' => 'Примерное время применения миграций:',
+        'time' => '#time# мин.',
         'btnRollback' => 'Отменить последнее обновление',
         'btnApply' => 'Обновить',
         'lastSetup' => array(

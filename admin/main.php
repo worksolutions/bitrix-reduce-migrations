@@ -23,11 +23,12 @@ if ($request->get('apply') && $isDiagnosticValid) {
 }
 
 $apply && LocalRedirect($APPLICATION->GetCurUri());
-
+$approximatelyTime = 0;
 $scenarios = array();
 /** @var \WS\ReduceMigrations\Scenario\ScriptScenario $notAppliedScenarioClassName */
 foreach ($module->getNotAppliedScenarios() as $priority => $scenarioList) {
     foreach ($scenarioList as $notAppliedScenarioClassName) {
+        $approximatelyTime += (int)$notAppliedScenarioClassName::approximatelyTime();
         $scenarios[$priority][] = $notAppliedScenarioClassName::name();
     }
 }
@@ -111,6 +112,9 @@ if ($scenarios) {
     if (isset($scenarios[\WS\ReduceMigrations\Scenario\ScriptScenario::PRIORITY_OPTIONAL])) {
         $form->AddCheckBoxField('skipOptional', $localization->message('skipOptional'), false, 'Y', false);
     }
+    $form->AddViewField('time', $localization->message('approximatelyTime'), $localization->message('time', array(
+        '#time#' => $approximatelyTime
+    )));
 }
 //--------------------
 if ($lastSetupLog) {
