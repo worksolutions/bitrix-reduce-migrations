@@ -8,9 +8,12 @@ use WS\ReduceMigrations\Module;
 class ApplyCommand extends BaseCommand{
     /** @var  bool */
     private $force;
+    /** @var  bool */
+    private $skipOptional;
 
     protected function initParams($params) {
         $this->force = in_array('-f', $params);
+        $this->skipOptional = in_array('--skip-optional', $params);
     }
 
     public function execute($callback = false) {
@@ -32,9 +35,9 @@ class ApplyCommand extends BaseCommand{
             ->printLine("Applying new fixes started....", Console::OUTPUT_PROGRESS);
 
         $time = microtime(true);
-        $skipOptional = false;
+
         $count = (int)$this->module
-            ->applyNewMigrations($skipOptional, $callback);
+            ->applyNewMigrations($this->skipOptional, $callback);
 
         $interval = round(microtime(true) - $time, 2);
 
