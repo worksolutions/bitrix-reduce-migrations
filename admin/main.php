@@ -28,7 +28,7 @@ $scenarios = array();
 /** @var \WS\ReduceMigrations\Scenario\ScriptScenario $notAppliedScenarioClassName */
 foreach ($module->getNotAppliedScenarios() as $priority => $scenarioList) {
     foreach ($scenarioList as $notAppliedScenarioClassName) {
-        $approximatelyTime += (int)$notAppliedScenarioClassName::approximatelyTime();
+        $approximatelyTime += (double)$notAppliedScenarioClassName::approximatelyTime();
         $scenarios[$priority][] = $notAppliedScenarioClassName::name();
     }
 }
