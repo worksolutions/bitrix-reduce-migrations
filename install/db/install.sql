@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS `ws_reducemigrations_apply_changes_log` (
   `PROCESS` VARCHAR (128) NOT NULL,
   `SUBJECT` VARCHAR (128) DEFAULT NULL,
   `UPDATE_DATA` MEDIUMTEXT NOT NULL,
-  `SUCCESS` INT (1),
+  `STATUS` INT (1),
   `DESCRIPTION` TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS `ws_reducemigrations_setups_log` (
