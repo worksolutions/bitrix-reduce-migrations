@@ -3,8 +3,15 @@
 namespace WS\ReduceMigrations\Console\Command;
 
 use WS\ReduceMigrations\Console\Console;
+use WS\ReduceMigrations\Console\ConsoleException;
 
 class RollbackCommand extends BaseCommand {
+
+    private $migrationHash;
+
+    protected function initParams($params) {
+        $this->migrationHash = isset($params[0]) ? $params[0] : null;
+    }
 
     public function execute($callback = false) {
         $this->console
@@ -19,8 +26,17 @@ class RollbackCommand extends BaseCommand {
         $this->console
             ->printLine("Rollback action started...", Console::OUTPUT_PROGRESS);
         $start = microtime(true);
-        $this->module
-            ->rollbackLastChanges($callback);
+        try {
+            if ($this->migrationHash) {
+                $this->module->rollbackByHash($this->migrationHash);
+            } else {
+                $this->module
+                    ->rollbackLastChanges($callback);
+            }
+        } catch (\Exception $e) {
+            throw new ConsoleException($e->getMessage());
+        }
+
 
         $interval = round(microtime(true) - $start, 2);
 

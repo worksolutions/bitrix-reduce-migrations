@@ -7,7 +7,6 @@ namespace WS\ReduceMigrations\Entities;
 
 use Bitrix\Main\Type\DateTime;
 use WS\ReduceMigrations\factories\DateTimeFactory;
-use WS\ReduceMigrations\Module;
 
 class AppliedChangesLogModel extends BaseEntity {
     const STATUS_SKIPPED = 2;
@@ -22,6 +21,28 @@ class AppliedChangesLogModel extends BaseEntity {
 
     public function __construct() {
         $this->date = DateTimeFactory::createBase();
+    }
+
+    public static function findByHash($hash) {
+        $logs = AppliedChangesLogModel::find(array(
+            'order' => array('id' => 'desc'),
+            'filter' => array(
+                'hash' => $hash . '%'
+            )
+        ));
+
+        return $logs;
+    }
+
+    public static function hasMigrationsWithLog($setupLogId) {
+        $logs = AppliedChangesLogModel::find(array(
+            'order' => array('id' => 'desc'),
+            'filter' => array(
+                '=setupLogId' => $setupLogId
+            )
+        ));
+
+        return !empty($logs);
     }
 
     public static function createByParams($setupLog, $class) {

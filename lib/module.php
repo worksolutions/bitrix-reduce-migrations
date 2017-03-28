@@ -198,7 +198,21 @@ class Module {
     }
 
     public function rollbackByHash($migrationHash) {
+        $logs = AppliedChangesLogModel::findByHash($migrationHash);
+        if (count($logs) > 1) {
+            throw new MultipleEqualHashException(sprintf('Found %s migrations with hash `%s`', count($logs), $migrationHash));
+        }
+        if (empty($logs)) {
+            throw new NothingToApplyException(sprintf('Not found migration with hash `%s`', $migrationHash));
+        }
+        /** @var AppliedChangesLogModel $log */
+        $log = $logs[0];
+        $setupLogId = $log->setupLogId;
+        $this->rollbackByLogs(array_reverse((array)$logs));
 
+        if (!AppliedChangesLogModel::hasMigrationsWithLog($setupLogId)) {
+            SetupLogModel::deleteById($setupLogId);
+        }
     }
 
     /**

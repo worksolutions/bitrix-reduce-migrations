@@ -35,6 +35,10 @@ class SetupLogModel extends BaseEntity {
         return SetupLogTable::className();
     }
 
+    static public function deleteById($id) {
+        return self::callGatewayMethod('delete', $id);
+    }
+
     static protected function modifyFromDb($data) {
         if ($data['date'] instanceof DateTime) {
             $timestamp = $data['date']->getTimestamp();
