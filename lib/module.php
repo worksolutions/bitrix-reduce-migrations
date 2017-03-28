@@ -197,6 +197,10 @@ class Module {
         $setupLog->delete();
     }
 
+    public function rollbackByHash($migrationHash) {
+
+    }
+
     /**
      * @param AppliedChangesLogModel[] $list
      * @param callable|bool $callback
@@ -433,4 +437,20 @@ class Module {
         is_callable($callback) && $callback($data, 'end');
     }
 
+}
+
+
+function jsonToArray($json) {
+    global $APPLICATION;
+    $value = json_decode($json, true);
+    $value = $APPLICATION->ConvertCharsetArray($value, "UTF-8", LANG_CHARSET);
+
+    return $value;
+}
+
+function arrayToJson($data) {
+    global $APPLICATION;
+    $data = $APPLICATION->ConvertCharsetArray($data, LANG_CHARSET, "UTF-8");
+
+    return json_encode($data);
 }

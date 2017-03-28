@@ -19,18 +19,3 @@ spl_autoload_register(function ($class) use ($lib) {
     require $path;
     return true;
 });
-
-function jsonToArray($json) {
-    global $APPLICATION;
-    $value = json_decode($json, true);
-    $value = $APPLICATION->ConvertCharsetArray($value, "UTF-8", LANG_CHARSET);
-
-    return $value;
-}
-
-function arrayToJson($data) {
-    global $APPLICATION;
-    $data = $APPLICATION->ConvertCharsetArray($data, LANG_CHARSET, "UTF-8");
-
-    return json_encode($data);
-}
