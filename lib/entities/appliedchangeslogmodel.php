@@ -15,7 +15,7 @@ class AppliedChangesLogModel extends BaseEntity {
     const STATUS_NOT_APPLIED = 0;
     public
         $id, $groupLabel, $date, $status,
-        $processName, $subjectName, $hash, $updateData,
+        $subjectName, $hash, $updateData,
         $owner, $description, $setupLogId;
 
     private $_setupLog;
@@ -26,7 +26,6 @@ class AppliedChangesLogModel extends BaseEntity {
 
     public static function createByParams($setupLog, $class) {
         $element = new self();
-        $element->processName = Module::SPECIAL_PROCESS_SCENARIO;
         $element->subjectName = $class;
         $element->setSetupLog($setupLog);
         $element->groupLabel = $class . '.php';
@@ -77,7 +76,6 @@ class AppliedChangesLogModel extends BaseEntity {
             'setupLogId' => 'SETUP_LOG_ID',
             'groupLabel' => 'GROUP_LABEL',
             'date' => 'DATE',
-            'processName' => 'PROCESS',
             'subjectName' => 'SUBJECT',
             'hash' => 'HASH',
             'owner' => 'OWNER',

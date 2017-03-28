@@ -28,17 +28,8 @@ class RuntimeFixCounter {
             if ($log->isFailed()) {
                 continue;
             }
-            $processName = $log->description;
-            if ($processName == Module::SPECIAL_PROCESS_SCENARIO) {
-                $this->migrationCount++;
-                continue;
-            }
-            if ($this->activeFixName != $log->description) {
-                $this->migrationCount++;
-                $this->fixNumber++;
-                $this->activeFixName = $log->description;
-            }
-            $this->fixNames[$this->activeFixName . $this->fixNumber]++;
+            $this->migrationCount++;
+            continue;
         }
     }
 

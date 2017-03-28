@@ -38,10 +38,6 @@ class AppliedChangesLogTable extends DataManager {
                 'data_type' => 'datetime',
                 'required' => true,
             ),
-            'PROCESS' => array(
-                'data_type' => 'string',
-                'required' => true,
-            ),
             'SUBJECT' => array(
                 'data_type' => 'string',
                 'required' => true,

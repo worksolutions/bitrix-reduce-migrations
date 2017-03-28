@@ -24,8 +24,6 @@ use WS\ReduceMigrations\Scenario\ScriptScenario;
  */
 class Module {
 
-    const SPECIAL_PROCESS_SCENARIO = 'Scenario';
-
     const FALLBACK_LOCALE = 'en';
 
     private $localizePath = null;
@@ -214,10 +212,6 @@ class Module {
         $this->runtimeFixCounter->time = microtime(true);
 
         foreach ($list as $log) {
-            $processName = $log->processName;
-            if ($processName != self::SPECIAL_PROCESS_SCENARIO) {
-                continue;
-            }
             $log->delete();
             if ($log->isFailed()) {
                 continue;
