@@ -125,7 +125,7 @@ class Module {
      * @return string
      * @throws \Exception
      */
-    public function putScriptClass($fileName, $content) {
+    private function putScriptClass($fileName, $content) {
         $file = new File($this->_getScenariosDir() . DIRECTORY_SEPARATOR . $fileName);
         $success = $file->putContents($content);
         if (!$success) {
