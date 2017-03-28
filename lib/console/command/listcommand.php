@@ -17,17 +17,16 @@ class ListCommand extends BaseCommand{
 
     public function execute($callback = false) {
         $has = false;
-        $time = 0;
-        foreach ($this->module->getNotAppliedScenarios() as $priority => $list) {
+        $notAppliedScenarios = $this->module->getNotAppliedScenarios();
+        foreach ($notAppliedScenarios->groupByPriority() as $priority => $list) {
             /** @var ScriptScenario $notAppliedScenario */
             foreach ($list as $notAppliedScenario) {
-                $time += (double)$notAppliedScenario::approximatelyTime();
                 $this->registerFix($priority, $notAppliedScenario::name(), $notAppliedScenario::hash());
                 $has = true;
             }
         }
         !$has && $this->console->printLine("Nothing to apply");
-        $has && $this->printRegisteredFixes($time);
+        $has && $this->printRegisteredFixes($notAppliedScenarios->getApproximateTime());
     }
 
     private function registerFix($priority, $name, $hash) {
