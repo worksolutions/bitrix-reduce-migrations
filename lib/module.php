@@ -203,7 +203,7 @@ class Module {
      *
      * @return null
      */
-    public function rollbackByLogs($list, $callback = false) {
+    private function rollbackByLogs($list, $callback = false) {
         $this->runtimeFixCounter = new RuntimeFixCounter();
         $this->runtimeFixCounter->setFixNamesByLogs($list);
         is_callable($callback) && $callback($this->runtimeFixCounter->migrationCount, 'setCount');
