@@ -354,7 +354,7 @@ class Module {
      *
      * @return string
      */
-    public function createScrenario($name, $priority, $time) {
+    public function createScenario($name, $priority, $time) {
         $templateContent = file_get_contents( $this->getModuleDir() . '/data/scenarioTemplate.tpl');
 
         $arReplace = array(

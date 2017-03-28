@@ -13,7 +13,7 @@ if ($_POST['save'] != "" && $_POST['name']) {
     $time = trim($request->get('time'));
 
     try {
-        $fileName = $module->createScrenario($name, $priority, $time);
+        $fileName = $module->createScenario($name, $priority, $time);
     } catch (Exception $e) {
         $hasError = true;
     }
