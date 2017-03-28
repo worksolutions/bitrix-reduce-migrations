@@ -6,10 +6,13 @@ use Bitrix\Main\Application;
 use Bitrix\Main\IO\Directory;
 use Bitrix\Main\IO\File;
 use Bitrix\Main\IO\Path;
+use WS\ReduceMigrations\Collection\MigrationCollection;
 use WS\ReduceMigrations\Console\RuntimeFixCounter;
 use WS\ReduceMigrations\Entities\AppliedChangesLogModel;
 use WS\ReduceMigrations\Entities\AppliedChangesLogTable;
 use WS\ReduceMigrations\Entities\SetupLogModel;
+use WS\ReduceMigrations\Exceptions\MultipleEqualHashException;
+use WS\ReduceMigrations\Exceptions\NothingToApplyException;
 use WS\ReduceMigrations\Scenario\Exceptions\ApplyScenarioException;
 use WS\ReduceMigrations\Scenario\Exceptions\SkipScenarioException;
 use WS\ReduceMigrations\Scenario\ScriptScenario;
@@ -51,6 +54,8 @@ class Module {
      * @var RuntimeFixCounter
      */
     private $runtimeFixCounter;
+    /** @var  MigrationCollection */
+    private $notAppliedScenarios;
 
     private function __construct() {
         $this->localizePath = __DIR__ . '/../lang/' . LANGUAGE_ID;
@@ -135,35 +140,16 @@ class Module {
     /**
      * Return list of not applied migration classes
      *
-     * @return array
+     * @return MigrationCollection
      */
     public function getNotAppliedScenarios() {
-        $scenarioList = array();
-        $priorities = ScriptScenario::getPriorities();
-        foreach ($priorities as $priority) {
-            $scenarioList[$priority] = array();
+        if ($this->notAppliedScenarios) {
+            return $this->notAppliedScenarios;
         }
-
         /** @var File[] $files */
         $files = $this->_getNotAppliedFiles($this->_getScenariosDir());
-
-        foreach ($files as $file) {
-            /** @var ScriptScenario $fileClass */
-            $fileClass = str_replace(".php", "", $file->getName());
-            if (!class_exists($fileClass)) {
-                include $file->getPath();
-            }
-
-            if (!is_subclass_of($fileClass, '\WS\ReduceMigrations\Scenario\ScriptScenario')) {
-                continue;
-            }
-            if (!$fileClass::isValid()) {
-                continue;
-            }
-            $scenarioList[$fileClass::priority()][] = $fileClass;
-        }
-
-        return array_filter($scenarioList);
+        $this->notAppliedScenarios = new MigrationCollection($files);
+        return $this->notAppliedScenarios;
     }
 
     /**
@@ -342,52 +328,21 @@ class Module {
      * @return int
      */
     public function applyNewMigrations($skipOptional, $callback = false) {
-        $list = $this->getNotAppliedScenarios();
-        if (!$list) {
+        $classes = $this->getNotAppliedScenarios();
+        if (!$classes) {
             return 0;
         }
         $count = 0;
-        $setupLog = $this->_useSetupLog();
-        foreach ($list as $classes) {
-            /** @var ScriptScenario $class */
-            foreach ($classes as $class) {
-                $count++;
-                $time = microtime(true);
-
-                $data = array(
-                    'name' => $class::name(),
-                );
-                is_callable($callback) && $callback($data, 'start');
-                /** @var ScriptScenario $object */
-                $applyFixLog = AppliedChangesLogModel::createByParams($setupLog, $class);
-                $this->_useVersion($class::owner());
-                $object = new $class(array());
-                try {
-                    $this->applyScenario($object, $skipOptional);
-                    $applyFixLog->updateData = $object->getData();
-                    $applyFixLog->markAsSuccessful();
-                } catch (SkipScenarioException $e) {
-                    $applyFixLog->markSkipped();
-                }
-                catch (ApplyScenarioException $e) {
-                    $applyFixLog->markAsFailed();
-                    $applyFixLog->description .= " Exception:" . $e->getMessage();
-                    $error = "Exception:" . $e->getMessage();
-                }
-                $applyFixLog->save();
-                $data = array(
-                    'time' => microtime(true) - $time,
-                    'log' => $applyFixLog,
-                    'error' => $error ? : '',
-                );
-                is_callable($callback) && $callback($data, 'end');
-            }
+        /** @var ScriptScenario $class */
+        foreach ($classes as $class) {
+            $count++;
+            $this->applyScenario($class, $skipOptional, $callback);
         }
 
         return $count;
     }
 
-    private function applyScenario(ScriptScenario $scenario, $skipOptional) {
+    private function commitScenario(ScriptScenario $scenario, $skipOptional) {
         if ($skipOptional && $scenario->isOptional()) {
             throw new SkipScenarioException();
         }
@@ -427,6 +382,61 @@ class Module {
      */
     public function getModuleDir() {
         return Path::getDirectory(__DIR__);
+    }
+
+    /**
+     * @param $migrationHash
+     * @param \Closure|bool $callback
+     *
+     * @throws MultipleEqualHashException
+     * @throws NothingToApplyException
+     */
+    public function applyMigrationByHash($migrationHash, $callback = false) {
+        $list = $this->getNotAppliedScenarios()->findByHash($migrationHash);
+        if (count($list) > 1) {
+            throw new MultipleEqualHashException(sprintf('Found %s migrations with hash `%s`', count($list), $migrationHash));
+        }
+        if (empty($list)) {
+            throw new NothingToApplyException(sprintf('Not found migration with hash `%s`', $migrationHash));
+        }
+        $this->applyScenario($list[0], false, $callback);
+    }
+
+    /**
+     * @param ScriptScenario $class
+     * @param $skipOptional
+     * @param $callback
+     */
+    private function applyScenario($class, $skipOptional, $callback) {
+        $setupLog = $this->_useSetupLog();
+        $time = microtime(true);
+
+        $data = array(
+            'name' => $class::name(),
+        );
+        is_callable($callback) && $callback($data, 'start');
+        /** @var ScriptScenario $object */
+        $applyFixLog = AppliedChangesLogModel::createByParams($setupLog, $class);
+        $this->_useVersion($class::owner());
+        $object = new $class(array());
+        try {
+            $this->commitScenario($object, $skipOptional);
+            $applyFixLog->updateData = $object->getData();
+            $applyFixLog->markAsSuccessful();
+        } catch (SkipScenarioException $e) {
+            $applyFixLog->markSkipped();
+        } catch (ApplyScenarioException $e) {
+            $applyFixLog->markAsFailed();
+            $applyFixLog->description .= " Exception:" . $e->getMessage();
+            $error = "Exception:" . $e->getMessage();
+        }
+        $applyFixLog->save();
+        $data = array(
+            'time' => microtime(true) - $time,
+            'log' => $applyFixLog,
+            'error' => $error ?: '',
+        );
+        is_callable($callback) && $callback($data, 'end');
     }
 
 }
