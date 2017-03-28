@@ -114,7 +114,7 @@ class Module {
      *
      * @return string
      */
-    private function _getScenariosDir() {
+    private function getScenariosDir() {
         return Application::getDocumentRoot() . $this->getOptions()->catalogPath;
     }
 
@@ -126,7 +126,7 @@ class Module {
      * @throws \Exception
      */
     private function putScriptClass($fileName, $content) {
-        $file = new File($this->_getScenariosDir() . DIRECTORY_SEPARATOR . $fileName);
+        $file = new File($this->getScenariosDir() . DIRECTORY_SEPARATOR . $fileName);
         $success = $file->putContents($content);
         if (!$success) {
             throw new \Exception("Could'nt save file");
@@ -145,7 +145,7 @@ class Module {
             return $this->notAppliedScenarios;
         }
         /** @var File[] $files */
-        $files = $this->_getNotAppliedFiles($this->_getScenariosDir());
+        $files = $this->getNotAppliedFiles($this->getScenariosDir());
         $this->notAppliedScenarios = new MigrationCollection($files);
         return $this->notAppliedScenarios;
     }
@@ -153,7 +153,7 @@ class Module {
     /**
      * @return SetupLogModel
      */
-    private function _useSetupLog() {
+    private function useSetupLog() {
         if (!$this->_setupLog) {
             $setupLog = new SetupLogModel();
             $setupLog->userId = $this->getCurrentUser()->GetID();
@@ -228,7 +228,7 @@ class Module {
             try {
                 $class = $log->subjectName;
                 if (!class_exists($class)) {
-                    include $this->_getScenariosDir() . DIRECTORY_SEPARATOR . $class . '.php';
+                    include $this->getScenariosDir() . DIRECTORY_SEPARATOR . $class . '.php';
                 }
                 if (!is_subclass_of($class, '\WS\ReduceMigrations\Scenario\ScriptScenario')) {
                     continue;
@@ -266,7 +266,7 @@ class Module {
     /**
      * @param string $owner
      */
-    private function _useVersion($owner) {
+    private function useVersion($owner) {
         if (!$owner) {
             return;
         }
@@ -284,7 +284,7 @@ class Module {
      * @throws \Bitrix\Main\ArgumentException
      * @throws \Bitrix\Main\IO\FileNotFoundException
      */
-    private function _getNotAppliedFiles($dir) {
+    private function getNotAppliedFiles($dir) {
         $result = AppliedChangesLogTable::getList(array(
             'select' => array('GROUP_LABEL'),
             'group' => array('GROUP_LABEL'),
@@ -402,7 +402,7 @@ class Module {
      * @param $callback
      */
     private function applyScenario($class, $skipOptional, $callback) {
-        $setupLog = $this->_useSetupLog();
+        $setupLog = $this->useSetupLog();
         $time = microtime(true);
 
         $data = array(
@@ -411,7 +411,7 @@ class Module {
         is_callable($callback) && $callback($data, 'start');
         /** @var ScriptScenario $object */
         $applyFixLog = AppliedChangesLogModel::createByParams($setupLog, $class);
-        $this->_useVersion($class::owner());
+        $this->useVersion($class::owner());
         $object = new $class(array());
         try {
             $this->commitScenario($object, $skipOptional);
