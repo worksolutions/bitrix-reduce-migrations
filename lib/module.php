@@ -326,7 +326,7 @@ class Module {
      * @return int
      */
     public function applyNewMigrations($skipOptional, $callback = false) {
-        $classes = $this->getNotAppliedScenarios();
+        $classes = $this->getNotAppliedScenarios()->toArray();
         if (!$classes) {
             return 0;
         }
