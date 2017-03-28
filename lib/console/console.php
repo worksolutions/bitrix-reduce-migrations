@@ -77,7 +77,8 @@ class Console {
         if (!$commands[$this->action]) {
             throw new ConsoleException("Action `{$this->action}` is not supported");
         }
-        return new $commands[$this->action]($this, $this->params);
+        $params = $this->prepareParams($this->params);
+        return new $commands[$this->action]($this, $params);
     }
 
     /**
@@ -98,6 +99,28 @@ class Console {
             default:;
         }
         return $this->defaultOutput;
+    }
+
+    /**
+     * @param $params
+     *
+     * @return array
+     */
+    private function prepareParams($params) {
+        array_shift($params);
+        $namedParams = array();
+        $positionalParams = array();
+        foreach ($params as $param) {
+            if (strpos($param, '-') === 0) {
+                $param = explode('=', $param);
+                $namedParams[$param[0]] = $param[1] ?: true;
+            } else {
+                $positionalParams[] = $param;
+            }
+        }
+        $params = array_merge($positionalParams, $namedParams);
+
+        return $params;
     }
 
 }
