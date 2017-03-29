@@ -6,7 +6,7 @@ use WS\ReduceMigrations\Console\Command\ApplyCommand;
 use WS\ReduceMigrations\Console\Command\BaseCommand;
 use WS\ReduceMigrations\Console\Command\CreateScenarioCommand;
 use WS\ReduceMigrations\Console\Command\HelpCommand;
-use WS\ReduceMigrations\Console\Command\LastCommand;
+use WS\ReduceMigrations\Console\Command\History;
 use WS\ReduceMigrations\Console\Command\ListCommand;
 use WS\ReduceMigrations\Console\Command\RollbackCommand;
 use WS\ReduceMigrations\Console\Formatter\Output;
@@ -71,7 +71,7 @@ class Console {
             'list' => ListCommand::className(),
             'apply' => ApplyCommand::className(),
             'rollback' => RollbackCommand::className(),
-            'last' => LastCommand::className(),
+            'history' => History::className(),
             'createScenario' => CreateScenarioCommand::className(),
         );
         if (!$commands[$this->action]) {
