@@ -18,7 +18,7 @@ if ($request->get('rollback')) {
 $skipOptional = $request->get('skipOptional') == 'Y';
 
 if ($request->get('apply') && $isDiagnosticValid) {
-    $module->applyNewMigrations($skipOptional);
+    $module->applyMigrations($skipOptional);
     $apply = true;
 }
 

@@ -37,7 +37,7 @@ class ApplyCommand extends BaseCommand{
                     ->applyMigrationByHash($this->migrationHash, $callback);
             } else {
                 $count = (int)$this->module
-                    ->applyNewMigrations($this->skipOptional, $callback);
+                    ->applyMigrations($this->skipOptional, $callback);
             }
         } catch (\Exception $e) {
             throw new ConsoleException($e->getMessage());
