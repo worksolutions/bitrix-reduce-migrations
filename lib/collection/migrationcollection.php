@@ -45,9 +45,9 @@ class MigrationCollection {
         foreach ($priorities as $priority) {
             $elements[$priority] = array();
         }
-        $elements = array();
+
         foreach ($this->elements as $key => $element) {
-            $elements[$element::priority()][$key] = $element;
+            $elements[$element::priority()][] = $element;
         }
 
         return array_filter($elements);
@@ -57,7 +57,12 @@ class MigrationCollection {
      * @return array
      */
     public function toArray() {
-        return $this->elements;
+        $migrations = $this->groupByPriority();
+        $result = [];
+        array_walk_recursive($migrations, function($item) use (& $result) {
+            $result[] = $item;
+        });
+        return $result;
     }
 
     /**
