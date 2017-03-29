@@ -39,7 +39,7 @@ if ($lastSetupLog) {
 
     foreach ($lastSetupLog->getAppliedLogs() as $appliedLog) {
         $appliedLog->isFailed() && $errorFixes[] = $appliedLog;
-        !$appliedLog->isFailed() && $appliedFixes[$appliedLog->description]++;
+        !$appliedLog->isFailed() && $appliedFixes[$appliedLog->getName()]++;
     }
 }
 //--------------------------------------------------------------------------
@@ -147,13 +147,8 @@ if ($lastSetupLog) {
                 <ol style="list-style-type: none; padding-left: 0px; margin-top: 0px;">
                     <?php
                     /** @var \WS\ReduceMigrations\Entities\AppliedChangesLogModel $errorApply */
-                    foreach ($errorFixes as $errorApply):
-                        $errorData = \WS\ReduceMigrations\jsonToArray($errorApply->description) ?: $errorApply->description;
-                        if (is_scalar($errorData)) {
-                            ?>
-                            <li><?= $errorData ?></li><?
-                        }
-                        ?>
+                    foreach ($errorFixes as $errorApply):?>
+                        <li><?= $errorApply->getName() ?> <br> <?= $errorApply->getErrorMessage() ?></li><br>
                     <?endforeach; ?>
                 </ol>
             </td>

@@ -38,14 +38,14 @@ switch ($type) {
         /** @var AppliedChangesLogModel[] $models */
         $models = AppliedChangesLogModel::find(array('filter' => array('=groupLabel' => $label)));
         $models[0] && $arTitle = array(
-            '#date' => $models[0]->date->format('d.m.Y'),
-            '#source' => $models[0]->hash,
+            '#date' => $models[0]->getDate()->format('d.m.Y'),
+            '#source' => $models[0]->getHash(),
             '#deployer' => $models[0]->getSetupLog()->shortUserInfo()
         );
         $data = array_map(function (AppliedChangesLogModel $model) {
             return array(
-                'description' => $model->description,
-                'updateData' => $model->updateData,
+                'description' => $model->getName(),
+                'updateData' => $model->getUpdateData(),
             );
         }, $models);
         break;

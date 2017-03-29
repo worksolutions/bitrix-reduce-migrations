@@ -33,24 +33,21 @@ $models = AppliedChangesLogModel::find(array(
 $rowsData = array();
 $versions = $module->getPlatformVersion()->getMapVersions();
 array_walk($models, function (AppliedChangesLogModel $model) use (& $rowsData, $versions) {
-    if (in_array($model->description, array('Insert reference', 'References updates'))) {
-        return;
-    }
-    $row = & $rowsData[$model->groupLabel];
+    $row = & $rowsData[$model->getGroupLabel()];
     if(!$row) {
         $row = array(
-            'label' => $model->groupLabel,
-            'updateDate' => $model->date->format('d.m.Y H:i:s'),
-            'hash' => substr($model->hash, 0, 8),
-            'owner' => $model->owner,
+            'label' => $model->getGroupLabel(),
+            'updateDate' => $model->getDate()->format('d.m.Y H:i:s'),
+            'hash' => $model->getHash(),
+            'owner' => $model->getOwner(),
             'dispatcher' => $model->getSetupLog() ? $model->getSetupLog()->shortUserInfo() : ''
         );
     }
-    $row['description'] = $row['description'] ? implode("<br />", array($row['description'], $model->description)) : $model->description;
+    $row['description'] = $row['description'] ? implode("<br />", array($row['description'], $model->getName())) : $model->getName();
     if ($model->isFailed()) {
         $row['error'][] = array(
-            'data' => \WS\ReduceMigrations\jsonToArray($model->description) ?: array('message' => $model->description),
-            'id' => $model->id
+            'data' => array('message' => $model->getErrorMessage()),
+            'id' => $model->getId()
         );
     }
 });

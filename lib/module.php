@@ -207,7 +207,7 @@ class Module {
         }
         /** @var AppliedChangesLogModel $log */
         $log = $logs[0];
-        $setupLogId = $log->setupLogId;
+        $setupLogId = $log->getSetupLogId();
         $this->rollbackByLogs(array_reverse((array)$logs));
 
         if (!AppliedChangesLogModel::hasMigrationsWithLog($setupLogId)) {
@@ -239,19 +239,19 @@ class Module {
             }
             $time = microtime(true);
             $callbackData = array(
-                'name' => $log->description,
+                'name' => $log->getName(),
             );
             is_callable($callback) && $callback($callbackData, 'start');
             $error = '';
             try {
-                $class = $log->subjectName;
+                $class = $log->getMigrationClassName();
                 if (!class_exists($class)) {
                     include $this->getScenariosDir() . DIRECTORY_SEPARATOR . $class . '.php';
                 }
                 if (!is_subclass_of($class, '\WS\ReduceMigrations\Scenario\ScriptScenario')) {
                     continue;
                 }
-                $data = $log->updateData;
+                $data = $log->getUpdateData();
                 /** @var ScriptScenario $object */
                 $object = new $class($data);
                 $object->rollback();
@@ -345,6 +345,7 @@ class Module {
             return 0;
         }
         $count = 0;
+        is_callable($callback) && $callback(count($classes), 'setCount');
         /** @var ScriptScenario $class */
         foreach ($classes as $class) {
             $count++;
@@ -433,16 +434,18 @@ class Module {
         $object = new $class(array());
         try {
             $this->commitScenario($object, $skipOptional);
-            $applyFixLog->updateData = $object->getData();
+            $applyFixLog->setUpdateData($object->getData());
             $applyFixLog->markAsSuccessful();
+            $applyFixLog->setTime(microtime(true) - $time);
         } catch (SkipScenarioException $e) {
             $applyFixLog->markSkipped();
         } catch (ApplyScenarioException $e) {
             $applyFixLog->markAsFailed();
-            $applyFixLog->description .= " Exception:" . $e->getMessage();
-            $error = "Exception:" . $e->getMessage();
+            $error = $e->getMessage();
+            $applyFixLog->setErrorMessage($error);
         }
         $applyFixLog->save();
+
         $data = array(
             'time' => microtime(true) - $time,
             'log' => $applyFixLog,

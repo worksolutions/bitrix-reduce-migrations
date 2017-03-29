@@ -7,6 +7,7 @@ namespace WS\ReduceMigrations\Entities;
 
 use Bitrix\Main\Type\DateTime;
 use WS\ReduceMigrations\factories\DateTimeFactory;
+use WS\ReduceMigrations\Scenario\ScriptScenario;
 
 class AppliedChangesLogModel extends BaseEntity {
     const STATUS_SKIPPED = 2;
@@ -14,10 +15,10 @@ class AppliedChangesLogModel extends BaseEntity {
     const STATUS_NOT_APPLIED = 0;
     public
         $id, $groupLabel, $date, $status,
-        $subjectName, $hash, $updateData,
+        $migrationClassName, $hash, $updateData,
         $owner, $description, $setupLogId;
 
-    private $_setupLog;
+    private $setupLog;
 
     public function __construct() {
         $this->date = DateTimeFactory::createBase();
@@ -34,6 +35,7 @@ class AppliedChangesLogModel extends BaseEntity {
         return $logs;
     }
 
+
     public static function hasMigrationsWithLog($setupLogId) {
         $logs = AppliedChangesLogModel::find(array(
             'order' => array('id' => 'desc'),
@@ -45,12 +47,18 @@ class AppliedChangesLogModel extends BaseEntity {
         return !empty($logs);
     }
 
+    /**
+     * @param $setupLog
+     * @param ScriptScenario $class
+     *
+     * @return AppliedChangesLogModel
+     */
     public static function createByParams($setupLog, $class) {
         $element = new self();
-        $element->subjectName = $class;
+        $element->migrationClassName = $class;
         $element->setSetupLog($setupLog);
         $element->groupLabel = $class . '.php';
-        $element->description = $class::name();
+        $element->setName($class::name());
         $element->hash = $class::hash();
         $element->owner = $class::owner();
 
@@ -69,7 +77,7 @@ class AppliedChangesLogModel extends BaseEntity {
                     $value = DateTimeFactory::createBase($value);
                 }
             }
-            if (in_array($name, array('updateData'))) {
+            if (in_array($name, array('description', 'updateData'))) {
                 $value = \WS\ReduceMigrations\jsonToArray($value);
             }
             $result[$name] = $value;
@@ -83,7 +91,7 @@ class AppliedChangesLogModel extends BaseEntity {
             if ($name == 'date' && $value instanceof \DateTime) {
                 $value = DateTimeFactory::createBitrix($value);
             }
-            if (in_array($name, array('updateData'))) {
+            if (in_array($name, array('description', 'updateData'))) {
                 $value = \WS\ReduceMigrations\arrayToJson($value);
             }
             $result[$name] = $value;
@@ -97,7 +105,7 @@ class AppliedChangesLogModel extends BaseEntity {
             'setupLogId' => 'SETUP_LOG_ID',
             'groupLabel' => 'GROUP_LABEL',
             'date' => 'DATE',
-            'subjectName' => 'SUBJECT',
+            'migrationClassName' => 'SUBJECT',
             'hash' => 'HASH',
             'owner' => 'OWNER',
             'updateData' => 'UPDATE_DATA',
@@ -107,20 +115,69 @@ class AppliedChangesLogModel extends BaseEntity {
     }
 
     /**
+     * @return string
+     */
+    public function getHash() {
+        return substr($this->hash, 0, 8);
+    }
+
+    /**
+     * @param $name
+     */
+    public function setName($name) {
+        $this->description['name'] = $name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName() {
+        return $this->description['name'] ? : '';
+    }
+
+    /**
+     * @param $message
+     */
+    public function setErrorMessage($message) {
+        $this->description['errorMessage'] = $message;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getErrorMessage() {
+        return $this->description['errorMessage'];
+    }
+
+    /**
+     * @param $time - seconds
+     */
+    public function setTime($time) {
+        $this->description['time'] = $time;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTime() {
+        return round((int)$this->description['time'] / 60, 2);
+    }
+
+    /**
      * @return SetupLogModel
      */
     public function getSetupLog() {
-        if (!$this->_setupLog) {
-            $this->_setupLog = SetupLogModel::findOne(array(
+        if (!$this->setupLog) {
+            $this->setupLog = SetupLogModel::findOne(array(
                     'filter' => array('=id' => $this->setupLogId)
                 )
             );
         }
-        return $this->_setupLog;
+        return $this->setupLog;
     }
 
     public function setSetupLog(SetupLogModel $model = null) {
-        $this->_setupLog = $model;
+        $this->setupLog = $model;
         $model->id && $this->setupLogId = $model->id;
         return $this;
     }
@@ -160,5 +217,61 @@ class AppliedChangesLogModel extends BaseEntity {
 
     public function markAsSuccessful() {
         $this->status = self::STATUS_SUCCESS;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getId() {
+        return $this->id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getGroupLabel() {
+        return $this->groupLabel;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getDate() {
+        return $this->date;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMigrationClassName() {
+        return $this->migrationClassName;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUpdateData() {
+        return $this->updateData;
+    }
+
+    /**
+     * @param mixed $updateData
+     */
+    public function setUpdateData($updateData) {
+        $this->updateData = $updateData;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOwner() {
+        return $this->owner;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSetupLogId() {
+        return $this->setupLogId;
     }
 }
