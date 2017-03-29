@@ -25,7 +25,7 @@ use WS\ReduceMigrations\Builder\BuilderException;
  * @property array arFilterAnswerText
  * @property array arFilterAnswerValue
  * @property array arFilterField
- * @package WS\Migrations\Builder\Entity
+ * @package WS\ReduceMigrations\Builder\Entity
  */
 class FormField extends Base {
 

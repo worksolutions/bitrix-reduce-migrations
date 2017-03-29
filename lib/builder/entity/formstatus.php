@@ -18,7 +18,7 @@ use Bitrix\Main\Type\DateTime;
  * @property array arGroupCanMove
  * @property array arGroupCanEdit
  * @property array arGroupCanDelete
- * @package WS\Migrations\Builder\Entity
+ * @package WS\ReduceMigrations\Builder\Entity
  */
 class FormStatus extends Base {
 

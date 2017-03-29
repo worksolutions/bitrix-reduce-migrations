@@ -29,7 +29,7 @@ use WS\ReduceMigrations\Builder\BuilderException;
  * @property string withDescription
  * @property int version
  * @property string hint
- * @package WS\Migrations\Builder\Entity
+ * @package WS\ReduceMigrations\Builder\Entity
  */
 class Property extends Base {
 

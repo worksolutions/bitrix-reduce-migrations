@@ -13,7 +13,7 @@ namespace WS\ReduceMigrations\Builder\Entity;
  * @property string fieldWidth
  * @property string fieldHeight
  * @property string fieldParam
- * @package WS\Migrations\Builder\Entity
+ * @package WS\ReduceMigrations\Builder\Entity
  */
 class FormAnswer extends Base {
 

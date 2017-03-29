@@ -16,7 +16,7 @@ namespace WS\ReduceMigrations\Builder\Entity;
  * @property string lang
  * @property string inRss
  * @property string iblockTypeId
- * @package WS\Migrations\Builder\Entity
+ * @package WS\ReduceMigrations\Builder\Entity
  */
 class IblockType extends Base {
 

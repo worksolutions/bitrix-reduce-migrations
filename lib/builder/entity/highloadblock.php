@@ -7,7 +7,7 @@ namespace WS\ReduceMigrations\Builder\Entity;
  * @property int id
  * @property string name
  * @property string tableName
- * @package WS\Migrations\Builder\Entity
+ * @package WS\ReduceMigrations\Builder\Entity
  */
 class HighLoadBlock extends Base {
 

@@ -31,7 +31,7 @@ use Bitrix\Main\Type\DateTime;
  * @property array picture
  * @property dateTime dateUpdate
  * @property array groupId
- * @package WS\Migrations\Builder\Entity
+ * @package WS\ReduceMigrations\Builder\Entity
  */
 class Iblock extends Base {
     const SECTION_CHOOSER_LIST = 'L';

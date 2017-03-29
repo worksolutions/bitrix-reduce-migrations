@@ -16,7 +16,7 @@ use WS\ReduceMigrations\Builder\BuilderException;
  * @property array picture
  * @property array detailPicture
  * @property int iblockId
- * @package WS\Migrations\Builder\Entity
+ * @package WS\ReduceMigrations\Builder\Entity
  */
 class IblockSection extends Base {
 

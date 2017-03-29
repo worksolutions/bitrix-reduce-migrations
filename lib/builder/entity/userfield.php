@@ -21,7 +21,7 @@ use WS\ReduceMigrations\Builder\BuilderException;
  * @property array filterLabel
  * @property array settings
  * @property int sort
- * @package WS\Migrations\Builder\Entity
+ * @package WS\ReduceMigrations\Builder\Entity
  */
 class UserField extends Base {
 

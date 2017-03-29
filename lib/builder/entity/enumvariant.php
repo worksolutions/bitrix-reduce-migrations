@@ -10,7 +10,7 @@ namespace WS\ReduceMigrations\Builder\Entity;
  * @property int sort
  * @property string default
  * @property string del
- * @package WS\Migrations\Builder\Entity
+ * @package WS\ReduceMigrations\Builder\Entity
  */
 class EnumVariant extends Base {
 

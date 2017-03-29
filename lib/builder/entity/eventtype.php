@@ -10,7 +10,7 @@ namespace WS\ReduceMigrations\Builder\Entity;
  * @property string lid
  * @property string name
  * @property string description
- * @package WS\Migrations\Builder\Entity
+ * @package WS\ReduceMigrations\Builder\Entity
  */
 class EventType extends Base {
 

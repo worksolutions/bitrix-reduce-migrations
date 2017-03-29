@@ -14,7 +14,7 @@ use Bitrix\Main\Type\DateTime;
  * @property string message
  * @property string bodyType
  * @property string bcc
- * @package WS\Migrations\Builder\Entity
+ * @package WS\ReduceMigrations\Builder\Entity
  */
 class EventMessage extends Base {
     const BODY_TYPE_TEXT = 'text';

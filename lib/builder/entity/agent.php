@@ -14,7 +14,7 @@ use Bitrix\Main\Type\DateTime;
  * @property string callback
  * @property string isPeriod
  * @property string nextExec d.m.Y H:i:s
- * @package WS\Migrations\Builder\Entity
+ * @package WS\ReduceMigrations\Builder\Entity
  */
 class Agent extends Base {
 

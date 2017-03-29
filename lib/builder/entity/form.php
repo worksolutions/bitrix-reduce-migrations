@@ -30,7 +30,7 @@ namespace WS\ReduceMigrations\Builder\Entity;
  * @property array arMailTemplate
  * @property array arMenu
  * @property array arGroup
- * @package WS\Migrations\Builder\Entity
+ * @package WS\ReduceMigrations\Builder\Entity
  */
 class Form extends Base {
 

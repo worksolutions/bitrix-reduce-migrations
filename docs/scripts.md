@@ -31,7 +31,7 @@
 /**
  * Class definition update migrations scenario actions
  **/
-class ws_m_1458654949_pervoe_migrirovanie_na_platformu extends \WS\Migrations\ScriptScenario {
+class ws_m_1458654949_pervoe_migrirovanie_na_platformu extends \WS\ReduceMigrations\ScriptScenario {
 
     /**
      * Name of scenario
@@ -99,7 +99,7 @@ class ws_m_1458654949_pervoe_migrirovanie_na_platformu extends \WS\Migrations\Sc
 ```php
 <?php
 
-$ibBuilder = new \WS\Migrations\Builder\IblockBuilder();
+$ibBuilder = new \WS\ReduceMigrations\Builder\IblockBuilder();
 $ibBuilder->getIblock("Каталог товаров");
 
 $ibBuilder
@@ -112,8 +112,8 @@ $ibBuilder->commit();
 
 Перечень классов:
 
-* \WS\Migrations\Builder\IblockBuilder
-* \WS\Migrations\Builder\HighLoadBlockBuilder
-* \WS\Migrations\Builder\FormBuilder
-* \WS\Migrations\Builder\EventsBuilder
-* \WS\Migrations\Builder\AgentBuilder
+* \WS\ReduceMigrations\Builder\IblockBuilder
+* \WS\ReduceMigrations\Builder\HighLoadBlockBuilder
+* \WS\ReduceMigrations\Builder\FormBuilder
+* \WS\ReduceMigrations\Builder\EventsBuilder
+* \WS\ReduceMigrations\Builder\AgentBuilder
