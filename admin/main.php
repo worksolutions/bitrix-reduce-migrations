@@ -11,7 +11,7 @@ $request = \Bitrix\Main\Application::getInstance()->getContext()->getRequest();
 $apply = false;
 
 if ($request->get('rollback')) {
-    $module->rollbackLastChanges();
+    $module->rollbackLastBatch();
     $apply = true;
 }
 
