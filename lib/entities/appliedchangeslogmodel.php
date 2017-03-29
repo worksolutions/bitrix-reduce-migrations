@@ -24,6 +24,11 @@ class AppliedChangesLogModel extends BaseEntity {
         $this->date = DateTimeFactory::createBase();
     }
 
+    /**
+     * @param $hash
+     *
+     * @return AppliedChangesLogModel[]
+     */
     public static function findByHash($hash) {
         $logs = AppliedChangesLogModel::find(array(
             'order' => array('id' => 'desc'),
@@ -35,7 +40,11 @@ class AppliedChangesLogModel extends BaseEntity {
         return $logs;
     }
 
-
+    /**
+     * @param $setupLogId
+     *
+     * @return bool
+     */
     public static function hasMigrationsWithLog($setupLogId) {
         $logs = AppliedChangesLogModel::find(array(
             'order' => array('id' => 'desc'),
@@ -143,7 +152,7 @@ class AppliedChangesLogModel extends BaseEntity {
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getErrorMessage() {
         return $this->description['errorMessage'];
@@ -157,7 +166,7 @@ class AppliedChangesLogModel extends BaseEntity {
     }
 
     /**
-     * @return mixed
+     * @return double
      */
     public function getTime() {
         return round((int)$this->description['time'] / 60, 2);
@@ -220,14 +229,14 @@ class AppliedChangesLogModel extends BaseEntity {
     }
 
     /**
-     * @return mixed
+     * @return integer
      */
     public function getId() {
         return $this->id;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getGroupLabel() {
         return $this->groupLabel;
@@ -241,35 +250,35 @@ class AppliedChangesLogModel extends BaseEntity {
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getMigrationClassName() {
         return $this->migrationClassName;
     }
 
     /**
-     * @return mixed
+     * @return array
      */
     public function getUpdateData() {
         return $this->updateData;
     }
 
     /**
-     * @param mixed $updateData
+     * @param array $updateData
      */
     public function setUpdateData($updateData) {
         $this->updateData = $updateData;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getOwner() {
         return $this->owner;
     }
 
     /**
-     * @return mixed
+     * @return integer
      */
     public function getSetupLogId() {
         return $this->setupLogId;
