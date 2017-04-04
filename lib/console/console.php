@@ -36,6 +36,16 @@ class Console {
         array_shift($args);
         $this->params = $args;
         $this->action = isset($this->params[0]) ? $this->params[0] : '--help';
+        foreach ($args as $arg) {
+            if ($arg == '--help') {
+                $this->action = '--help';
+                $index = array_search($this->action, $this->params);
+                if ($index !== false) {
+                    unset($this->params[$index]);
+                }
+                array_unshift($this->params, $this->action);
+            }
+        }
         $this->successOutput = new Output('green');
         $this->errorOutput = new Output('red');
         $this->progressOutput = new Output('yellow');
@@ -48,13 +58,18 @@ class Console {
      * @return Console
      */
     public function printLine($str, $type = false) {
+        $str = $this->colorize($str, $type);
+        fwrite($this->out, $str . "\n");
+        return $this;
+    }
+
+    public function colorize($str, $type = false) {
         global $APPLICATION;
         $str = $APPLICATION->ConvertCharset($str, LANG_CHARSET, "UTF-8");
         if ($type) {
             $str = $this->getOutput($type)->colorize($str);
         }
-        fwrite($this->out, $str . "\n");
-        return $this;
+        return $str;
     }
 
     public function readLine() {
