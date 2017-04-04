@@ -20,6 +20,10 @@ $USER->Authorize(1);
 $module = \WS\ReduceMigrations\Module::getInstance();
 $console = new Console($argv);
 
+$console
+    ->printLine('')
+    ->printLine('Migrations module for CMS Bitrix. Worksolutions company https://worksolutions.ru');
+
 $getShowProgress = function () use ($console) {
     $counter = new \WS\ReduceMigrations\Console\RuntimeCounter();
     return function ($data, $type) use ($console, $counter) {
