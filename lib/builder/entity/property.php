@@ -1,36 +1,11 @@
 <?php
 
 namespace WS\ReduceMigrations\Builder\Entity;
+
 use Bitrix\Main\Type\DateTime;
 use WS\ReduceMigrations\Builder\BuilderException;
 
-/**
- * Class Property
- * private @property int id
- * @property int iblockId
- * @property string name
- * @property string active
- * @property int sort
- * @property string code
- * @property string propertyType
- * @property string listType
- * @property string userType
- * @property string xmlId
- * @property string multiple
- * @property string searchable
- * @property string filtrable
- * @property string isRequired
- * @property dateTime dateUpdate
- * @property int rowCount
- * @property int colCount
- * @property int multipleCnt
- * @property string fileType
- * @property int linkIblockId
- * @property string withDescription
- * @property int version
- * @property string hint
- * @package WS\ReduceMigrations\Builder\Entity
- */
+
 class Property extends Base {
 
     const TYPE_STRING = 'S';
@@ -58,69 +33,59 @@ class Property extends Base {
     const USER_TYPE_SEQUENCE = 'N:Sequence';
     /** @var  EnumVariant[] */
     private $enumVariants;
+    private $id;
 
-    public function __construct($name, $data = array()) {
-        $this->name = $name;
-        $this->dateUpdate = new DateTime();
+    public function __construct($name, $propertyData = array()) {
+        foreach ($propertyData as $code => $value) {
+            $this->setAttribute($code, $value);
+        }
+        if ($propertyData['ID']) {
+            $this->setId($propertyData['ID']);
+        }
+        $this->name($name);
+        $this->dateUpdate(new DateTime());
         $this->enumVariants = array();
-        $this->setSaveData($data);
     }
 
     /**
-     * @return array
+     * @return int
      */
-    public function getMap() {
-        return array(
-            'id' => 'ID',
-            'iblockId' => 'IBLOCK_ID',
-            'name' => 'NAME',
-            'code' => 'CODE',
-            'active' => 'ACTIVE',
-            'sort' => 'SORT',
-            'propertyType' => 'PROPERTY_TYPE',
-            'userType' => 'USER_TYPE',
-            'listType' => 'LIST_TYPE',
-            'fileType' => 'FILE_TYPE',
-            'xmlId' => 'XML_ID',
-            'multiple' => 'MULTIPLE',
-            'searchable' => 'SEARCHABLE',
-            'filtrable' => 'FILTRABLE',
-            'isRequired' => 'IS_REQUIRED',
-            'dateUpdate' => 'TIMESTAMP_X',
-            'rowCount' => 'ROW_COUNT',
-            'colCount' => 'COL_COUNT',
-            'multipleCnt' => 'MULTIPLE_CNT',
-            'linkIblockId' => 'LINK_IBLOCK_ID',
-            'withDescription' => 'WITH_DESCRIPTION',
-            'version' => 'VERSION',
-            'hint' => 'HINT',
-        );
+    public function getId() {
+        return $this->id;
     }
 
     /**
-     * @param string $code
+     * @param int $id
      * @return Property
      */
-    public function setCode($code) {
-        $this->code = $code;
+    public function setId($id) {
+        $this->id = $id;
         return $this;
+    }
+
+    /**
+     * @param string $name
+     * @return Property
+     */
+    public function name($name) {
+        $this->setAttribute('NAME', $name);
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getName() {
+        return $this->getAttribute('NAME');
     }
 
     /**
      * @param bool $active
      * @return Property
      */
-    public function setActive($active) {
-        $this->active = $active ? 'Y' : 'N';
-        return $this;
-    }
-
-    /**
-     * @param int $value
-     * @return Property
-     */
-    public function setSort($value = 500) {
-        $this->sort = $value;
+    public function active($active = true) {
+        $active = $active ? 'Y' : 'N';
+        $this->setAttribute('ACTIVE', $active);
         return $this;
     }
 
@@ -129,18 +94,23 @@ class Property extends Base {
      * @param string|bool $userType
      * @return Property
      */
-    public function setType($propertyType, $userType = false) {
-        $this->propertyType = $propertyType;
+    public function type($propertyType, $userType = false) {
         if (!$userType) {
-            $this->userType = '';
+            $this
+                ->setAttribute('PROPERTY_TYPE', $propertyType)
+                ->setAttribute('USER_TYPE', $userType);
+
             return $this;
         }
         $type = explode(':', $userType);
         if (count($type) == 2) {
-            $this->propertyType = $type[0];
-            $this->userType = $type[1];
+            $this
+                ->setAttribute('PROPERTY_TYPE', $type[0])
+                ->setAttribute('USER_TYPE', $type[1]);
         } else {
-            $this->userType = $type[0];
+            $this
+                ->setAttribute('PROPERTY_TYPE', $type[0])
+                ->setAttribute('USER_TYPE', '');
         }
         return $this;
     }
@@ -149,8 +119,8 @@ class Property extends Base {
      * @param string $listType
      * @return Property
      */
-    public function setListType($listType) {
-        $this->listType = $listType;
+    public function listType($listType) {
+        $this->setAttribute('LIST_TYPE', $listType);
         return $this;
     }
 
@@ -158,17 +128,8 @@ class Property extends Base {
      * @param string $xmlId
      * @return Property
      */
-    public function setXmlId($xmlId) {
-        $this->xmlId = $xmlId;
-        return $this;
-    }
-
-    /**
-     * @param bool $multiple
-     * @return Property
-     */
-    public function setMultiple($multiple) {
-        $this->multiple = $multiple ? 'Y' : 'N';
+    public function xmlId($xmlId) {
+        $this->setAttribute('XML_ID', $xmlId);
         return $this;
     }
 
@@ -176,26 +137,17 @@ class Property extends Base {
      * @param bool $searchable
      * @return Property
      */
-    public function setSearchable($searchable) {
-        $this->searchable = $searchable ? 'Y' : 'N';
+    public function searchable($searchable) {
+        $this->setAttribute('SEARCHABLE', $searchable ? 'Y' : 'N');
         return $this;
     }
 
     /**
-     * @param bool $filtrable
+     * @param bool $filterable
      * @return Property
      */
-    public function setFiltrable($filtrable) {
-        $this->filtrable = $filtrable ? 'Y' : 'N';
-        return $this;
-    }
-
-    /**
-     * @param bool $isRequired
-     * @return Property
-     */
-    public function setIsRequired($isRequired) {
-        $this->isRequired = $isRequired ? 'Y' : 'N';
+    public function filterable($filterable) {
+        $this->setAttribute('FILTRABLE', $filterable);
         return $this;
     }
 
@@ -203,8 +155,8 @@ class Property extends Base {
      * @param DateTime $dateUpdate
      * @return Property
      */
-    public function setDateUpdate($dateUpdate) {
-        $this->dateUpdate = $dateUpdate;
+    public function dateUpdate($dateUpdate) {
+        $this->setAttribute('TIMESTAMP_X', $dateUpdate);
         return $this;
     }
 
@@ -212,8 +164,8 @@ class Property extends Base {
      * @param int $rowCount
      * @return Property
      */
-    public function setRowCount($rowCount) {
-        $this->rowCount = $rowCount;
+    public function rowCount($rowCount) {
+        $this->setAttribute('ROW_COUNT', $rowCount);
         return $this;
     }
 
@@ -221,8 +173,8 @@ class Property extends Base {
      * @param int $colCount
      * @return Property
      */
-    public function setColCount($colCount) {
-        $this->colCount = $colCount;
+    public function colCount($colCount) {
+        $this->setAttribute('COL_COUNT', $colCount);
         return $this;
     }
 
@@ -230,8 +182,8 @@ class Property extends Base {
      * @param int $multipleCnt
      * @return Property
      */
-    public function setMultipleCnt($multipleCnt) {
-        $this->multipleCnt = $multipleCnt;
+    public function multipleCnt($multipleCnt) {
+        $this->setAttribute('MULTIPLE_CNT', $multipleCnt);
         return $this;
     }
 
@@ -239,8 +191,8 @@ class Property extends Base {
      * @param string $fileType
      * @return Property
      */
-    public function setFileType($fileType) {
-        $this->fileType = $fileType;
+    public function fileType($fileType) {
+        $this->setAttribute('FILE_TYPE', $fileType);
         return $this;
     }
 
@@ -248,8 +200,8 @@ class Property extends Base {
      * @param int $linkIblockId
      * @return Property
      */
-    public function setLinkIblockId($linkIblockId) {
-        $this->linkIblockId = $linkIblockId;
+    public function linkIblockId($linkIblockId) {
+        $this->setAttribute('LINK_IBLOCK_ID', $linkIblockId);
         return $this;
     }
 
@@ -257,8 +209,8 @@ class Property extends Base {
      * @param bool $withDescription
      * @return Property
      */
-    public function setWithDescription($withDescription) {
-        $this->withDescription = $withDescription ? 'Y' : 'N';
+    public function withDescription($withDescription) {
+        $this->setAttribute('WITH_DESCRIPTION', $withDescription ? 'Y' : 'N');
         return $this;
     }
 
@@ -266,8 +218,154 @@ class Property extends Base {
      * @param int $version
      * @return Property
      */
-    public function setVersion($version = 1) {
-        $this->version = $version;
+    public function version($version = 1) {
+        $this->setAttribute('VERSION', $version);
+        return $this;
+    }
+
+    /**
+     * @return Property
+     */
+    public function typeString() {
+        $this->type(self::TYPE_STRING);
+        return $this;
+    }
+
+    /**
+     * @return Property
+     */
+    public function typeNumber() {
+        $this->type(self::TYPE_NUMBER);
+        return $this;
+    }
+
+    /**
+     * @return Property
+     */
+    public function typeFile() {
+        $this->type(self::TYPE_FILE);
+        return $this;
+    }
+
+    /**
+     * @return Property
+     */
+    public function typeDropdown() {
+        $this
+            ->type(self::TYPE_LIST)
+            ->listType('L');
+        return $this;
+    }
+
+    /**
+     * @return Property
+     */
+    public function typeCheckbox() {
+        $this
+            ->type(self::TYPE_LIST)
+            ->listType('C');
+        return $this;
+    }
+
+    /**
+     * @param integer $linkIblockId
+     *
+     * @return Property
+     */
+    public function typeElement($linkIblockId) {
+        $this
+            ->type(self::TYPE_ELEMENT)
+            ->linkIblockId($linkIblockId);
+        return $this;
+    }
+
+    /**
+     * @param integer $linkIblockId
+     *
+     * @return Property
+     */
+    public function typeSection($linkIblockId) {
+        $this
+            ->type(self::TYPE_GROUP)
+            ->linkIblockId($linkIblockId);
+        return $this;
+    }
+
+    /**
+     * @return Property
+     */
+    public function typeHtml() {
+        $this->type(self::TYPE_STRING, self::USER_TYPE_HTML);
+        return $this;
+    }
+
+    /**
+     * @return Property
+     */
+    public function typeDate() {
+        $this->type(self::TYPE_STRING, self::USER_TYPE_DATE);
+        return $this;
+    }
+
+    /**
+     * @return Property
+     */
+    public function typeDateTime() {
+        $this->type(self::TYPE_STRING, self::USER_TYPE_DATETIME);
+        return $this;
+    }
+
+    /**
+     * @return Property
+     */
+    public function typeUser() {
+        $this->type(self::TYPE_STRING, self::USER_TYPE_USER);
+        return $this;
+    }
+
+    /**
+     * @return Property
+     */
+    public function typeVideo() {
+        $this->type(self::TYPE_STRING, self::USER_TYPE_VIDEO);
+        return $this;
+    }
+
+    /**
+     * @param bool $multiple
+     * @return Property
+     */
+    public function multiple($multiple = true) {
+        $multiple = $multiple ? 'Y' : 'N';
+        $this->setAttribute('MULTIPLE', $multiple);
+        return $this;
+    }
+
+    /**
+     * @param bool $isRequired
+     * @return Property
+     */
+    public function required($isRequired = true) {
+        $required = $isRequired ? 'Y' : 'N';
+        $this->setAttribute('IS_REQUIRED', $required);
+        return $this;
+    }
+
+    /**
+     * @param int $value
+     * @return Property
+     */
+    public function sort($value = 500) {
+        $this->setAttribute('SORT', $value);
+        return $this;
+    }
+
+    /**
+     * @param string $code
+     * @return Property
+     */
+    public function code($code) {
+        $this->setAttribute('CODE', $code);
         return $this;
     }
 
@@ -275,16 +373,9 @@ class Property extends Base {
      * @param string $hint
      * @return Property
      */
-    public function setHint($hint) {
-        $this->hint = $hint;
+    public function hint($hint) {
+        $this->setAttribute('HINT', $hint);
         return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getId() {
-        return $this->id;
     }
 
     /**
@@ -304,19 +395,19 @@ class Property extends Base {
     public function updateEnum($name) {
         $data = $this->findEnum($name);
         $variant = new EnumVariant($name, $data);
-        $this->enumVariants[] = $variant;
+        $this->enumVariants[$variant->getId()] = $variant;
         return $variant;
     }
 
     /**
      * @param $name
-     * @return UserField
+     * @return Property
      */
     public function removeEnum($name) {
         $data = $this->findEnum($name);
         $variant = new EnumVariant($name, $data);
-        $variant->del = 'Y';
-        $this->enumVariants[] = $variant;
+        $variant->markDeleted();
+        $this->enumVariants[$variant->getId()] = $variant;
         return $this;
     }
 
@@ -329,7 +420,7 @@ class Property extends Base {
             'VALUE' => $name,
         ))->Fetch();
         if (empty($res)) {
-            throw new BuilderException('Enum for update not found');
+            throw new BuilderException("Enum `$name` not found");
         }
         return $res;
     }
@@ -341,12 +432,4 @@ class Property extends Base {
         return $this->enumVariants;
     }
 
-    /**
-     * @param int $id
-     * @return Property
-     */
-    public function setId($id) {
-        $this->id = $id;
-        return $this;
-    }
 }

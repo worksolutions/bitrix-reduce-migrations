@@ -2,37 +2,24 @@
 
 namespace WS\ReduceMigrations\Builder\Entity;
 
-/**
- * Class EnumVariant
- * @property int id
- * @property string value
- * @property string xmlId
- * @property int sort
- * @property string default
- * @property string del
- * @package WS\ReduceMigrations\Builder\Entity
- */
+
 class EnumVariant extends Base {
 
-    public function __construct($value, $data = false) {
-        $this->value = $value;
-        $this->setSaveData($data);
-    }
+    private $id;
 
-    public function getMap() {
-        return array(
-            'id' => 'ID',
-            'value' => 'VALUE',
-            'xmlId' => 'XML_ID',
-            'sort' => 'SORT',
-            'default' => 'DEF',
-            'del' => 'DEL',
-        );
+    public function __construct($value, $data = array()) {
+        foreach ($data as $key => $item) {
+            $this->setAttribute($key, $item);
+        }
+        if ($data['ID']) {
+            $this->setId($data['ID']);
+        }
+        $this->value($value);
     }
 
     /**
      * @param int $id
-     * @return IblockType
+     * @return EnumVariant
      */
     public function setId($id) {
         $this->id = $id;
@@ -48,37 +35,56 @@ class EnumVariant extends Base {
 
     /**
      * @param string $value
+     *
      * @return EnumVariant
      */
-    public function setValue($value) {
-        $this->value = $value;
+    public function value($value) {
+        $this->setAttribute('VALUE', $value);
         return $this;
     }
 
     /**
-     * @param string $xmlId
+     * @param string $value
+     *
      * @return EnumVariant
      */
-    public function setXmlId($xmlId) {
-        $this->xmlId = $xmlId;
+    public function xmlId($value) {
+        $this->setAttribute('XML_ID', $value);
+        $this->setAttribute('EXTERNAL_ID', $value);
         return $this;
     }
 
     /**
-     * @param int $sort
+     * @param string $value
+     *
      * @return EnumVariant
      */
-    public function setSort($sort) {
-        $this->sort = $sort;
+    public function sort($value) {
+        $this->setAttribute('SORT', $value);
         return $this;
     }
 
     /**
-     * @param bool $default
+     * @param bool $value
+     *
      * @return EnumVariant
      */
-    public function setDefault($default) {
-        $this->default = $default ? 'Y' : 'N';
+    public function byDefault($value = true) {
+        $this->setAttribute('DEF', $value ? 'Y' : 'N');
         return $this;
     }
+
+    /**
+     * @return EnumVariant
+     */
+    public function markDeleted() {
+        $this->setAttribute('DEL', 'Y');
+        return $this;
+    }
+
+    public function needToDelete() {
+        return $this->getAttribute('DEL');
+    }
+
+
 }
