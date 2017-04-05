@@ -1,56 +1,21 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: under5
- * Date: 10.03.16
- * Time: 11:32
- */
 
 namespace WS\ReduceMigrations\Builder\Entity;
 
-/**
- * Class IblockType
- * @property int id
- * @property int sort
- * @property string sections
- * @property string lang
- * @property string inRss
- * @property string iblockTypeId
- * @package WS\ReduceMigrations\Builder\Entity
- */
+
 class IblockType extends Base {
 
-    public function __construct($type, $data = array()) {
-        $this->id = $type;
-        $this->iblockTypeId = $data['ID'];
-        $this->setSaveData($data);
-    }
-
-    public function getMap() {
-        return array(
-            'id' => 'ID',
-            'sort' => 'SORT',
-            'sections' => 'SECTIONS',
-            'inRss' => 'IN_RSS',
-            'lang' => 'LANG',
-        );
+    public function __construct($type) {
+        $this->setId($type);
+        $this->type($type);
     }
 
     /**
-     * @param int $id
+     * @param string $id
      * @return IblockType
      */
     public function setId($id) {
-        $this->id = $id;
-        return $this;
-    }
-
-    /**
-     * @param int $sort
-     * @return IblockType
-     */
-    public function setSort($sort) {
-        $this->sort = $sort;
+        $this->setAttribute('ID', $id);
         return $this;
     }
 
@@ -58,15 +23,33 @@ class IblockType extends Base {
      * @return int
      */
     public function getId() {
-        return $this->id;
+        return $this->getAttribute('ID');
+    }
+
+    /**
+     * @param string $value
+     * @return IblockType
+     */
+    public function type($value) {
+        $this->setAttribute('IBLOCK_TYPE_ID', $value);
+        return $this;
+    }
+
+    /**
+     * @param int $sort
+     * @return IblockType
+     */
+    public function sort($sort) {
+        $this->setAttribute('SORT', $sort);
+        return $this;
     }
 
     /**
      * @param string $sections
      * @return IblockType
      */
-    public function setSections($sections) {
-        $this->sections = $sections;
+    public function sections($sections) {
+        $this->setAttribute('SECTIONS', $sections);
         return $this;
     }
 
@@ -74,8 +57,8 @@ class IblockType extends Base {
      * @param array $lang ['en' => ['NAME'=>'Catalog', 'SECTION_NAME'=>'Sections', 'ELEMENT_NAME'=>'Products']]
      * @return IblockType
      */
-    public function setLang($lang) {
-        $this->lang = $lang;
+    public function lang($lang) {
+        $this->setAttribute('LANG', $lang);
         return $this;
     }
 
@@ -83,8 +66,8 @@ class IblockType extends Base {
      * @param bool $inRss
      * @return IblockType
      */
-    public function setInRss($inRss) {
-        $this->inRss = $inRss ? 'Y' : 'N';
+    public function inRss($inRss) {
+        $this->setAttribute('IN_RSS', $inRss ? 'Y' : 'N');
         return $this;
     }
 }

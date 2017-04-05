@@ -4,6 +4,7 @@ namespace WS\ReduceMigrations\Builder;
 
 use Bitrix\Main\Application;
 use WS\ReduceMigrations\Builder\Entity\Iblock;
+use WS\ReduceMigrations\Builder\Entity\IblockType;
 use WS\ReduceMigrations\Builder\Entity\Property;
 
 class IblockBuilder {
@@ -12,6 +13,53 @@ class IblockBuilder {
         \CModule::IncludeModule('iblock');
     }
 
+    /**
+     * @param string $type
+     * @param \Closure $callback
+     *
+     * @return string
+     * @throws BuilderException
+     */
+    public function createIblockType($type, $callback) {
+        $iblockType = new IblockType($type);
+        $callback($iblockType);
+        $gateway = new \CIBlockType();
+        $res = $gateway->Add($iblockType->getData());
+        if (!$res) {
+            throw new BuilderException($gateway->LAST_ERROR);
+        }
+        return $type;
+    }
+
+    /**
+     * @param string $type
+     * @param \Closure $callback
+     *
+     * @return string
+     * @throws BuilderException
+     */
+    public function updateIblockType($type, $callback) {
+        $iblockType = new IblockType($type);
+        $callback($iblockType);
+        $gateway = new \CIBlockType();
+        $res = $gateway->Update($type, $iblockType->getData());
+        if (!$res) {
+            throw new BuilderException($gateway->LAST_ERROR);
+        }
+        return $type;
+    }
+
+    /**
+     * @param $type
+     *
+     * @throws BuilderException
+     */
+    public function removeIblockType($type) {
+        $isSuccess = \CIBlockType::Delete($type);
+        if (!$isSuccess) {
+            throw new BuilderException("Error occurred removing iblockType `$type`");
+        }
+    }
     /**
      * @param string $iblockType
      * @param string $name
@@ -181,7 +229,7 @@ class IblockBuilder {
 
         $result = \CIBlock::Delete($id);
         if (!$result) {
-            throw new BuilderException("Error occurring delete iblock with id={$id}");
+            throw new BuilderException("Error occurred removing iblock with id={$id}");
         }
         return true;
     }
