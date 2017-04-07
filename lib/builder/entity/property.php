@@ -5,7 +5,25 @@ namespace WS\ReduceMigrations\Builder\Entity;
 use Bitrix\Main\Type\DateTime;
 use WS\ReduceMigrations\Builder\BuilderException;
 
-
+/**
+ * Class Property
+ *
+ * @method Property name(string $value) - NAME
+ * @method Property xmlId(string $value) - XML_ID
+ * @method Property listType(string $value) - LIST_TYPE
+ * @method Property dateUpdate(\Bitrix\Main\Type\DateTime $value) - TIMESTAMP_X
+ * @method Property rowCount(integer $value) - ROW_COUNT
+ * @method Property colCount(integer $value) - COL_COUNT
+ * @method Property multipleCnt(integer $value) - MULTIPLE_CNT
+ * @method Property fileType(string $value) - FILE_TYPE
+ * @method Property linkIblockId(string $value) - LINK_IBLOCK_ID
+ * @method Property version(string $value) - VERSION
+ * @method Property sort(integer $value) - SORT
+ * @method Property code(string $value) - CODE
+ * @method Property hint(string $value) - HINT
+ *
+ * @package WS\ReduceMigrations\Builder\Entity
+ */
 class Property extends Base {
 
     const TYPE_STRING = 'S';
@@ -63,13 +81,22 @@ class Property extends Base {
         return $this;
     }
 
-    /**
-     * @param string $name
-     * @return Property
-     */
-    public function name($name) {
-        $this->setAttribute('NAME', $name);
-        return $this;
+    protected function getMap() {
+        return array(
+            'name' => 'NAME',
+            'xmlId' => 'XML_ID',
+            'listType' => 'LIST_TYPE',
+            'dateUpdate' => 'TIMESTAMP_X',
+            'rowCount' => 'ROW_COUNT',
+            'colCount' => 'COL_COUNT',
+            'multipleCnt' => 'MULTIPLE_CNT',
+            'fileType' => 'FILE_TYPE',
+            'linkIblockId' => 'LINK_IBLOCK_ID',
+            'version' => 'VERSION',
+            'sort' => 'SORT',
+            'code' => 'CODE',
+            'hint' => 'HINT',
+        );
     }
 
     /**
@@ -86,6 +113,15 @@ class Property extends Base {
     public function active($active = true) {
         $active = $active ? 'Y' : 'N';
         $this->setAttribute('ACTIVE', $active);
+        return $this;
+    }
+
+    /**
+     * @param bool $searchable
+     * @return Property
+     */
+    public function searchable($searchable) {
+        $this->setAttribute('SEARCHABLE', $searchable ? 'Y' : 'N');
         return $this;
     }
 
@@ -116,92 +152,11 @@ class Property extends Base {
     }
 
     /**
-     * @param string $listType
-     * @return Property
-     */
-    public function listType($listType) {
-        $this->setAttribute('LIST_TYPE', $listType);
-        return $this;
-    }
-
-    /**
-     * @param string $xmlId
-     * @return Property
-     */
-    public function xmlId($xmlId) {
-        $this->setAttribute('XML_ID', $xmlId);
-        return $this;
-    }
-
-    /**
-     * @param bool $searchable
-     * @return Property
-     */
-    public function searchable($searchable) {
-        $this->setAttribute('SEARCHABLE', $searchable ? 'Y' : 'N');
-        return $this;
-    }
-
-    /**
      * @param bool $filterable
      * @return Property
      */
     public function filterable($filterable) {
-        $this->setAttribute('FILTRABLE', $filterable);
-        return $this;
-    }
-
-    /**
-     * @param DateTime $dateUpdate
-     * @return Property
-     */
-    public function dateUpdate($dateUpdate) {
-        $this->setAttribute('TIMESTAMP_X', $dateUpdate);
-        return $this;
-    }
-
-    /**
-     * @param int $rowCount
-     * @return Property
-     */
-    public function rowCount($rowCount) {
-        $this->setAttribute('ROW_COUNT', $rowCount);
-        return $this;
-    }
-
-    /**
-     * @param int $colCount
-     * @return Property
-     */
-    public function colCount($colCount) {
-        $this->setAttribute('COL_COUNT', $colCount);
-        return $this;
-    }
-
-    /**
-     * @param int $multipleCnt
-     * @return Property
-     */
-    public function multipleCnt($multipleCnt) {
-        $this->setAttribute('MULTIPLE_CNT', $multipleCnt);
-        return $this;
-    }
-
-    /**
-     * @param string $fileType
-     * @return Property
-     */
-    public function fileType($fileType) {
-        $this->setAttribute('FILE_TYPE', $fileType);
-        return $this;
-    }
-
-    /**
-     * @param int $linkIblockId
-     * @return Property
-     */
-    public function linkIblockId($linkIblockId) {
-        $this->setAttribute('LINK_IBLOCK_ID', $linkIblockId);
+        $this->setAttribute('FILTRABLE', $filterable ? 'Y' : 'N');
         return $this;
     }
 
@@ -211,15 +166,6 @@ class Property extends Base {
      */
     public function withDescription($withDescription) {
         $this->setAttribute('WITH_DESCRIPTION', $withDescription ? 'Y' : 'N');
-        return $this;
-    }
-
-    /**
-     * @param int $version
-     * @return Property
-     */
-    public function version($version = 1) {
-        $this->setAttribute('VERSION', $version);
         return $this;
     }
 
@@ -352,33 +298,6 @@ class Property extends Base {
     }
 
     /**
-     * @param int $value
-     * @return Property
-     */
-    public function sort($value = 500) {
-        $this->setAttribute('SORT', $value);
-        return $this;
-    }
-
-    /**
-     * @param string $code
-     * @return Property
-     */
-    public function code($code) {
-        $this->setAttribute('CODE', $code);
-        return $this;
-    }
-
-    /**
-     * @param string $hint
-     * @return Property
-     */
-    public function hint($hint) {
-        $this->setAttribute('HINT', $hint);
-        return $this;
-    }
-
-    /**
      * @param $name
      * @return EnumVariant
      */
@@ -431,5 +350,4 @@ class Property extends Base {
     public function getEnumVariants() {
         return $this->enumVariants;
     }
-
 }

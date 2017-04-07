@@ -2,7 +2,14 @@
 
 namespace WS\ReduceMigrations\Builder\Entity;
 
-
+/**
+ * Class EnumVariant
+ *
+ * @method EnumVariant value($value) - VALUE
+ * @method EnumVariant sort($value) - SORT
+ *
+ * @package WS\ReduceMigrations\Builder\Entity
+ */
 class EnumVariant extends Base {
 
     private $id;
@@ -33,14 +40,11 @@ class EnumVariant extends Base {
         return $this->id;
     }
 
-    /**
-     * @param string $value
-     *
-     * @return EnumVariant
-     */
-    public function value($value) {
-        $this->setAttribute('VALUE', $value);
-        return $this;
+    protected function getMap() {
+        return array(
+            'value' => 'VALUE',
+            'sort' => 'SORT',
+        );
     }
 
     /**
@@ -54,15 +58,6 @@ class EnumVariant extends Base {
         return $this;
     }
 
-    /**
-     * @param string $value
-     *
-     * @return EnumVariant
-     */
-    public function sort($value) {
-        $this->setAttribute('SORT', $value);
-        return $this;
-    }
 
     /**
      * @param bool $value
@@ -85,6 +80,5 @@ class EnumVariant extends Base {
     public function needToDelete() {
         return $this->getAttribute('DEL');
     }
-
 
 }
