@@ -2,27 +2,31 @@
 
 namespace WS\ReduceMigrations\Builder\Entity;
 
+use WS\ReduceMigrations\Entities\EventMessageTable;
+
 /**
  * Class EventType
- * @property int id
- * @property int sort
- * @property string eventName
- * @property string lid
- * @property string name
- * @property string description
+ *
+ * @method EventType lid($value) - LID
+ * @method EventType sort(int $value) - SORT
+ * @method EventType eventName(string $value) - EVENT_NAME
+ * @method EventType name(string $value) - NAME
+ * @method EventType description(string $value) - DESCRIPTION
  * @package WS\ReduceMigrations\Builder\Entity
  */
 class EventType extends Base {
 
+    private $id;
+    private $eventMessages;
+
     public function __construct($eventName, $lid, $data = array()) {
-        $this->eventName = $eventName;
-        $this->lid = $lid;
-        $this->setSaveData($data);
+        $this
+            ->eventName($eventName)
+            ->lid($lid);
     }
 
-    public function getMap() {
+    protected function getMap() {
         return array(
-            'id' => 'ID',
             'sort' => 'SORT',
             'eventName' => 'EVENT_NAME',
             'lid' => 'LID',
@@ -48,48 +52,56 @@ class EventType extends Base {
     }
 
     /**
-     * @param int $sort
-     * @return EventType
+     * @return string
      */
-    public function setSort($sort) {
-        $this->sort = $sort;
-        return $this;
+    public function getEventName() {
+        return $this->getAttribute('EVENT_NAME');
     }
 
     /**
-     * @param string $eventName
-     * @return EventType
+     * @param string $from
+     * @param string $to
+     * @param string $siteId
+     *
+     * @return EventMessage
      */
-    public function setEventName($eventName) {
-        $this->eventName = $eventName;
-        return $this;
+    public function addEventMessage($from, $to, $siteId) {
+        $eventMessage = new EventMessage($from, $to, $siteId);
+        $this->eventMessages[] = $eventMessage;
+        return $eventMessage;
     }
 
     /**
-     * @param string $lid
-     * @return EventType
+     *
+     * @return EventMessage[]
      */
-    public function setLid($lid) {
-        $this->lid = $lid;
-        return $this;
+    public function loadEventMessages() {
+        $messages = $this->findMessages();
+        foreach ($messages as $message) {
+            $eventMessage = new EventMessage($message['FROM'], $message['TO'], $message['LID']);
+            $eventMessage->setId($message['ID']);
+            $this->eventMessages[] = $eventMessage;
+        }
+        return $this->eventMessages;
     }
 
     /**
-     * @param string $name
-     * @return EventType
+     * @return mixed
      */
-    public function setName($name) {
-        $this->name = $name;
-        return $this;
+    public function getEventMessages() {
+        return $this->eventMessages;
     }
 
     /**
-     * @param string $description
-     * @return EventType
+     * @return array
      */
-    public function setDescription($description) {
-        $this->description = $description;
-        return $this;
-    }
+    private function findMessages() {
+        $res = EventMessageTable::getList(array(
+            'filter' => array(
+                'EVENT_NAME' => $this->getEventName()
+            )
+        ));
 
+        return $res->fetchAll();
+    }
 }

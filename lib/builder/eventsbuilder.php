@@ -4,90 +4,47 @@ namespace WS\ReduceMigrations\Builder;
 
 use WS\ReduceMigrations\Builder\Entity\EventMessage;
 use WS\ReduceMigrations\Builder\Entity\EventType;
-use WS\ReduceMigrations\Entities\EventMessageTable;
 
 class EventsBuilder {
-    /** @var  EventType */
-    private $eventType;
-    /** @var  EventMessage[] */
-    private $newMessages;
-    /** @var  EventMessage[] */
-    private $exitsMessages;
-
-    public function reset() {
-        $this->eventType = null;
-        $this->newMessages = array();
-        $this->exitsMessages = array();
-    }
 
     /**
-     * @param $type
-     * @param $lid
+     * @param string $type
+     * @param string $lid
+     * @param \Closure $callback
      * @return EventType
      * @throws BuilderException
      */
-    public function addEventType($type, $lid) {
-        if ($this->eventType) {
-            throw new BuilderException('EventType already set');
-        }
-        $this->eventType = new EventType($type, $lid);
-        return $this->eventType;
+    public function createEventType($type, $lid, $callback) {
+        $eventType = new EventType($type, $lid);
+        $callback($eventType);
+        $this->commit($eventType);
     }
 
     /**
-     * @param $type
-     * @param $lid
+     * @param string $type
+     * @param string $lid
+     * @param \Closure $callback
      * @return EventType
      * @throws BuilderException
      */
-    public function getEventType($type, $lid) {
-        if ($this->eventType) {
-            throw new BuilderException('EventType already set');
-        }
-        $this->eventType = new EventType($type, $lid, $this->findEventType($type, $lid));
-        return $this->eventType;
+    public function updateEventType($type, $lid, $callback) {
+        $data = $this->findEventType($type, $lid);
+        $eventType = new EventType($data['EVENT_NAME'], $data['LID']);
+        $eventType->setId($data['ID']);
+        $callback($eventType);
+        $this->commit($eventType);
     }
 
     /**
-     * @param $from
-     * @param $to
-     * @param $siteId
-     * @return EventMessage
-     */
-    public function addEventMessage($from, $to, $siteId) {
-        $message = new EventMessage($from, $to, $siteId);
-        $this->newMessages[] = $message;
-        return $message;
-    }
-
-    /**
-     * @return Entity\EventMessage[]
+     * @param EventType $eventType
+     *
      * @throws BuilderException
      */
-    public function getEventMessages() {
-        foreach ($this->findMessages() as $data) {
-            $this->exitsMessages[] = new EventMessage(false, false, false, $data);
-        }
-        return $this->exitsMessages;
-    }
-
-    /**
-     * @return EventType
-     */
-    public function getCurrentEventType() {
-        return $this->eventType;
-    }
-
-    /**
-     * @throws BuilderException
-     */
-    public function commit() {
+    public function commit($eventType) {
         global $DB;
         $DB->StartTransaction();
         try {
-            $this->commitEventType();
-            $this->commitNewEventMessages();
-            $this->commitExistsEventMessages();
+            $this->commitEventType($eventType);
         } catch (\Exception $e) {
             $DB->Rollback();
             throw new BuilderException($e->getMessage());
@@ -113,89 +70,59 @@ class EventsBuilder {
     }
 
     /**
+     * @param EventType $eventType
+     *
      * @throws BuilderException
      */
-    private function commitEventType() {
+    private function commitEventType($eventType) {
         global $APPLICATION;
-        if (!$this->eventType) {
-            throw new BuilderException("EventType doesn't set");
-        }
+
         $gw = new \CEventType();
-        if ($this->eventType->getId() > 0) {
-            $gw->Update(['ID' => $this->eventType->getId()], $this->eventType->getSaveData());
+        if ($eventType->getId() > 0) {
+            $result = $gw->Update(['ID' => $eventType->getId()], $eventType->getData());
+            if (!$result) {
+                throw new BuilderException('EventType update failed with error: ' . $APPLICATION->GetException()->GetString());
+            }
         } else {
-            $res = $gw->Add($this->eventType->getSaveData());
-            if (!$res) {
+            $result = $gw->Add($eventType->getData());
+            if (!$result) {
                 throw new BuilderException('EventType add failed with error: ' . $APPLICATION->GetException()->GetString());
             }
-            $this->eventType->setId($res);
+            $eventType->setId($result);
         }
+        $this->commitEventMessages($eventType->getEventName(), $eventType->getEventMessages());
     }
 
     /**
+     * @param string $eventName
+     * @param EventMessage[] $eventMessages
+     *
      * @throws BuilderException
      */
-    private function commitNewEventMessages() {
+    private function commitEventMessages($eventName, $eventMessages) {
         global $APPLICATION;
-        if (!$this->getCurrentEventType()->getId()) {
-            throw new BuilderException("EventType doesn't set");
-        }
+
         $gw = new \CEventMessage();
-        foreach ($this->newMessages as $message) {
-            $id = $gw->Add(array_merge(
-                $message->getSaveData(),
-                array('EVENT_NAME' => $this->getCurrentEventType()->eventName)
-            ));
-            if (!$id) {
-               throw new BuilderException("EventMessage add failed with error: " . $APPLICATION->GetException()->GetString());
+        foreach ($eventMessages as $message) {
+            if ($message->getId() > 0) {
+                if ($message->isRemoved() && !$gw->Delete($message->getId())) {
+                    throw new BuilderException("EventType wasn't deleted: ". $APPLICATION->GetException()->GetString());
+                }
+                if (!$gw->Update($message->getId(), $message->getData())) {
+                    throw new BuilderException("EventType wasn't updated: ". $APPLICATION->GetException()->GetString());
+                }
+            } else {
+                $id = $gw->Add(array_merge(
+                    $message->getData(),
+                    array('EVENT_NAME' => $eventName)
+                ));
+                if (!$id) {
+                    throw new BuilderException("EventMessage add failed with error: " . $APPLICATION->GetException()->GetString());
+                }
+                $message->setId($id);
             }
-            $message->setId($id);
+
         }
     }
-
-    /**
-     * @throws BuilderException
-     */
-    private function commitExistsEventMessages() {
-        global $APPLICATION;
-        if (!$this->getCurrentEventType()->getId()) {
-            throw new BuilderException("EventType doesn't set");
-        }
-        $gw = new \CEventMessage();
-        foreach ($this->exitsMessages as $message) {
-            if (!$message->isRemoved()) {
-               continue;
-            }
-            if (!$gw->Delete($message->getId())) {
-                throw new BuilderException("EventType wasn't deleted: ". $APPLICATION->GetException()->GetString());
-            }
-        }
-        foreach ($this->exitsMessages as $message) {
-            if ($message->isRemoved()) {
-                continue;
-            }
-            if (!$gw->Update($message->getId(), $message->getSaveData())) {
-                throw new BuilderException("EventType wasn't updated: ". $APPLICATION->GetException()->GetString());
-            }
-        }
-    }
-
-    /**
-     * @return array
-     * @throws BuilderException
-     * @throws \Bitrix\Main\ArgumentException
-     */
-    private function findMessages() {
-        if (!$this->getCurrentEventType()->getId()) {
-            throw new BuilderException("EventType doesn't set");
-        }
-        $res = EventMessageTable::getList(array(
-            'filter' => array(
-                'EVENT_NAME' => $this->getCurrentEventType()->eventName
-            )
-        ));
-        return $res->fetchAll();
-    }
-
 
 }
