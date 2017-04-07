@@ -4,6 +4,26 @@ namespace WS\ReduceMigrations\Builder\Entity;
 use Bitrix\Main\Type\DateTime;
 use WS\ReduceMigrations\Builder\BuilderException;
 
+/**
+ * Class Iblock
+ *
+ * @method Iblock name(string $value) - set NAME
+ * @method Iblock code(string $value) - set CODE
+ * @method Iblock iblockType(string $value) - set IBLOCK_TYPE_ID
+ * @method Iblock sort(integer $value) - set SORT
+ * @method Iblock siteId($value) - set SITE_ID array or string
+ * @method Iblock groupId(array $value) - set GROUP_ID, e.g [2 => 'R']
+ * @method Iblock dateUpdate(\Bitrix\Main\Type\DateTime $value) - set TIMESTAMP_X
+ * @method Iblock listPageUrl(string $value) - set LIST_PAGE_URL
+ * @method Iblock sectionPageUrl(string $value) - set SECTION_PAGE_URL
+ * @method Iblock detailPageUrl(string $value) - set DETAIL_PAGE_URL
+ * @method Iblock picture($value) - set PICTURE
+ * @method Iblock description($value) - set DESCRIPTION
+ * @method Iblock descriptionType($value) - set DESCRIPTION_TYPE
+ * @method Iblock version($value) - set VERSION
+ * @method Iblock sectionChooser($value) - set SECTION_CHOOSER
+ * @package WS\ReduceMigrations\Builder\Entity
+ */
 class Iblock  extends Base {
     const SECTION_CHOOSER_LIST = 'L';
     const SECTION_CHOOSER_DROPDOWN = 'D';
@@ -57,74 +77,24 @@ class Iblock  extends Base {
         return $this->id;
     }
 
-    /**
-     * @param string $name
-     *
-     * @return Iblock
-     */
-    public function name($name) {
-        $this->setAttribute('NAME', $name);
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return Iblock
-     */
-    public function code($value) {
-        $this->setAttribute('CODE', $value);
-        return $this;
-    }
-
-    /**
-     * @param integer $value
-     *
-     * @return Iblock
-     */
-    public function iblockType($value) {
-        $this->setAttribute('IBLOCK_TYPE_ID', $value);
-        return $this;
-    }
-
-    /**
-     * @param integer $value
-     *
-     * @return Iblock
-     */
-    public function sort($value) {
-        $this->setAttribute('SORT', $value);
-        return $this;
-    }
-
-    /**
-     * @param mixed $value
-     *
-     * @return Iblock
-     */
-    public function siteId($value) {
-        $this->setAttribute('SITE_ID', $value);
-        return $this;
-    }
-
-    /**
-     * @param array $value
-     *
-     * @return Iblock
-     */
-    public function groupId($value) {
-        $this->setAttribute('GROUP_ID', $value);
-        return $this;
-    }
-
-    /**
-     * @param DateTime $value
-     *
-     * @return Iblock
-     */
-    public function dateUpdate($value) {
-        $this->setAttribute('TIMESTAMP_X', $value);
-        return $this;
+    protected function getMap() {
+        return array(
+            'name' => 'NAME',
+            'code' => 'CODE',
+            'iblockType' => 'IBLOCK_TYPE_ID',
+            'sort' => 'SORT',
+            'siteId' => 'SITE_ID',
+            'groupId' => 'GROUP_ID',
+            'dateUpdate' => 'TIMESTAMP_X',
+            'listPageUrl' => 'LIST_PAGE_URL',
+            'sectionPageUrl' => 'SECTION_PAGE_URL',
+            'detailPageUrl' => 'DETAIL_PAGE_URL',
+            'picture' => 'PICTURE',
+            'description' => 'DESCRIPTION',
+            'descriptionType' => 'DESCRIPTION_TYPE',
+            'version' => 'VERSION',
+            'sectionChooser' => 'SECTION_CHOOSER',
+        );
     }
 
     /**
@@ -134,66 +104,6 @@ class Iblock  extends Base {
      */
     public function active($value = true) {
         $this->setAttribute('ACTIVE', $value ? 'Y' : 'N');
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return Iblock
-     */
-    public function listPageUrl($value) {
-        $this->setAttribute('LIST_PAGE_URL', $value);
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return Iblock
-     */
-    public function sectionPageUrl($value) {
-        $this->setAttribute('SECTION_PAGE_URL', $value);
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return Iblock
-     */
-    public function detailPageUrl($value) {
-        $this->setAttribute('DETAIL_PAGE_URL', $value);
-        return $this;
-    }
-
-    /**
-     * @param $value
-     *
-     * @return Iblock
-     */
-    public function picture($value) {
-        $this->setAttribute('PICTURE', $value);
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return Iblock
-     */
-    public function description($value) {
-        $this->setAttribute('DESCRIPTION', $value);
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return Iblock
-     */
-    public function descriptionType($value) {
-        $this->setAttribute('DESCRIPTION_TYPE', $value);
         return $this;
     }
 
@@ -224,26 +134,6 @@ class Iblock  extends Base {
      */
     public function workFlow($value = true) {
         $this->setAttribute('WORKFLOW', $value ? 'Y' : 'N');
-        return $this;
-    }
-
-    /**
-     * @param integer $value
-     *
-     * @return Iblock
-     */
-    public function version($value = 1) {
-        $this->setAttribute('VERSION', $value);
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return Iblock
-     */
-    public function sectionChooser($value) {
-        $this->setAttribute('SECTION_CHOOSER', $value);
         return $this;
     }
 

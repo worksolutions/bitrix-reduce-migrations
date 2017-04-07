@@ -3,7 +3,7 @@
 namespace WS\ReduceMigrations\Builder\Entity;
 
 
-class Base {
+abstract class Base {
     /** @var array */
     protected $params;
 
@@ -31,5 +31,16 @@ class Base {
      */
     public function getData() {
         return $this->params;
+    }
+
+    protected abstract function getMap();
+
+    public function __call($name, $arguments) {
+        $map = $this->getMap();
+        if (!isset($map[$name])) {
+            throw new \Exception("Call to undefined method {$name}");
+        }
+        $this->setAttribute($map[$name], $arguments[0]);
+        return $this;
     }
 }

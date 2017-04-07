@@ -2,7 +2,15 @@
 
 namespace WS\ReduceMigrations\Builder\Entity;
 
-
+/**
+ * Class IblockType
+ *
+ * @method IblockType type(string $value) - IBLOCK_TYPE_ID
+ * @method IblockType sort(int $value) - SORT
+ * @method IblockType sections(string $value) - SECTIONS
+ * @method IblockType lang(array $value) - LANG ['en' => ['NAME'=>'Catalog', 'SECTION_NAME'=>'Sections', 'ELEMENT_NAME'=>'Products']]
+ * @package WS\ReduceMigrations\Builder\Entity
+ */
 class IblockType extends Base {
 
     public function __construct($type) {
@@ -26,40 +34,13 @@ class IblockType extends Base {
         return $this->getAttribute('ID');
     }
 
-    /**
-     * @param string $value
-     * @return IblockType
-     */
-    public function type($value) {
-        $this->setAttribute('IBLOCK_TYPE_ID', $value);
-        return $this;
-    }
-
-    /**
-     * @param int $sort
-     * @return IblockType
-     */
-    public function sort($sort) {
-        $this->setAttribute('SORT', $sort);
-        return $this;
-    }
-
-    /**
-     * @param string $sections
-     * @return IblockType
-     */
-    public function sections($sections) {
-        $this->setAttribute('SECTIONS', $sections);
-        return $this;
-    }
-
-    /**
-     * @param array $lang ['en' => ['NAME'=>'Catalog', 'SECTION_NAME'=>'Sections', 'ELEMENT_NAME'=>'Products']]
-     * @return IblockType
-     */
-    public function lang($lang) {
-        $this->setAttribute('LANG', $lang);
-        return $this;
+    protected function getMap() {
+        return array(
+            'type' => 'IBLOCK_TYPE_ID',
+            'sort' => 'SORT',
+            'sections' => 'SECTIONS',
+            'lang' => 'LANG',
+        );
     }
 
     /**
