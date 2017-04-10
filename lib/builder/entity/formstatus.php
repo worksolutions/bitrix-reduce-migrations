@@ -75,7 +75,7 @@ class FormStatus extends Base {
      * @param bool $isDefault
      * @return FormStatus
      */
-    public function byDefault($isDefault) {
+    public function byDefault($isDefault = true) {
         $this->setAttribute('DEFAULT_VALUE', $isDefault ? 'Y' : 'N');
         return $this;
     }

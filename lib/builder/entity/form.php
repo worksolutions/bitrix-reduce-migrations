@@ -108,7 +108,9 @@ class Form extends Base {
     public function updateStatus($title) {
 
         $data = $this->findStatus($title);
-        $status = new FormStatus($title, $data);
+        $status = new FormStatus($title);
+        $status->setId($data['ID']);
+        $status->markClean();
         $this->statuses[] = $status;
         return $status;
     }
@@ -119,7 +121,7 @@ class Form extends Base {
      * @throws BuilderException
      */
     private function findStatus($title) {
-        $status = \CFormStatus::GetList($this->form->getId(), $by, $order, array(
+        $status = \CFormStatus::GetList($this->getId(), $by, $order, array(
             'TITLE' => $title,
         ), $isFiltered)->Fetch();
 
@@ -147,7 +149,9 @@ class Form extends Base {
      */
     public function updateField($sid) {
         $data = $this->findField($sid);
-        $field = new FormField($sid, $data);
+        $field = new FormField($sid);
+        $field->setId($data['ID']);
+        $field->markClean();
         $this->fields[] = $field;
         return $field;
     }
@@ -158,7 +162,7 @@ class Form extends Base {
      * @throws BuilderException
      */
     private function findField($sid) {
-        $field = \CFormField::GetList($this->form->getId(), 'ALL', $by, $order, array(
+        $field = \CFormField::GetList($this->getId(), 'ALL', $by, $order, array(
             'SID' => $sid,
         ), $isFiltered)->Fetch();
         if (empty($field)) {

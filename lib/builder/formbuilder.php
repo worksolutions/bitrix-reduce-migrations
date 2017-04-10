@@ -48,13 +48,13 @@ class FormBuilder {
      * @param Form $form
      * @throws BuilderException
      */
-    public function commit($form) {
+    protected function commit($form) {
         global $DB;
         $DB->StartTransaction();
         try {
             $this->commitForm($form);
             $this->commitFields($form);
-            $this->commitStatuses();
+            $this->commitStatuses($form);
         } catch (\Exception $e) {
             $DB->Rollback();
             throw new BuilderException($e->getMessage());
@@ -87,8 +87,8 @@ class FormBuilder {
         $gw = new \CFormField();
         foreach ($form->getFields() as $field) {
             if ($field->isDirty()) {
+                $field->setAttribute('FORM_ID', $form->getId());
                 $saveData = $field->getData();
-                $saveData['FORM_ID'] = $form->getId();
                 $fieldId = $gw->Set($saveData, $field->getId(), 'N', 'Y');
                 if (!$fieldId) {
                     throw new BuilderException("Field '{$field->getAttribute('SID')}' wasn't saved. " . $strError);
@@ -113,8 +113,8 @@ class FormBuilder {
                     throw new BuilderException("Can't delete '{$answer->getAttribute('MESSAGE')}'. ". $strError);
                 }
             }
+            $answer->setAttribute('QUESTION_ID', $field->getId());
             $data = $answer->getData();
-            $data['QUESTION_ID'] = $field->getId();
             if ($answer->isDirty() && !$gw->Set($data, $answer->getId())) {
                 throw new BuilderException("Answer wasn't saved. " . $strError);
             }
@@ -132,8 +132,8 @@ class FormBuilder {
             if (!$form->isDirty()) {
                 continue;
             }
+            $status->setAttribute('FORM_ID', $form->getId());
             $saveData = $status->getData();
-            $saveData['FORM_ID'] = $form->getId();
             $statusId = $gw->Set($saveData, $status->getId(), 'N');
             if (!$statusId) {
                 throw new BuilderException("Field '{$status->getAttribute('TITLE')}' wasn't saved. " . $strError);

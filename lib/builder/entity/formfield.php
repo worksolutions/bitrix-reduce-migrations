@@ -34,7 +34,7 @@ class FormField extends Base {
 
 
     public function __construct($sid) {
-        $this->sid = $sid;
+        $this->setAttribute('SID', $sid);
         $this->answers = array();
     }
 
@@ -107,7 +107,7 @@ class FormField extends Base {
      * @param bool $required
      * @return FormField
      */
-    public function required($required) {
+    public function required($required = true) {
         $this->setAttribute('REQUIRED', $required ? "Y" : "N");
         return $this;
     }
@@ -146,9 +146,6 @@ class FormField extends Base {
      * @throws BuilderException
      */
     public function updateAnswer($message) {
-        if (!$this->getId()) {
-            throw new BuilderException("Can't update answer. Form Field not saved");
-        }
         $data = $this->findAnswer($message);
         $answer = new FormAnswer($message);
         $answer->setId($data['ID']);
@@ -164,9 +161,6 @@ class FormField extends Base {
      * @throws BuilderException
      */
     public function removeAnswer($message) {
-        if (!$this->getId()) {
-            throw new BuilderException("Can't remove answer. Form Field not saved");
-        }
         $data = $this->findAnswer($message);
         $answer = new FormAnswer($message);
         $answer->markDelete();
