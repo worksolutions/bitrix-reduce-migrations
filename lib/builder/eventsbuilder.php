@@ -31,6 +31,7 @@ class EventsBuilder {
         $data = $this->findEventType($type, $lid);
         $eventType = new EventType($data['EVENT_NAME'], $data['LID']);
         $eventType->setId($data['ID']);
+        $eventType->markClean();
         $callback($eventType);
         $this->commit($eventType);
     }
@@ -79,10 +80,13 @@ class EventsBuilder {
 
         $gw = new \CEventType();
         if ($eventType->getId() > 0) {
-            $result = $gw->Update(['ID' => $eventType->getId()], $eventType->getData());
-            if (!$result) {
-                throw new BuilderException('EventType update failed with error: ' . $APPLICATION->GetException()->GetString());
+            if ($eventType->isDirty()) {
+                $result = $gw->Update(['ID' => $eventType->getId()], $eventType->getData());
+                if (!$result) {
+                    throw new BuilderException('EventType update failed with error: ' . $APPLICATION->GetException()->GetString());
+                }
             }
+
         } else {
             $result = $gw->Add($eventType->getData());
             if (!$result) {
@@ -108,7 +112,7 @@ class EventsBuilder {
                 if ($message->isRemoved() && !$gw->Delete($message->getId())) {
                     throw new BuilderException("EventType wasn't deleted: ". $APPLICATION->GetException()->GetString());
                 }
-                if (!$gw->Update($message->getId(), $message->getData())) {
+                if ($message->isDirty() && !$gw->Update($message->getId(), $message->getData())) {
                     throw new BuilderException("EventType wasn't updated: ". $APPLICATION->GetException()->GetString());
                 }
             } else {

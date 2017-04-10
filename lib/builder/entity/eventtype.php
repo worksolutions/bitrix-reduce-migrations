@@ -80,6 +80,7 @@ class EventType extends Base {
         foreach ($messages as $message) {
             $eventMessage = new EventMessage($message['FROM'], $message['TO'], $message['LID']);
             $eventMessage->setId($message['ID']);
+            $eventMessage->markClean();
             $this->eventMessages[] = $eventMessage;
         }
         return $this->eventMessages;
