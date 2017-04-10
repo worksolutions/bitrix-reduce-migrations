@@ -3,19 +3,12 @@
 namespace WS\ReduceMigrations;
 
 use Bitrix\Main\Application;
-use Bitrix\Main\IO\Directory;
 use Bitrix\Main\IO\File;
 use Bitrix\Main\IO\Path;
 use WS\ReduceMigrations\Collection\MigrationCollection;
-use WS\ReduceMigrations\Console\RuntimeFixCounter;
-use WS\ReduceMigrations\Entities\AppliedChangesLogModel;
-use WS\ReduceMigrations\Entities\AppliedChangesLogTable;
 use WS\ReduceMigrations\Entities\SetupLogModel;
 use WS\ReduceMigrations\Exceptions\MultipleEqualHashException;
 use WS\ReduceMigrations\Exceptions\NothingToApplyException;
-use WS\ReduceMigrations\Scenario\Exceptions\ApplyScenarioException;
-use WS\ReduceMigrations\Scenario\Exceptions\SkipScenarioException;
-use WS\ReduceMigrations\Scenario\ScriptScenario;
 
 /**
  * Class Module
@@ -32,28 +25,13 @@ class Module {
     private static $name = 'ws.reducemigrations';
 
     /**
-     * Versions options Cache
-     *
-     * @var array
-     */
-    private $_versions;
-
-    /**
-     * @var SetupLogModel
-     */
-    private $_setupLog;
-
-    /**
      * @var PlatformVersion
      */
     private $version;
 
-    /**
-     * @var RuntimeFixCounter
-     */
-    private $runtimeFixCounter;
-    /** @var  MigrationCollection */
-    private $notAppliedScenarios;
+    private $applier;
+
+    private $rollback;
 
     private function __construct() {
         $this->localizePath = __DIR__ . '/../lang/' . LANGUAGE_ID;
@@ -119,49 +97,38 @@ class Module {
     }
 
     /**
-     * @param $fileName
-     * @param $content
-     *
-     * @return string
-     * @throws \Exception
-     */
-    private function putScriptClass($fileName, $content) {
-        $file = new File($this->getScenariosDir() . DIRECTORY_SEPARATOR . $fileName);
-        $success = $file->putContents($content);
-        if (!$success) {
-            throw new \Exception("Could'nt save file");
-        }
-
-        return $file->getPath();
-    }
-
-    /**
      * Return list of not applied migration classes
      *
      * @return MigrationCollection
      */
     public function getNotAppliedScenarios() {
-        if ($this->notAppliedScenarios) {
-            return $this->notAppliedScenarios;
-        }
-        /** @var File[] $files */
-        $files = $this->getNotAppliedFiles($this->getScenariosDir());
-        $this->notAppliedScenarios = new MigrationCollection($files);
-        return $this->notAppliedScenarios;
+        $applier = $this->getApplier();
+        return $applier->getMigrationList();
     }
 
     /**
-     * @return SetupLogModel
+     * @param bool $skipOptional
+     * @param bool|callable $callback
+     *
+     * @return int
      */
-    private function useSetupLog() {
-        if (!$this->_setupLog) {
-            $setupLog = new SetupLogModel();
-            $setupLog->userId = $this->getCurrentUser()->GetID();
-            $setupLog->save();
-            $this->_setupLog = $setupLog;
-        }
+    public function applyMigrations($skipOptional, $callback = false) {
+        $applier = $this->getApplier();
+        $applier->skipOptional($skipOptional);
+        return $applier->applyMigrations($callback);
+    }
 
-        return $this->_setupLog;
+    /**
+     * @param $migrationHash
+     * @param \Closure|bool $callback
+     *
+     * @throws MultipleEqualHashException
+     * @throws NothingToApplyException
+     */
+    public function applyMigrationByHash($migrationHash, $callback = false) {
+        $applier = $this->getApplier();
+        $applier->skipOptional(false);
+        $applier->applyMigrationByHash($migrationHash, $callback);
     }
 
     /**
@@ -196,58 +163,6 @@ class Module {
     }
 
     /**
-     * @param string $owner
-     */
-    private function useVersion($owner) {
-        if (!$owner) {
-            return;
-        }
-        $this->_versions = $this->_versions ?: $this->getOptions()->getOtherVersions();
-        if (array_search($owner, $this->_versions) !== false) {
-            $this->_versions[] = $owner;
-            $this->getOptions()->otherVersions = $this->_versions;
-        }
-    }
-
-    /**
-     * @param $dir
-     *
-     * @return array
-     * @throws \Bitrix\Main\ArgumentException
-     * @throws \Bitrix\Main\IO\FileNotFoundException
-     */
-    private function getNotAppliedFiles($dir) {
-        $result = AppliedChangesLogTable::getList(array(
-            'select' => array('GROUP_LABEL'),
-            'group' => array('GROUP_LABEL'),
-        ));
-
-        $usesGroups = array_map(function ($row) {
-            return $row['GROUP_LABEL'];
-        }, $result->fetchAll());
-
-        $dir = new Directory($dir);
-
-        if (!$dir->isExists()) {
-            return array();
-        }
-
-        $files = array();
-        foreach ($dir->getChildren() as $file) {
-            if ($file->isDirectory()) {
-                continue;
-            }
-            if (in_array($file->getName(), $usesGroups)) {
-                continue;
-            }
-            $files[$file->getName()] = $file;
-        }
-        ksort($files);
-
-        return $files;
-    }
-
-    /**
      * @param $name
      * @param $priority
      * @param $time
@@ -272,107 +187,27 @@ class Module {
     }
 
     /**
+     * @param $fileName
+     * @param $content
+     *
+     * @return string
+     * @throws \Exception
+     */
+    private function putScriptClass($fileName, $content) {
+        $file = new File($this->getScenariosDir() . DIRECTORY_SEPARATOR . $fileName);
+        $success = $file->putContents($content);
+        if (!$success) {
+            throw new \Exception("Could'nt save file");
+        }
+
+        return $file->getPath();
+    }
+
+    /**
      * @return string - module root directory
      */
     public function getModuleDir() {
         return Path::getDirectory(__DIR__);
-    }
-
-    /**
-     * @param bool $skipOptional
-     * @param bool|callable $callback
-     *
-     * @return int
-     */
-    public function applyMigrations($skipOptional, $callback = false) {
-        $classes = $this->getNotAppliedScenarios()->toArray();
-        if (!$classes) {
-            return 0;
-        }
-        $count = 0;
-        is_callable($callback) && $callback(count($classes), 'setCount');
-        /** @var ScriptScenario $class */
-        foreach ($classes as $class) {
-            $count++;
-            $this->applyScenario($class, $skipOptional, $callback);
-        }
-
-        return $count;
-    }
-
-    /**
-     * @param $migrationHash
-     * @param \Closure|bool $callback
-     *
-     * @throws MultipleEqualHashException
-     * @throws NothingToApplyException
-     */
-    public function applyMigrationByHash($migrationHash, $callback = false) {
-        $list = $this->getNotAppliedScenarios()->findByHash($migrationHash);
-        if (count($list) > 1) {
-            throw new MultipleEqualHashException(sprintf('Found %s migrations with hash `%s`', count($list), $migrationHash));
-        }
-        if (empty($list)) {
-            throw new NothingToApplyException(sprintf('Not found migration with hash `%s`', $migrationHash));
-        }
-        $this->applyScenario($list[0], false, $callback);
-    }
-
-    /**
-     * @param ScriptScenario $class
-     * @param $skipOptional
-     * @param $callback
-     */
-    private function applyScenario($class, $skipOptional, $callback) {
-        $setupLog = $this->useSetupLog();
-        $time = microtime(true);
-
-        $data = array(
-            'name' => $class::name(),
-        );
-        is_callable($callback) && $callback($data, 'start');
-        /** @var ScriptScenario $object */
-        $applyFixLog = AppliedChangesLogModel::createByParams($setupLog, $class);
-        $this->useVersion($class::owner());
-        $object = new $class(array());
-        try {
-            $this->commitScenario($object, $skipOptional);
-            $applyFixLog->setUpdateData($object->getData());
-            $applyFixLog->markAsSuccessful();
-            $applyFixLog->setTime(microtime(true) - $time);
-        } catch (SkipScenarioException $e) {
-            $applyFixLog->markSkipped();
-        } catch (ApplyScenarioException $e) {
-            $applyFixLog->markAsFailed();
-            $error = $e->getMessage();
-            $applyFixLog->setErrorMessage($error);
-        }
-        $applyFixLog->save();
-
-        $data = array(
-            'time' => microtime(true) - $time,
-            'log' => $applyFixLog,
-            'error' => $error ?: '',
-        );
-        is_callable($callback) && $callback($data, 'end');
-    }
-
-    /**
-     * @param ScriptScenario $scenario
-     * @param $skipOptional
-     *
-     * @throws ApplyScenarioException
-     * @throws SkipScenarioException
-     */
-    private function commitScenario(ScriptScenario $scenario, $skipOptional) {
-        if ($skipOptional && $scenario->isOptional()) {
-            throw new SkipScenarioException();
-        }
-        try {
-            $scenario->commit();
-        } catch (\Exception $e) {
-            throw new ApplyScenarioException($e->getMessage());
-        }
     }
 
     /**
@@ -382,30 +217,8 @@ class Module {
      * @throws NothingToApplyException
      */
     public function rollbackLastFewMigrations($count, $callback = false) {
-        $logs = AppliedChangesLogModel::find(array(
-            'order' => array('id' => 'desc'),
-            'limit' => $count,
-        ));
-
-        if (empty($logs)) {
-            throw new NothingToApplyException(sprintf('Nothing to rollback'));
-        }
-
-        $setupLogIds = array();
-        /** @var AppliedChangesLogModel $log */
-        foreach ($logs as $log) {
-            $setupLogIds[] = $log->getSetupLogId();
-        }
-        $setupLogIds = array_unique($setupLogIds);
-
-        $this->rollbackByLogs($logs, $callback);
-
-        foreach ($setupLogIds as $setupLogId) {
-            if (!AppliedChangesLogModel::hasMigrationsWithLog($setupLogId)) {
-                SetupLogModel::deleteById($setupLogId);
-            }
-        }
-
+        $rollback = $this->getRollBack();
+        $rollback->rollbackLastFewMigrations($count, $callback);
     }
 
     /**
@@ -415,48 +228,17 @@ class Module {
      * @throws NothingToApplyException
      */
     public function rollbackToHash($toHash, $callback = false) {
-        $logsByHash = AppliedChangesLogModel::findByHash($toHash);
-
-        if (empty($logsByHash)) {
-            throw new NothingToApplyException(sprintf('Nothing to rollback'));
-        }
-        $logs = AppliedChangesLogModel::find(array(
-            'order' => array('id' => 'desc'),
-            'filter' => array('>id' => $logsByHash[0]->getId())
-        ));
-        if (empty($logs)) {
-            throw new NothingToApplyException(sprintf('Nothing to rollback'));
-        }
-
-        $setupLogIds = array();
-        /** @var AppliedChangesLogModel $log */
-        foreach ($logs as $log) {
-            $setupLogIds[] = $log->getSetupLogId();
-        }
-        $setupLogIds = array_unique($setupLogIds);
-
-        $this->rollbackByLogs($logs, $callback);
-
-        foreach ($setupLogIds as $setupLogId) {
-            if (!AppliedChangesLogModel::hasMigrationsWithLog($setupLogId)) {
-                SetupLogModel::deleteById($setupLogId);
-            }
-        }
+        $rollback = $this->getRollBack();
+        $rollback->rollbackToHash($toHash, $callback);
     }
 
     /**
      * @param $callback
      *
-     * @return null
      */
     public function rollbackLastBatch($callback = false) {
-        $setupLog = $this->getLastSetupLog();
-        if (!$setupLog) {
-            return null;
-        }
-        $logs = $setupLog->getAppliedLogs() ?: array();
-        $this->rollbackByLogs(array_reverse($logs), $callback);
-        $setupLog->delete();
+        $rollback = $this->getRollBack();
+        $rollback->rollbackLastBatch($callback);
     }
 
     /**
@@ -467,83 +249,31 @@ class Module {
      * @throws NothingToApplyException
      */
     public function rollbackByHash($migrationHash, $callback = false) {
-        $logs = AppliedChangesLogModel::findByHash($migrationHash);
-        if (count($logs) > 1) {
-            throw new MultipleEqualHashException(sprintf('Found %s migrations with hash `%s`', count($logs), $migrationHash));
-        }
-        if (empty($logs)) {
-            throw new NothingToApplyException(sprintf('Not found migration with hash `%s`', $migrationHash));
-        }
-
-        $setupLogIds = array();
-        /** @var AppliedChangesLogModel $log */
-        foreach ($logs as $log) {
-            $setupLogIds[] = $log->getSetupLogId();
-        }
-        $setupLogIds = array_unique($setupLogIds);
-
-        $this->rollbackByLogs($logs, $callback);
-
-        foreach ($setupLogIds as $setupLogId) {
-            if (!AppliedChangesLogModel::hasMigrationsWithLog($setupLogId)) {
-                SetupLogModel::deleteById($setupLogId);
-            }
-        }
+        $rollback = $this->getRollBack();
+        $rollback->rollbackByHash($migrationHash, $callback);
     }
 
     /**
-     * @param AppliedChangesLogModel[] $list
-     * @param callable|bool $callback
-     *
-     * @return null
+     * @return MigrationApplier
      */
-    private function rollbackByLogs($list, $callback = false) {
-        $this->runtimeFixCounter = new RuntimeFixCounter();
-        $this->runtimeFixCounter->setFixNamesByLogs($list);
-        is_callable($callback) && $callback($this->runtimeFixCounter->migrationCount, 'setCount');
-        $this->runtimeFixCounter->activeFixName = '';
-        $this->runtimeFixCounter->fixNumber = 0;
-        $this->runtimeFixCounter->time = microtime(true);
-
-        foreach ($list as $log) {
-            $log->delete();
-            if ($log->isFailed()) {
-                continue;
-            }
-            if ($log->isSkipped()) {
-                continue;
-            }
-            $time = microtime(true);
-            $callbackData = array(
-                'name' => $log->getName(),
-            );
-            is_callable($callback) && $callback($callbackData, 'start');
-            $error = '';
-            try {
-                $class = $log->getMigrationClassName();
-                if (!class_exists($class)) {
-                    include $this->getScenariosDir() . DIRECTORY_SEPARATOR . $class . '.php';
-                }
-                if (!is_subclass_of($class, '\WS\ReduceMigrations\Scenario\ScriptScenario')) {
-                    continue;
-                }
-                $data = $log->getUpdateData();
-                /** @var ScriptScenario $object */
-                $object = new $class($data);
-                $object->rollback();
-
-            } catch (\Exception $e) {
-                $error = "Exception:" . $e->getMessage();
-            }
-            $callbackData = array(
-                'time' => microtime(true) - $time,
-                'log' => $log,
-                'error' => $error,
-            );
-            is_callable($callback) && $callback($callbackData, 'end');
+    private function getApplier() {
+        if ($this->applier) {
+            return $this->applier;
         }
+        $this->applier = new MigrationApplier($this->getScenariosDir());
+        return $this->applier;
     }
 
+    /**
+     * @return MigrationRollback
+     */
+    private function getRollBack() {
+        if ($this->rollback) {
+            return $this->rollback;
+        }
+        $this->rollback = new MigrationRollback($this->getScenariosDir());
+        return $this->rollback;
+    }
 }
 
 
