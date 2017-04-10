@@ -40,12 +40,16 @@ class IblockBuilder {
      */
     public function updateIblockType($type, $callback) {
         $iblockType = new IblockType($type);
+        $iblockType->markClean();
         $callback($iblockType);
-        $gateway = new \CIBlockType();
-        $res = $gateway->Update($type, $iblockType->getData());
-        if (!$res) {
-            throw new BuilderException($gateway->LAST_ERROR);
+        if ($iblockType->isDirty()) {
+            $gateway = new \CIBlockType();
+            $res = $gateway->Update($type, $iblockType->getData());
+            if (!$res) {
+                throw new BuilderException($gateway->LAST_ERROR);
+            }
         }
+
         return $type;
     }
 
@@ -91,7 +95,7 @@ class IblockBuilder {
         }
         $iblock = new Iblock();
         $iblock->setId($iblockData['ID']);
-
+        $iblock->markClean();
         $callback($iblock);
 
         $result = $this->commitIblock($iblock);
@@ -112,8 +116,9 @@ class IblockBuilder {
             $connection->startTransaction();
             $data = $iblock->getData();
             $cIblock = new \CIBlock();
+            $isSuccess = true;
             if ($iblock->getId() > 0) {
-                $isSuccess = $cIblock->Update($iblock->getId(), $data);
+                $iblock->isDirty() && $isSuccess = $cIblock->Update($iblock->getId(), $data);
                 $iblockId = $iblock->getId();
             } else {
                 $isSuccess = $cIblock->Add($data);
@@ -149,10 +154,13 @@ class IblockBuilder {
         }
         $propertyGateway = new \CIBlockProperty();
         foreach ($iblock->getUpdateProperties() as $property) {
-            $isSuccess = $propertyGateway->Update($property->getId(), $property->getData());
-            if (!$isSuccess) {
-                throw new BuilderException($propertyGateway->LAST_ERROR);
+            if ($property->isDirty()) {
+                $isSuccess = $propertyGateway->Update($property->getId(), $property->getData());
+                if (!$isSuccess) {
+                    throw new BuilderException($propertyGateway->LAST_ERROR);
+                }
             }
+
             $this->commitEnum($property);
         }
         foreach ($iblock->getProperties() as $property) {
@@ -181,7 +189,7 @@ class IblockBuilder {
                 continue;
             }
             if ($variant->getId() > 0) {
-                if (!$obEnum->Update($variant->getId(), $variant->getData())) {
+                if ($variant->isDirty() && !$obEnum->Update($variant->getId(), $variant->getData())) {
                     throw new BuilderException("Failed to update enum '{$variant->getAttribute('VALUE')}'");
                 }
                 continue;

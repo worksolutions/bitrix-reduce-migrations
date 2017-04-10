@@ -156,6 +156,7 @@ class Iblock  extends Base {
     public function updateProperty($name) {
         $propertyData = $this->findProperty($name);
         $prop = new Property($name, $propertyData);
+        $prop->markClean();
         $this->updateProperties[$name] = $prop;
         return $prop;
     }

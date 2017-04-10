@@ -314,6 +314,7 @@ class Property extends Base {
     public function updateEnum($name) {
         $data = $this->findEnum($name);
         $variant = new EnumVariant($name, $data);
+        $variant->markClean();
         $this->enumVariants[$variant->getId()] = $variant;
         return $variant;
     }
