@@ -4,15 +4,13 @@ namespace WS\ReduceMigrations\Builder\Entity;
 
 /**
  * Class FormAnswer
- * @property int id
- * @property int sort
- * @property string active
- * @property string message
- * @property string value
- * @property string fieldType
- * @property string fieldWidth
- * @property string fieldHeight
- * @property string fieldParam
+ * @method FormAnswer sort(int $value)
+ * @method FormAnswer message(string $value)
+ * @method FormAnswer value(string $value)
+ * @method FormAnswer fieldType(string $value)
+ * @method FormAnswer fieldWidth($value)
+ * @method FormAnswer fieldHeight($value)
+ * @method FormAnswer fieldParam(string $value)
  * @package WS\ReduceMigrations\Builder\Entity
  */
 class FormAnswer extends Base {
@@ -27,14 +25,14 @@ class FormAnswer extends Base {
     const TYPE_IMAGE = 'image';
     const TYPE_FILE = 'file';
     const TYPE_PASSWORD = 'password';
-    public function __construct($message, $data = array()) {
-        $this->message = $message;
-        $this->setSaveData($data);
+    private $id;
+
+    public function __construct($message) {
+        $this->message($message);
     }
 
     public function getMap() {
         return array(
-            'id' => 'ID',
             'sort' => 'C_SORT',
             'message' => 'MESSAGE',
             'value' => 'VALUE',
@@ -64,79 +62,20 @@ class FormAnswer extends Base {
     }
 
     /**
-     * @param int $sort
-     * @return FormAnswer
-     */
-    public function setSort($sort) {
-        $this->sort = $sort;
-        return $this;
-    }
-
-    /**
      * @param bool $active
      * @return FormAnswer
      */
-    public function setActive($active) {
-        $this->active = $active ? 'Y' : 'N';
-        return $this;
-    }
-
-    /**
-     * @param string $message
-     * @return FormAnswer
-     */
-    public function setMessage($message) {
-        $this->message = $message;
-        return $this;
-    }
-
-    /**
-     * @param string $value
-     * @return FormAnswer
-     */
-    public function setValue($value) {
-        $this->value = $value;
-        return $this;
-    }
-
-    /**
-     * @param string $fieldType
-     * @return FormAnswer
-     */
-    public function setFieldType($fieldType) {
-        $this->fieldType = $fieldType;
-        return $this;
-    }
-
-    /**
-     * @param string $fieldWidth
-     * @return FormAnswer
-     */
-    public function setFieldWidth($fieldWidth) {
-        $this->fieldWidth = $fieldWidth;
-        return $this;
-    }
-
-    /**
-     * @param string $fieldHeight
-     * @return FormAnswer
-     */
-    public function setFieldHeight($fieldHeight) {
-        $this->fieldHeight = $fieldHeight;
-        return $this;
-    }
-
-    /**
-     * @param string $fieldParam
-     * @return FormAnswer
-     */
-    public function setFieldParam($fieldParam) {
-        $this->fieldParam = $fieldParam;
+    public function active($active) {
+        $this->setAttribute('ACTIVE', $active ? 'Y' : 'N');
         return $this;
     }
 
     public function needDelete() {
-        return $this->del == 'Y';
+        return $this->getAttribute('DEL') == 'Y';
+    }
+
+    public function markDelete() {
+        $this->setAttribute('DEL', 'Y');
     }
 
 

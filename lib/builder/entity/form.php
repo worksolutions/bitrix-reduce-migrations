@@ -1,48 +1,45 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: under5
- * Date: 10.03.16
- * Time: 11:32
- */
 
 namespace WS\ReduceMigrations\Builder\Entity;
 
+use WS\ReduceMigrations\Builder\BuilderException;
+
 /**
  * Class Form
- * @property int id
- * @property int sort
- * @property string name
- * @property string sid
- * @property string useRestrictions
- * @property string useCaptcha
- * @property int restrictUser
- * @property int restrictTime
- * @property string description
- * @property string descriptionType
- * @property string filterResultTemplate
- * @property string tableResultTemplate
- * @property string statEvent1
- * @property string statEvent2
- * @property string statEvent3
- * @property array image
- * @property array arSiteId
- * @property array arMailTemplate
- * @property array arMenu
- * @property array arGroup
+ * @method Form sort(int $value)
+ * @method Form name(string $value)
+ * @method Form sid(string $value)
+ * @method Form useRestrictions(string $value)
+ * @method Form restrictUser(int $value)
+ * @method Form restrictTime(int $value)
+ * @method Form description(string $value)
+ * @method Form descriptionType(string $value)
+ * @method Form filterResultTemplate(string $value)
+ * @method Form tableResultTemplate(string $value)
+ * @method Form statEvent1(string $value)
+ * @method Form statEvent2(string $value)
+ * @method Form statEvent3(string $value)
+ * @method Form image(array $value)
+ * @method Form arSiteId(array $value)
+ * @method Form arMailTemplate(array $value)
+ * @method Form arMenu(array $value)
+ * @method Form arGroup(array $value)
  * @package WS\ReduceMigrations\Builder\Entity
  */
 class Form extends Base {
 
-    public function __construct($name, $sid, $data = array()) {
-        $this->name = $name;
-        $this->sid = $sid;
-        $this->setSaveData($data);
+    private $id;
+    private $statuses;
+    private $fields;
+
+    public function __construct($name, $sid) {
+        $this
+            ->name($name)
+            ->sid($sid);
     }
 
     public function getMap() {
         return array(
-            'id' => 'ID',
             'name' => 'NAME',
             'sid' => 'SID',
             'sort' => 'C_SORT',
@@ -76,15 +73,6 @@ class Form extends Base {
     }
 
     /**
-     * @param int $sort
-     * @return Form
-     */
-    public function setSort($sort) {
-        $this->sort = $sort;
-        return $this;
-    }
-
-    /**
      * @return int
      */
     public function getId() {
@@ -92,164 +80,105 @@ class Form extends Base {
     }
 
     /**
-     * @param string $name
-     * @return Form
-     */
-    public function setName($name) {
-        $this->name = $name;
-        return $this;
-    }
-
-    /**
-     * @param string $sid
-     * @return Form
-     */
-    public function setSid($sid) {
-        $this->sid = $sid;
-        return $this;
-    }
-
-    /**
-     * @param string $useRestrictions
-     * @return Form
-     */
-    public function setUseRestrictions($useRestrictions) {
-        $this->useRestrictions = $useRestrictions;
-        return $this;
-    }
-
-    /**
-     * @param int $restrictUser
-     * @return Form
-     */
-    public function setRestrictUser($restrictUser) {
-        $this->restrictUser = $restrictUser;
-        return $this;
-    }
-
-    /**
-     * @param int $restrictTime
-     * @return Form
-     */
-    public function setRestrictTime($restrictTime) {
-        $this->restrictTime = $restrictTime;
-        return $this;
-    }
-
-    /**
-     * @param string $description
-     * @return Form
-     */
-    public function setDescription($description) {
-        $this->description = $description;
-        return $this;
-    }
-
-    /**
-     * @param string $descriptionType
-     * @return Form
-     */
-    public function setDescriptionType($descriptionType) {
-        $this->descriptionType = $descriptionType;
-        return $this;
-    }
-
-    /**
-     * @param string $filterResultTemplate
-     * @return Form
-     */
-    public function setFilterResultTemplate($filterResultTemplate) {
-        $this->filterResultTemplate = $filterResultTemplate;
-        return $this;
-    }
-
-    /**
-     * @param string $tableResultTemplate
-     * @return Form
-     */
-    public function setTableResultTemplate($tableResultTemplate) {
-        $this->tableResultTemplate = $tableResultTemplate;
-        return $this;
-    }
-
-    /**
-     * @param string $statEvent1
-     * @return Form
-     */
-    public function setStatEvent1($statEvent1) {
-        $this->statEvent1 = $statEvent1;
-        return $this;
-    }
-
-    /**
-     * @param string $statEvent2
-     * @return Form
-     */
-    public function setStatEvent2($statEvent2) {
-        $this->statEvent2 = $statEvent2;
-        return $this;
-    }
-
-    /**
-     * @param string $statEvent3
-     * @return Form
-     */
-    public function setStatEvent3($statEvent3) {
-        $this->statEvent3 = $statEvent3;
-        return $this;
-    }
-
-    /**
-     * @param array $image
-     * @return Form
-     */
-    public function setImage($image) {
-        $this->image = $image;
-        return $this;
-    }
-
-    /**
-     * @param array $arSiteId
-     * @return Form
-     */
-    public function setArSiteId($arSiteId) {
-        $this->arSiteId = $arSiteId;
-        return $this;
-    }
-
-    /**
-     * @param array $arMailTemplate
-     * @return Form
-     */
-    public function setArMailTemplate($arMailTemplate) {
-        $this->arMailTemplate = $arMailTemplate;
-        return $this;
-    }
-
-    /**
-     * @param array $arMenu
-     * @return Form
-     */
-    public function setArMenu($arMenu) {
-        $this->arMenu = $arMenu;
-        return $this;
-    }
-
-    /**
-     * @param array $arGroup
-     * @return Form
-     */
-    public function setArGroup($arGroup) {
-        $this->arGroup = $arGroup;
-        return $this;
-    }
-
-    /**
      * @param bool $useCaptcha
      * @return Form
      */
-    public function setUseCaptcha($useCaptcha) {
-        $this->useCaptcha = $useCaptcha ? 'Y' : 'N';
+    public function useCaptcha($useCaptcha) {
+        $this->setAttribute('USE_CAPTCHA', $useCaptcha ? 'Y' : 'N');
         return $this;
     }
+
+    /**
+     * @param $title
+     * @return FormStatus
+     * @throws BuilderException
+     */
+    public function addStatus($title) {
+
+        $status = new FormStatus($title);
+        $this->statuses[] = $status;
+        return $status;
+    }
+
+    /**
+     * @param $title
+     * @return FormStatus
+     * @throws BuilderException
+     */
+    public function updateStatus($title) {
+
+        $data = $this->findStatus($title);
+        $status = new FormStatus($title, $data);
+        $this->statuses[] = $status;
+        return $status;
+    }
+
+    /**
+     * @param $title
+     * @return array
+     * @throws BuilderException
+     */
+    private function findStatus($title) {
+        $status = \CFormStatus::GetList($this->form->getId(), $by, $order, array(
+            'TITLE' => $title,
+        ), $isFiltered)->Fetch();
+
+        if (empty($status)) {
+            throw new BuilderException("Form status '{$title}' not found");
+        }
+        return $status;
+    }
+
+    /**
+     * @param $sid
+     * @return FormField
+     * @throws BuilderException
+     */
+    public function addField($sid) {
+        $field = new FormField($sid);
+        $this->fields[] = $field;
+        return $field;
+    }
+
+    /**
+     * @param $sid
+     * @return FormField
+     * @throws BuilderException
+     */
+    public function updateField($sid) {
+        $data = $this->findField($sid);
+        $field = new FormField($sid, $data);
+        $this->fields[] = $field;
+        return $field;
+    }
+
+    /**
+     * @param $sid
+     * @return array
+     * @throws BuilderException
+     */
+    private function findField($sid) {
+        $field = \CFormField::GetList($this->form->getId(), 'ALL', $by, $order, array(
+            'SID' => $sid,
+        ), $isFiltered)->Fetch();
+        if (empty($field)) {
+            throw new BuilderException("Form field '{$sid}' not found");
+        }
+        return $field;
+    }
+
+    /**
+     * @return FormStatus[]
+     */
+    public function getStatuses() {
+        return $this->statuses;
+    }
+
+    /**
+     * @return FormField[]
+     */
+    public function getFields() {
+        return $this->fields;
+    }
+
 }

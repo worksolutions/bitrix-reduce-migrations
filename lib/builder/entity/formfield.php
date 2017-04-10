@@ -5,26 +5,22 @@ use WS\ReduceMigrations\Builder\BuilderException;
 
 /**
  * Class FormField
- * @property int id
- * @property int sort
- * @property int formId
- * @property string sid
- * @property string title
- * @property string titleType
- * @property string active
- * @property string additional
- * @property string fieldType
- * @property string required
- * @property string filterTitle
- * @property string inResultsTable
- * @property string inExcelTable
- * @property string resultsTableTitle
- * @property string comments
- * @property array arImage
- * @property array arFilterUser
- * @property array arFilterAnswerText
- * @property array arFilterAnswerValue
- * @property array arFilterField
+ * 
+ * @method FormField sort(int $value)
+ * @method FormField formId(int $value)
+ * @method FormField sid(string $value)
+ * @method FormField title(string $value)
+ * @method FormField titleType(string $value)
+ * @method FormField additional(string $value)
+ * @method FormField fieldType(string $value)
+ * @method FormField filterTitle(string $value)
+ * @method FormField resultsTableTitle(string $value)
+ * @method FormField comments(string $value)
+ * @method FormField arImage(array $value)
+ * @method FormField arFilterUser(array $value)
+ * @method FormField arFilterAnswerText(array $value)
+ * @method FormField arFilterAnswerValue(array $value)
+ * @method FormField arFilterField(array $value)
  * @package WS\ReduceMigrations\Builder\Entity
  */
 class FormField extends Base {
@@ -34,17 +30,16 @@ class FormField extends Base {
     const FIELD_TYPE_DATE = 'date';
     /** @var  FormAnswer[] */
     private $answers;
+    private $id;
 
 
-    public function __construct($sid, $data = array()) {
+    public function __construct($sid) {
         $this->sid = $sid;
         $this->answers = array();
-        $this->setSaveData($data);
     }
 
     public function getMap() {
         return array(
-            'id' => 'ID',
             'sort' => 'C_SORT',
             'sid' => 'SID',
             'formId' => 'FORM_ID',
@@ -84,72 +79,27 @@ class FormField extends Base {
     }
 
     /**
-     * @param int $sort
-     * @return FormField
-     */
-    public function setSort($sort) {
-        $this->sort = $sort;
-        return $this;
-    }
-
-    /**
-     * @param string $sid
-     * @return FormField
-     */
-    public function setSid($sid) {
-        $this->sid = $sid;
-        return $this;
-    }
-
-    /**
-     * @param string $title
-     * @return FormField
-     */
-    public function setTitle($title) {
-        $this->title = $title;
-        return $this;
-    }
-
-    /**
-     * @param string $titleType
-     * @return FormField
-     */
-    public function setTitleType($titleType) {
-        $this->titleType = $titleType;
-        return $this;
-    }
-
-    /**
      * @param bool $active
      * @return FormField
      */
-    public function setActive($active) {
-        $this->active = $active ? 'Y' : 'N';
+    public function active($active) {
+        $this->setAttribute('ACTIVE', $active ? 'Y' : 'N');
         return $this;
     }
 
     /**
      * @return FormField
      */
-    public function setAsQuestion() {
-        $this->additional = 'N';
+    public function asQuestion() {
+        $this->setAttribute('ADDITIONAL', 'N');
         return $this;
     }
 
     /**
      * @return FormField
      */
-    public function setAsField() {
-        $this->additional = 'Y';
-        return $this;
-    }
-
-    /**
-     * @param string $fieldType
-     * @return FormField
-     */
-    public function setFieldType($fieldType) {
-        $this->fieldType = $fieldType;
+    public function asField() {
+        $this->setAttribute('ADDITIONAL', 'Y');
         return $this;
     }
 
@@ -157,17 +107,8 @@ class FormField extends Base {
      * @param bool $required
      * @return FormField
      */
-    public function setRequired($required) {
-        $this->required = $required ? "Y" : "N";
-        return $this;
-    }
-
-    /**
-     * @param string $filterTitle
-     * @return FormField
-     */
-    public function setFilterTitle($filterTitle) {
-        $this->filterTitle = $filterTitle;
+    public function required($required) {
+        $this->setAttribute('REQUIRED', $required ? "Y" : "N");
         return $this;
     }
 
@@ -175,8 +116,8 @@ class FormField extends Base {
      * @param bool $inResultsTable
      * @return FormField
      */
-    public function setInResultsTable($inResultsTable) {
-        $this->inResultsTable = $inResultsTable ? "Y" : "N";;
+    public function inResultsTable($inResultsTable) {
+        $this->setAttribute('IN_RESULTS_TABLE', $inResultsTable ? "Y" : "N");
         return $this;
     }
 
@@ -184,71 +125,8 @@ class FormField extends Base {
      * @param bool $inExcelTable
      * @return FormField
      */
-    public function setInExcelTable($inExcelTable) {
-        $this->inExcelTable = $inExcelTable ? "Y" : "N";;
-        return $this;
-    }
-
-    /**
-     * @param string $resultsTableTitle
-     * @return FormField
-     */
-    public function setResultsTableTitle($resultsTableTitle) {
-        $this->resultsTableTitle = $resultsTableTitle;
-        return $this;
-    }
-
-    /**
-     * @param string $comments
-     * @return FormField
-     */
-    public function setComments($comments) {
-        $this->comments = $comments;
-        return $this;
-    }
-
-    /**
-     * @param array $arImage
-     * @return FormField
-     */
-    public function setArImage($arImage) {
-        $this->arImage = $arImage;
-        return $this;
-    }
-
-    /**
-     * @param array $arFilterUser
-     * @return FormField
-     */
-    public function setArFilterUser($arFilterUser) {
-        $this->arFilterUser = $arFilterUser;
-        return $this;
-    }
-
-    /**
-     * @param array $arFilterAnswerText
-     * @return FormField
-     */
-    public function setArFilterAnswerText($arFilterAnswerText) {
-        $this->arFilterAnswerText = $arFilterAnswerText;
-        return $this;
-    }
-
-    /**
-     * @param array $arFilterAnswerValue
-     * @return FormField
-     */
-    public function setArFilterAnswerValue($arFilterAnswerValue) {
-        $this->arFilterAnswerValue = $arFilterAnswerValue;
-        return $this;
-    }
-
-    /**
-     * @param array $arFilterField
-     * @return FormField
-     */
-    public function setArFilterField($arFilterField) {
-        $this->arFilterField = $arFilterField;
+    public function inExcelTable($inExcelTable) {
+        $this->setAttribute('IN_EXCEL_TABLE', $inExcelTable ? "Y" : "N");
         return $this;
     }
 
@@ -268,28 +146,37 @@ class FormField extends Base {
      * @throws BuilderException
      */
     public function updateAnswer($message) {
-        if (!$this->id) {
+        if (!$this->getId()) {
             throw new BuilderException("Can't update answer. Form Field not saved");
         }
         $data = $this->findAnswer($message);
-        $answer = new FormAnswer($message, $data);
+        $answer = new FormAnswer($message);
+        $answer->setId($data['ID']);
+        $answer->markClean();
         $this->answers[] = $answer;
         return $answer;
     }
 
+    /**
+     * @param $message
+     *
+     * @return FormAnswer
+     * @throws BuilderException
+     */
     public function removeAnswer($message) {
-        if (!$this->id) {
+        if (!$this->getId()) {
             throw new BuilderException("Can't remove answer. Form Field not saved");
         }
         $data = $this->findAnswer($message);
-        $data['DEL'] = 'Y';
-        $answer = new FormAnswer($message, $data);
+        $answer = new FormAnswer($message);
+        $answer->markDelete();
+        $answer->setId($data['ID']);
         $this->answers[] = $answer;
         return $answer;
     }
 
     private function findAnswer($message) {
-        $data = \CFormAnswer::GetList($this->id, $by, $order, array(
+        $data = \CFormAnswer::GetList($this->getId(), $by, $order, array(
             'MESSAGE' => $message
         ), $isFiltered)->Fetch();
 
