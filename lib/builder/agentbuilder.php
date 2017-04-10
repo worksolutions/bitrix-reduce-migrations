@@ -10,61 +10,61 @@ class AgentBuilder {
      */
     private $agent;
 
-    public function reset() {
-        $this->agent = null;
-    }
-
     /**
-     * @param $callback
+     * @param string $agentFunction
+     * @param \Closure $callback
      * @return Agent
      * @throws BuilderException
      */
-    public function addAgent($callback) {
-        if ($this->agent) {
-            throw new BuilderException('reset builder data for continue');
-        }
-        $this->agent = new Agent($callback);
-        return $this->agent;
+    public function addAgent($agentFunction, $callback) {
+        $agent = Agent::create($agentFunction);
+        $callback($agent);
+        $this->commit($agent);
+        return $agent;
     }
 
     /**
-     * @param $callback
+     * @param string $agentFunction
+     * @param \Closure $callback
      * @return Agent
      * @throws BuilderException
      */
-    public function getAgent($callback) {
-        if ($this->agent) {
-            throw new BuilderException('reset builder data for continue');
-        }
-        $data = $this->findAgent($callback);
-        $this->agent = new Agent($callback, $data);
-        return $this->agent;
+    public function updateAgent($agentFunction, $callback) {
+        $data = $this->findAgent($agentFunction);
+        $agent = new Agent($agentFunction);
+        $agent->setId($data['ID']);
+        $agent->markClean();
+        $this->commit($agent);
+        return $agent;
     }
 
     /**
+     * @var Agent $agent
      * @throws BuilderException
      */
-    public function commit() {
+    private function commit($agent) {
         global $DB, $APPLICATION;
         $DB->StartTransaction();
+        $gw = new \CAgent();
         try {
-            $agent = $this->agent;
             if ($agent->getId() > 0) {
-                $res = \CAgent::Update($agent->getId(), $agent->getSaveData());
-                if (!$res) {
-                    throw new BuilderException("Agent wasn't updated");
+                if ($agent->isDirty()) {
+                    $res = $gw->Update($agent->getId(), $agent->getData());
+                    if (!$res) {
+                        throw new BuilderException("Agent wasn't updated");
+                    }
                 }
             } else {
-                $res = \CAgent::AddAgent(
-                    $agent->callback,
-                    $agent->module,
-                    $agent->isPeriod,
-                    $agent->interval,
+                $res = $gw->AddAgent(
+                    $agent->getAttribute('NAME'),
+                    $agent->getAttribute('MODULE_ID'),
+                    $agent->getAttribute('IS_PERIOD'),
+                    $agent->getAttribute('AGENT_INTERVAL'),
                     '',
-                    $agent->active,
-                    $agent->nextExec,
-                    $agent->sort,
-                    $agent->userId
+                    $agent->getAttribute('ACTIVE'),
+                    $agent->getAttribute('NEXT_EXEC'),
+                    $agent->getAttribute('SORT'),
+                    $agent->getAttribute('USER_ID')
                 );
                 if (!$res) {
                     throw new BuilderException("Agent wasn't created: " . $APPLICATION->GetException()->GetString());
@@ -77,13 +77,6 @@ class AgentBuilder {
             throw new BuilderException($e->getMessage());
         }
         $DB->Commit();
-    }
-
-    /**
-     * @return Agent
-     */
-    public function getCurrentAgent() {
-        return $this->agent;
     }
 
     /**

@@ -5,28 +5,24 @@ use Bitrix\Main\Type\DateTime;
 
 /**
  * Class Agent
- * @property int id
- * @property int sort
- * @property int userId
- * @property int interval
- * @property string active
- * @property string module
- * @property string callback
- * @property string isPeriod
- * @property string nextExec d.m.Y H:i:s
+ * @method Agent sort(int $value)
+ * @method Agent userId(int $value)
+ * @method Agent interval(int $value)
+ * @method Agent module(string $value)
+ * @method Agent callback(string $value)
+ * @method Agent nextExec(\Bitrix\Main\Type\DateTime $value)
  * @package WS\ReduceMigrations\Builder\Entity
  */
 class Agent extends Base {
 
-    public function __construct($callback, $data = array()) {
-        $this->callback = $callback;
-        $this->setDefault();
-        $this->setSaveData($data);
+    private $id;
+
+    public function __construct($callback) {
+        $this->callback($callback);
     }
 
     public function getMap() {
         return array(
-            'id' => 'ID',
             'sort' => 'SORT',
             'active' => 'ACTIVE',
             'module' => 'MODULE_ID',
@@ -48,72 +44,30 @@ class Agent extends Base {
     }
 
     /**
-     * @param int $sort
-     * @return Agent
-     */
-    public function setSort($sort) {
-        $this->sort = $sort;
-        return $this;
-    }
-
-    /**
      * @return int
      */
     public function getId() {
         return $this->id;
     }
 
-    private function setDefault() {
-        $this
-            ->setSort(100)
-            ->setActive(true)
-            ->setInterval(86400)
-            ->setIsPeriod(false)
-            ->setNextExec(new DateTime());
-    }
+    public static function create($callback) {
+        $agent = new Agent($callback);
+        $agent
+            ->sort(100)
+            ->active(true)
+            ->interval(86400)
+            ->isPeriod(false)
+            ->nextExec(new DateTime());
 
-    /**
-     * @param int $userId
-     * @return Agent
-     */
-    public function setUserId($userId) {
-        $this->userId = $userId;
-        return $this;
-    }
-
-    /**
-     * @param int $interval
-     * @return Agent
-     */
-    public function setInterval($interval) {
-        $this->interval = $interval;
-        return $this;
+        return $agent;
     }
 
     /**
      * @param bool $active
      * @return Agent
      */
-    public function setActive($active) {
-        $this->active = $active ? 'Y' : 'N';
-        return $this;
-    }
-
-    /**
-     * @param string $module
-     * @return Agent
-     */
-    public function setModule($module) {
-        $this->module = $module;
-        return $this;
-    }
-
-    /**
-     * @param string $callback
-     * @return Agent
-     */
-    public function setCallback($callback) {
-        $this->callback = $callback;
+    public function active($active) {
+        $this->setAttribute('ACTIVE', $active ? 'Y' : 'N');
         return $this;
     }
 
@@ -121,17 +75,8 @@ class Agent extends Base {
      * @param bool $isPeriod
      * @return Agent
      */
-    public function setIsPeriod($isPeriod) {
-        $this->isPeriod = $isPeriod ? 'Y' : 'N';
-        return $this;
-    }
-
-    /**
-     * @param DateTime $nextExec
-     * @return Agent
-     */
-    public function setNextExec($nextExec) {
-        $this->nextExec = $nextExec->format('d.m.Y H:i:s');
+    public function isPeriod($isPeriod) {
+        $this->setAttribute('IS_PERIOD', $isPeriod ? 'Y' : 'N');
         return $this;
     }
 
