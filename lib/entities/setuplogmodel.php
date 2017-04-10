@@ -60,6 +60,7 @@ class SetupLogModel extends BaseEntity {
      */
     public function getAppliedLogs() {
         return AppliedChangesLogModel::find(array(
+            'order' => array('id' => 'desc'),
             'filter' => array(
                 '=setupLogId' => $this->id
             )
