@@ -5,22 +5,17 @@ use WS\ReduceMigrations\Builder\BuilderException;
 
 /**
  * Class UserField
- * @property int id
- * @property string code
- * @property string entityId
- * @property string userTypeId
- * @property string xmlId
- * @property string multiple
- * @property string required
- * @property string showInFilter
- * @property string showInList
- * @property string editInList
- * @property string searchable
- * @property array editFormLabel
- * @property array listLabel
- * @property array filterLabel
- * @property array settings
- * @property int sort
+ * 
+ * @method  UserField code(string $value)
+ * @method UserField entityId
+ * @method UserField userTypeId(string $value)
+ * @method UserField xmlId(string $value)
+ * @method UserField editFormLabel(array $value) - ['ru' => 'name', 'en' => 'name']
+ * @method UserField listLabel(array $value) - ['ru' => 'name', 'en' => 'name']
+ * @method UserField filterLabel(array $value) - ['ru' => 'name', 'en' => 'name']
+ * @method UserField settings(array $value)
+ * @method UserField sort(int $value)
+ *                         
  * @package WS\ReduceMigrations\Builder\Entity
  */
 class UserField extends Base {
@@ -40,16 +35,15 @@ class UserField extends Base {
     const TYPE_STRING_FORMATTED = 'string_formatted';
     const TYPE_VOTE = 'vote';
     private $enumVariants;
+    private $id;
 
-    public function __construct($code, $data = false) {
+    public function __construct($code) {
         $this->code = strtoupper($code);
         $this->enumVariants = array();
-        $this->setSaveData($data);
     }
 
     public function getMap() {
         return array(
-            'id' => 'ID',
             'code' => 'FIELD_NAME',
             'entityId' => 'ENTITY_ID',
             'userTypeId' => 'USER_TYPE_ID',
@@ -70,7 +64,7 @@ class UserField extends Base {
 
     /**
      * @param int $id
-     * @return IblockType
+     * @return UserField
      */
     public function setId($id) {
         $this->id = $id;
@@ -85,38 +79,11 @@ class UserField extends Base {
     }
 
     /**
-     * @param string $code
-     * @return UserField
-     */
-    public function setCode($code) {
-        $this->code = $code;
-        return $this;
-    }
-
-    /**
-     * @param string $userTypeId
-     * @return UserField
-     */
-    public function setUserTypeId($userTypeId) {
-        $this->userTypeId = $userTypeId;
-        return $this;
-    }
-
-    /**
-     * @param string $xmlId
-     * @return UserField
-     */
-    public function setXmlId($xmlId) {
-        $this->xmlId = $xmlId;
-        return $this;
-    }
-
-    /**
      * @param bool $multiple
      * @return UserField
      */
-    public function setMultiple($multiple) {
-        $this->multiple = $multiple ? 'Y' : 'N';
+    public function multiple($multiple) {
+        $this->setAttribute('MULTIPLE', $multiple ? 'Y' : 'N');
         return $this;
     }
 
@@ -124,8 +91,8 @@ class UserField extends Base {
      * @param bool $required
      * @return UserField
      */
-    public function setRequired($required) {
-        $this->required = $required ? 'Y' : 'N';
+    public function required($required) {
+        $this->setAttribute('MANDATORY', $required ? 'Y' : 'N');
         return $this;
     }
 
@@ -133,8 +100,8 @@ class UserField extends Base {
      * @param bool $showInFilter
      * @return UserField
      */
-    public function setShowInFilter($showInFilter) {
-        $this->showInFilter = $showInFilter ? 'Y' : 'N';
+    public function showInFilter($showInFilter) {
+        $this->setAttribute('SHOW_FILTER', $showInFilter ? 'Y' : 'N');
         return $this;
     }
 
@@ -142,8 +109,8 @@ class UserField extends Base {
      * @param bool $showInList
      * @return UserField
      */
-    public function setShowInList($showInList) {
-        $this->showInList = $showInList ? 'Y' : 'N';
+    public function showInList($showInList) {
+        $this->setAttribute('SHOW_IN_LIST', $showInList ? 'Y' : 'N');
         return $this;
     }
 
@@ -151,8 +118,8 @@ class UserField extends Base {
      * @param bool $editInList
      * @return UserField
      */
-    public function setEditInList($editInList) {
-        $this->editInList = $editInList ? 'Y' : 'N';
+    public function editInList($editInList) {
+        $this->setAttribute('EDIT_IN_LIST', $editInList ? 'Y' : 'N');
         return $this;
     }
 
@@ -160,46 +127,8 @@ class UserField extends Base {
      * @param bool $searchable
      * @return UserField
      */
-    public function setSearchable($searchable) {
-        $this->searchable = $searchable ? 'Y' : 'N';
-        return $this;
-    }
-
-    /**
-     * @param array $label ['ru' => 'поле', 'en' => 'field']
-     * @return UserField
-     */
-    public function setLabel($label) {
-        $this->editFormLabel = $label;
-        $this->filterLabel = $label;
-        $this->listLabel = $label;
-        return $this;
-    }
-
-    /**
-     * @param array $filterLabel
-     * @return UserField
-     */
-    public function setFilterLabel($filterLabel) {
-        $this->filterLabel = $filterLabel;
-        return $this;
-    }
-
-    /**
-     * @param array $settings
-     * @return UserField
-     */
-    public function setSettings($settings) {
-        $this->settings = $settings;
-        return $this;
-    }
-
-    /**
-     * @param int $sort
-     * @return UserField
-     */
-    public function setSort($sort) {
-        $this->sort = $sort;
+    public function searchable($searchable) {
+        $this->setAttribute('IS_SEARCHABLE', $searchable ? 'Y' : 'N');
         return $this;
     }
 
@@ -220,6 +149,7 @@ class UserField extends Base {
     public function updateEnum($name) {
         $data = $this->findEnum($name);
         $variant = new EnumVariant($name, $data);
+        $variant->markClean();
         $this->enumVariants[] = $variant;
         return $variant;
     }
@@ -231,7 +161,7 @@ class UserField extends Base {
     public function removeEnum($name) {
         $data = $this->findEnum($name);
         $variant = new EnumVariant($name, $data);
-        $variant->del = 'Y';
+        $variant->markDeleted();
         $this->enumVariants[] = $variant;
         return $this;
     }
@@ -253,11 +183,11 @@ class UserField extends Base {
             throw new BuilderException('Save Field before update enum');
         }
         $res = \CUserFieldEnum::GetList(null, array(
-            'USER_FIELD_ID' => $this->id,
+            'USER_FIELD_ID' => $this->getId(),
             'VALUE' => $name,
         ))->Fetch();
         if (empty($res)) {
-            throw new BuilderException('Enum for update not found');
+            throw new BuilderException("Enum for `$name` not found");
         }
         return $res;
     }

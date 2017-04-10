@@ -7,80 +7,54 @@ use WS\ReduceMigrations\Builder\Entity\HighLoadBlock;
 use WS\ReduceMigrations\Builder\Entity\UserField;
 
 class HighLoadBlockBuilder {
-    /** @var  HighLoadBlock */
-    private $highLoadBlock;
-    /** @var  UserField[] */
-    private $fields;
 
     public function __construct() {
         \CModule::IncludeModule('iblock');
         \CModule::IncludeModule('highloadblock');
     }
 
-    public function reset() {
-        $this->highLoadBlock = null;
-        $this->fields = array();
-    }
 
     /**
-     * @param $name
-     * @param $tableName
+     * @param string $name
+     * @param string $tableName
+     * @param \Closure $callback
      * @return HighLoadBlock
      * @throws BuilderException
      */
-    public function addHLBlock($name, $tableName) {
-        if ($this->highLoadBlock) {
-            throw new BuilderException('reset builder data for continue');
-        }
-        $this->highLoadBlock = new HighLoadBlock($name, $tableName);
-        return $this->highLoadBlock;
+    public function addHLBlock($name, $tableName, $callback) {
+
+        $highLoadBlock = new HighLoadBlock($name, $tableName);
+        $callback($highLoadBlock);
+        $this->commit($highLoadBlock);
+        return $highLoadBlock;
     }
 
     /**
-     * @param $tableName
+     * @param string $tableName
+     * @param \Closure $callback
+     *
      * @return HighLoadBlock
      * @throws BuilderException
      */
-    public function getHLBlock($tableName) {
-        if ($this->highLoadBlock) {
-            throw new BuilderException('reset builder data for continue');
-        }
+    public function updateHLBlock($tableName, $callback) {
         $block = $this->findTable($tableName);
-        $this->highLoadBlock = new HighLoadBlock($block['NAME'], $tableName, $block['ID']);
-        return $this->highLoadBlock;
+        $highLoadBlock = new HighLoadBlock($block['NAME'], $tableName, $block['ID']);
+        $highLoadBlock->markClean();
+        $callback($highLoadBlock);
+
+        return $highLoadBlock;
     }
 
     /**
-     * @param $code
-     * @return UserField
-     */
-    public function addField($code) {
-        $field = new UserField($code);
-        $this->fields[] = $field;
-        return $field;
-    }
-
-    /**
-     * @param $code
-     * @return UserField
+     * @var HighLoadBlock $highLoadBlock
      * @throws BuilderException
      */
-    public function getField($code) {
-        $data = $this->findField($code);
-        $field = new UserField($code, $data);
-        $this->fields[] = $field;
-        return $field;
-    }
-
-    /**
-     * @throws BuilderException
-     */
-    public function commit() {
+    private function commit($highLoadBlock) {
         global $DB;
         $DB->StartTransaction();
         try {
-            $this->commitHighLoadBlock();
-            $this->commitFields();
+            $this->commitHighLoadBlock($highLoadBlock);
+            $this->commitFields($highLoadBlock);
         } catch (BuilderException $e) {
             $DB->Rollback();
             throw new BuilderException($e->getMessage());
@@ -107,46 +81,43 @@ class HighLoadBlockBuilder {
     }
 
     /**
-     * @return HighLoadBlock
-     */
-    public function getCurrentHighLoadBlock() {
-        return $this->highLoadBlock;
-    }
-
-    /**
+     * @var HighLoadBlock $highLoadBlock
      * @throws BuilderException
      * @throws \Bitrix\Main\SystemException
      */
-    private function commitHighLoadBlock() {
-        if (!$this->highLoadBlock->getId()) {
-            $hbRes = HighloadBlockTable::add($this->highLoadBlock->getSaveData());
-        } else {
+    private function commitHighLoadBlock($highLoadBlock) {
+        $isSuccess = true;
+        if (!$highLoadBlock->getId()) {
+            $hbRes = HighloadBlockTable::add($highLoadBlock->getData());
+            $isSuccess = $hbRes->isSuccess();
+            $highLoadBlock->setId($hbRes->getId());
+        } elseif ($highLoadBlock->isDirty()) {
             $hbRes = HighloadBlockTable::update(
-                $this->highLoadBlock->getId(),
-                $this->highLoadBlock->getSaveData()
+                $highLoadBlock->getId(),
+                $highLoadBlock->getData()
             );
+            $isSuccess = $hbRes->isSuccess();
         }
-        if (!$hbRes->isSuccess()) {
-            throw new BuilderException($this->highLoadBlock->tableName . ' ' . implode(', ', $hbRes->getErrorMessages()));
+        if (!$isSuccess) {
+            throw new BuilderException($highLoadBlock->getAttribute('TABLE_NAME') . ' ' . implode(', ', $hbRes->getErrorMessages()));
         }
-        $this->highLoadBlock->setId($hbRes->getId());
     }
 
     /**
+     * @var HighLoadBlock $highLoadBlock
      * @throws BuilderException
      */
-    private function commitFields() {
+    private function commitFields($highLoadBlock) {
         global $APPLICATION;
-        if (!$this->getCurrentHighLoadBlock()->getId()) {
-            throw new BuilderException('Set highLoadBlock before');
-        }
+
         $gw = new \CUserTypeEntity();
-        foreach ($this->fields as $field) {
+        foreach ($highLoadBlock->getFields() as $field) {
+            $res = true;
             if ($field->getId() > 0) {
-                $res = $gw->Update($field->getId(), $field->getSaveData());
+                $field->isDirty() && $res = $gw->Update($field->getId(), $field->getData());
             } else {
-                $res = $gw->Add(array_merge($field->getSaveData(), array(
-                    'ENTITY_ID' => 'HLBLOCK_' . $this->getCurrentHighLoadBlock()->getId()
+                $res = $gw->Add(array_merge($field->getData(), array(
+                    'ENTITY_ID' => 'HLBLOCK_' . $highLoadBlock->getId()
                 )));
                 if ($res) {
                     $field->setId($res);
@@ -174,7 +145,7 @@ class HighLoadBlockBuilder {
             if ($variant->getId() > 0) {
                 $key = $variant->getId();
             }
-            $values[$key] = $variant->getSaveData();
+            $values[$key] = $variant->getData();
         }
         if (empty($values)) {
             return;
@@ -182,26 +153,6 @@ class HighLoadBlockBuilder {
         if (!$obEnum->SetEnumValues($field->getId(), $values)) {
             throw new BuilderException($APPLICATION->GetException()->GetString());
         }
-    }
-
-    /**
-     * @param $code
-     * @return array
-     * @throws BuilderException
-     */
-    private function findField($code) {
-        if (!$this->highLoadBlock) {
-            throw new BuilderException('set higloadBlock for continue');
-        }
-        $field = \CUserTypeEntity::GetList(null, array(
-            'FIELD_NAME' => $code,
-            'ENTITY_ID' => "HLBLOCK_" . $this->getCurrentHighLoadBlock()->getId(),
-        ))->Fetch();
-
-        if (empty($field)) {
-            throw new BuilderException('Field for update not found');
-        }
-        return $field;
     }
 
 }

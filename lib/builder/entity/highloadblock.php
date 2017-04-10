@@ -1,25 +1,29 @@
 <?php
 
 namespace WS\ReduceMigrations\Builder\Entity;
+use WS\ReduceMigrations\Builder\BuilderException;
 
 /**
  * Class HighLoadBlock
- * @property int id
- * @property string name
- * @property string tableName
+ *
+ * @method HighLoadBlock name(string $value)
+ * @method HighLoadBlock tableName(string $value)
+ *
  * @package WS\ReduceMigrations\Builder\Entity
  */
 class HighLoadBlock extends Base {
 
+    private $id;
+    private $fields;
+
     public function __construct($name, $tableName, $id = false) {
-        $this->name = $name;
-        $this->tableName = $tableName;
         $this->id = $id;
+        $this->name($name);
+        $this->tableName($tableName);
     }
 
     public function getMap() {
         return array(
-            'id' => 'ID',
             'name' => 'NAME',
             'tableName' => 'TABLE_NAME',
         );
@@ -27,7 +31,7 @@ class HighLoadBlock extends Base {
 
     /**
      * @param int $id
-     * @return IblockType
+     * @return HighLoadBlock
      */
     public function setId($id) {
         $this->id = $id;
@@ -42,21 +46,54 @@ class HighLoadBlock extends Base {
     }
 
     /**
-     * @param string $name
-     * @return HighLoadBlock
+     * @param $code
+     * @return UserField
      */
-    public function setName($name) {
-        $this->name = $name;
-        return $this;
+    public function addField($code) {
+        $field = new UserField($code);
+        $this->fields[] = $field;
+        return $field;
     }
 
     /**
-     * @param string $tableName
-     * @return HighLoadBlock
+     * @param $code
+     * @return UserField
+     * @throws BuilderException
      */
-    public function setTableName($tableName) {
-        $this->tableName = $tableName;
-        return $this;
+    public function updateField($code) {
+        $data = $this->findField($code);
+        $field = new UserField($code);
+        $field->setId($data['ID']);
+        $field->markClean();
+        $this->fields[] = $field;
+        return $field;
+    }
+
+    /**
+     * @param $code
+     * @return array
+     * @throws BuilderException
+     */
+    private function findField($code) {
+        if (!$this->getId()) {
+            throw new BuilderException('Set higloadBlock for continue');
+        }
+        $field = \CUserTypeEntity::GetList(null, array(
+            'FIELD_NAME' => $code,
+            'ENTITY_ID' => "HLBLOCK_" . $this->getId(),
+        ))->Fetch();
+
+        if (empty($field)) {
+            throw new BuilderException("Field for `$code` not found");
+        }
+        return $field;
+    }
+
+    /**
+     * @return UserField[]
+     */
+    public function getFields() {
+        return $this->fields;
     }
 
 }
