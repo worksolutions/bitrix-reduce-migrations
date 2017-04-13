@@ -3,10 +3,35 @@
 namespace WS\ReduceMigrations\Console\Formatter;
 
 
+use WS\ReduceMigrations\Console\Console;
+
 class Table {
 
-    public function __construct($title) {
+    private $rows;
+    private $title;
+    private $console;
+
+    /**
+     * Table constructor.
+     *
+     * @param string $title
+     * @param Console $console
+     */
+    public function __construct($title, $console) {
         $this->title = $title;
+        $this->console = $console;
+    }
+
+    /**
+     * @param $row
+     * @param $color
+     */
+    public function addColorRow($row, $color) {
+        $currentRow = array();
+        foreach ($row as $item) {
+            $currentRow[] = $this->console->colorize($item, $color);
+        }
+        $this->rows[] = $currentRow;
     }
 
     public function addRow() {

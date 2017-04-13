@@ -95,11 +95,11 @@ class HelpCommand extends BaseCommand {
             return "[" . $item . "]";
         }, array_keys($commandInfo['params'])));
 
-        $table = new Table($this->console->colorize('Params:', Console::OUTPUT_PROGRESS));
+        $table = new Table($this->console->colorize('Params:', Console::OUTPUT_PROGRESS), $this->console);
         foreach ($commandInfo['params'] as $param => $info) {
             $table->addRow($this->console->colorize("   " . $param, Console::OUTPUT_SUCCESS), $info);
         }
-        $exampleTable = new Table($this->console->colorize('Examples:', Console::OUTPUT_PROGRESS));
+        $exampleTable = new Table($this->console->colorize('Examples:', Console::OUTPUT_PROGRESS), $this->console);
         foreach ($commandInfo['examples'] as $example) {
             $exampleTable->addRow($example);
         }
@@ -114,7 +114,7 @@ class HelpCommand extends BaseCommand {
 
     private function showConsoleInfo() {
         $commandsInfo = $this->commandsInfo();
-        $table = new Table($this->console->colorize('Commands:', Console::OUTPUT_PROGRESS));
+        $table = new Table($this->console->colorize('Commands:', Console::OUTPUT_PROGRESS), $this->console);
 
         foreach ($commandsInfo as $param => $info) {
             $table->addRow($this->console->colorize("   " . $param, Console::OUTPUT_SUCCESS), $info['info']);

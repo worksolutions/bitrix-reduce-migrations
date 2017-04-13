@@ -43,7 +43,7 @@ class ListCommand extends BaseCommand{
     }
 
     private function printRegisteredFixes($time) {
-        $table = new Table('List of migrations:');
+        $table = new Table('List of migrations:', $this->console);
         $table->addRow("\tMigrationName", "Hash", "Approximate time");
         foreach ($this->registeredFixes as $priority => $fixList) {
             $table->addRow(" {$priority}:");

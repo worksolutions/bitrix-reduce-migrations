@@ -4,6 +4,7 @@ namespace WS\ReduceMigrations\Console\Command;
 
 use WS\ReduceMigrations\Console\Console;
 use WS\ReduceMigrations\Console\ConsoleException;
+use WS\ReduceMigrations\Console\Formatter\Table;
 use WS\ReduceMigrations\Entities\AppliedChangesLogModel;
 use WS\ReduceMigrations\Entities\SetupLogModel;
 
@@ -53,31 +54,34 @@ class History extends BaseCommand {
      * @param AppliedChangesLogModel[] $logs
      */
     private function show($logs) {
+
+        $table = new Table('', $this->console);
         /** @var AppliedChangesLogModel $appliedLog */
         foreach ($logs as $appliedLog) {
-            $message = sprintf('%s "%s" `%s` %s min',
-                $appliedLog->getDate()->format('d.m.Y H:i:s'),
-                $appliedLog->getName(), $appliedLog->getHash(),
-                $appliedLog->getTime()
-            );
-            $type = Console::OUTPUT_SUCCESS;
             if ($appliedLog->isFailed()) {
-                $message = sprintf('%s "%s" `%s` Error: "%s"',
+                $table->addColorRow(array(
                     $appliedLog->getDate()->format('d.m.Y H:i:s'),
                     $appliedLog->getName(),
                     $appliedLog->getHash(),
-                    $appliedLog->getErrorMessage()
-                );
-                $type = Console::OUTPUT_ERROR;
+                    "Error: " . $appliedLog->getErrorMessage()
+                ), Console::OUTPUT_ERROR);
             } elseif($appliedLog->isSkipped()) {
-                $message = sprintf('%s "%s" `%s` - skipped',
+                $table->addColorRow(array(
                     $appliedLog->getDate()->format('d.m.Y H:i:s'),
-                    $appliedLog->getName(), $appliedLog->getHash()
-                );
-                $type = false;
+                    $appliedLog->getName(),
+                    $appliedLog->getHash(),
+                    "skipped"
+                ), Console::OUTPUT_PROGRESS);
+            } else {
+                $table->addColorRow(array(
+                    $appliedLog->getDate()->format('d.m.Y H:i:s'),
+                    $appliedLog->getName(),
+                    $appliedLog->getHash(),
+                    $appliedLog->getTime() . ' min'
+                ), Console::OUTPUT_SUCCESS);
             }
-            $this->console->printLine($message, $type);
         }
+        $this->console->printLine($table);
     }
 
 }
