@@ -8,24 +8,20 @@ class CreateScenarioCommand extends BaseCommand {
 
     private $name;
     private $priority;
+    private $time;
 
-    private function isParam($value) {
-        $params = array(
-            '-n',
-            '-p'
-        );
-        return in_array(trim($value), $params);
+    private function availablePriorities() {
+       return [
+           'h' => 'high',
+           'm' => 'middle',
+           'o' => 'optional',
+       ];
     }
 
     protected function initParams($params) {
-        $this->name = false;
-        $this->priority = false;
-        if ($index = array_search('-n', $params)) {
-            isset($params[$index + 1]) && !$this->isParam($params[$index + 1]) && $this->name = trim($params[$index + 1]);
-        }
-        if ($index = array_search('-p', $params)) {
-            isset($params[$index + 1]) && !$this->isParam($params[$index + 1]) && $this->priority = trim($params[$index + 1]);
-        }
+        $this->name = isset($params['-n']) ? trim($params['-n']) : false;
+        $this->priority = isset($params['-p']) ? trim($params['-p']) : false;
+        $this->time = isset($params['-t']) ? trim($params['-t']) : false;
     }
 
     private function getName() {
@@ -46,18 +42,31 @@ class CreateScenarioCommand extends BaseCommand {
     }
 
     private function getPriority() {
-        if ($this->priority) {
-            return $this->priority;
+        $priority = $this->normalizePriority($this->priority);
+        while (!$priority) {
+            $this->console
+                ->printLine("Enter priority(h - high, m - middle, o - optional):");
+            $priority = $this->normalizePriority($this->console
+                ->readLine());
         }
-        $this->console
-            ->printLine('Enter priority:');
-        return $this->console
-            ->readLine();
+        return $priority;
+    }
+
+    private function normalizePriority($priority) {
+        $priorities = $this->availablePriorities();
+        if ($priorities[$priority]) {
+            return $priorities[$priority];
+        }
+        if (in_array($priority, $priorities)) {
+            return $priority;
+        }
+
+        return false;
     }
 
     public function execute($callback = false) {
         try {
-            $fileName = $this->module->createScenario($this->getName(), $this->getPriority());
+            $fileName = $this->module->createScenario($this->getName(), $this->getPriority(), (int)$this->time);
         } catch (\Exception $e) {
             $this->console->printLine("An error occurred saving file", Console::OUTPUT_ERROR);
             return;
