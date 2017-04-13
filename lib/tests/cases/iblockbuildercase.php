@@ -2,8 +2,8 @@
 
 namespace WS\ReduceMigrations\Tests\Cases;
 
-
-use WS\ReduceMigrations\Builder\Entity\Property;
+use WS\ReduceMigrations\Builder\Entity\Iblock;
+use WS\ReduceMigrations\Builder\Entity\IblockType;
 use WS\ReduceMigrations\Builder\IblockBuilder;
 use WS\ReduceMigrations\Tests\AbstractCase;
 
@@ -17,11 +17,6 @@ class IblockBuilderCase extends AbstractCase {
         return $this->localization->message('description');
     }
 
-    public function init() {
-
-        \CModule::IncludeModule('iblock');
-    }
-
     public function close() {
         $iblock = \CIBlock::GetList(null, array(
             '=NAME' => 'testAddBlock'
@@ -32,72 +27,74 @@ class IblockBuilderCase extends AbstractCase {
         \CIBlockType::Delete('testAddType');
     }
 
+    public function testAlgorithm() {
+        $iblockId = $this->add();
+        $this->updateIblockType();
+        $this->update($iblockId);
 
-    public function testAdd() {
-        $iblockBuilder = new IblockBuilder();
-        $iblockBuilder
-            ->addIblockType('testAddType')
-            ->setLang(array(
-                'ru' => array(
-                    'NAME' => 'Тестовый тип иб'
-                ),
-            ))
-            ->setSort(10)
-            ->setInRss(false)
-        ;
-        $iblockBuilder
-            ->addIblock('testAddBlock')
-            ->setIblockTypeId('testAddType')
-            ->setSort(100)
-            ->setName('testAddBlock')
-            ->setCode('testAddBlock')
-            ->setVersion(2)
-            ->setSiteId('s1')
-            ->setGroupId(array(
-                '2' => 'R'
-            ))
-        ;
+    }
 
-        $iblockBuilder
-            ->addProperty('Цвет')
-            ->setType(Property::TYPE_NUMBER)
-            ->setIsRequired(true)
-            ->setMultiple(true)
-            ->setCode('color')
+    private function add() {
+        $builder = new IblockBuilder();
+        $builder->createIblockType('testAddType', function (IblockType $type) {
+            $type
+                ->inRss(false)
+                ->sort(10)
+                ->lang(array(
+                    'ru' => array(
+                        'NAME' => 'Тестовый тип иб'
+                    ),
+                ));
+        });
+
+        $iblock = $builder->createIblock('testAddType', 'testAddBlock', function (Iblock $iblock) {
+            $iblock
+                ->code('testAddBlock')
+                ->version(2)
+                ->siteId('s1')
+                ->groupId(array('2' => 'R'))
+                ->sort(100)
             ;
-        $iblockBuilder
-            ->addProperty('Картинка')
-            ->setType(Property::TYPE_FILE)
+            $iblock
+                ->addProperty('Цвет')
+                ->typeString()
+                ->required()
+                ->multiple()
+                ->code('color')
             ;
 
-        $iblockBuilder->addSection('Три', 'Тысячи', 'Чертей');
-        $iblockBuilder->commit();
+            $iblock
+                ->addProperty('Картинка')
+                ->typeFile()
+                ->code('picture');
+        });
+
 
         $arType = \CIBlockType::GetList(null, array(
-            'IBLOCK_TYPE_ID' => 'testAddType')
+                'IBLOCK_TYPE_ID' => 'testAddType')
         )->Fetch();
 
         $this->assertNotEmpty($arType, "iblockType wasn't created");
 
         $arIblock = \CIBlock::GetList(null, array(
-            'ID' => $iblockBuilder->getCurrentIblock()->getId()
+            'ID' => $iblock->getId()
         ))->Fetch();
 
         $this->assertNotEmpty($arIblock, "iblock wasn't created");
-        $this->assertEquals($arIblock['CODE'], $iblockBuilder->getCurrentIblock()->code);
-        $this->assertEquals($arIblock['NAME'], $iblockBuilder->getCurrentIblock()->name);
-        $this->assertEquals($arIblock['SORT'], $iblockBuilder->getCurrentIblock()->sort);
-        $this->assertEquals($arIblock['LID'], $iblockBuilder->getCurrentIblock()->siteId);
+        $this->assertEquals($arIblock['CODE'], $iblock->getAttribute('CODE'));
+        $this->assertEquals($arIblock['NAME'], $iblock->getAttribute('NAME'));
+        $this->assertEquals($arIblock['SORT'], $iblock->getAttribute('SORT'));
+        $this->assertEquals($arIblock['LID'], $iblock->getAttribute('SITE_ID'));
 
         $properties = \CIBlockProperty::GetList(null, array(
-            'IBLOCK_ID' => $iblockBuilder->getCurrentIblock()->getId()
+            'IBLOCK_ID' => $iblock->getId()
         ));
         $props = array(
             'Картинка' => array(
                 'PROPERTY_TYPE' => 'F'
             ),
             'Цвет' => array(
-                'PROPERTY_TYPE' => 'N',
+                'PROPERTY_TYPE' => 'S',
                 'IS_REQUIRED' => 'Y',
                 'MULTIPLE' => 'Y',
             ),
@@ -114,73 +111,54 @@ class IblockBuilderCase extends AbstractCase {
                 $this->assertEquals($props[$property['NAME']]['MULTIPLE'], $property['MULTIPLE']);
             }
         }
-        $res = \CIBlockSection::GetList(array(), array(
-            'IBLOCK_ID' => $iblockBuilder->getCurrentIblock()->getId()
-        ));
 
-        $this->assertEquals(3, $res->SelectedRowsCount());
-        while($item = $res->Fetch()) {
-            $this->assertTrue(in_array($item['NAME'], array('Три', 'Тысячи', 'Чертей')));
-        }
-
+        return $iblock->getId();
     }
 
-    public function testUpdateIblockType() {
+    public function updateIblockType() {
         $iblockBuilder = new IblockBuilder();
-        $type = $iblockBuilder
-            ->getIblockType('testAddType')
-            ->setSort(20)
-        ;
-        $iblockBuilder->commit();
+        $type = $iblockBuilder->updateIblockType('testAddType', function(IblockType $type) {
+            $type->sort(20);
+        });
 
         $arType = \CIBlockType::GetList(null, array(
                 'IBLOCK_TYPE_ID' => 'testAddType')
         )->Fetch();
 
-        $this->assertEquals($arType['SORT'], $type->sort);
+        $this->assertEquals($arType['SORT'], $type->getAttribute('SORT'));
     }
 
-    public function testUpdate() {
+    public function update($iblockId) {
         $iblockBuilder = new IblockBuilder();
-        $iblockBuilder
-            ->getIblock('testAddBlock')
-            ->setSort(200)
-            ->setCode('testAddBlock2')
-            ->setVersion(2)
-            ->setSiteId('s1')
-            ->setGroupId(array(
-                '2' => 'W'
-            ))
-        ;
-
-        $iblockBuilder
-            ->getProperty('Цвет')
-            ->setType(Property::TYPE_STRING, Property::USER_TYPE_USER)
-        ;
-        $iblockBuilder
-            ->getProperty('Картинка')
-            ->setType(Property::TYPE_STRING)
-            ->setCode('pic')
-        ;
-        $iblockBuilder->getSection('Три', 'Тысячи', 'Чертей')->setName('Четыре');
-
-        $iblockBuilder->commit();
+        $iblock = $iblockBuilder->updateIblock($iblockId, function (Iblock $iblock) {
+            $iblock->sort(200);
+            $iblock
+                ->code('testAddBlock2')
+                ->version(2);
+            $iblock
+                ->updateProperty('Цвет')
+                ->typeUser();
+            $iblock
+                ->updateProperty('Картинка')
+                ->code('pic')
+                ->typeNumber();
+        });
 
         $arIblock = \CIBlock::GetList(null, array(
-            'ID' => $iblockBuilder->getCurrentIblock()->getId()
+            'ID' => $iblockId
         ))->Fetch();
 
 
-        $this->assertEquals($arIblock['CODE'], $iblockBuilder->getCurrentIblock()->code);
-        $this->assertEquals($arIblock['NAME'], $iblockBuilder->getCurrentIblock()->name);
-        $this->assertEquals($arIblock['SORT'], $iblockBuilder->getCurrentIblock()->sort);
+        $this->assertEquals($arIblock['CODE'], $iblock->getAttribute('CODE'));
+        $this->assertEquals($arIblock['NAME'], $iblock->getAttribute('NAME'));
+        $this->assertEquals($arIblock['SORT'], $iblock->getAttribute('SORT'));
 
         $properties = \CIBlockProperty::GetList(null, array(
-            'IBLOCK_ID' => $iblockBuilder->getCurrentIblock()->getId()
+            'IBLOCK_ID' => $iblockId
         ));
         $props = array(
             'Картинка' => array(
-                'PROPERTY_TYPE' => 'S',
+                'PROPERTY_TYPE' => 'N',
                 'CODE' => 'pic',
             ),
             'Цвет' => array(
@@ -199,15 +177,6 @@ class IblockBuilderCase extends AbstractCase {
                 $this->assertEquals($props[$property['NAME']]['PROPERTY_TYPE'], $property['PROPERTY_TYPE']);
                 $this->assertEquals($props[$property['NAME']]['USER_TYPE'], $property['USER_TYPE']);
             }
-        }
-
-        $res = \CIBlockSection::GetList(array(), array(
-            'IBLOCK_ID' => $iblockBuilder->getCurrentIblock()->getId()
-        ));
-
-        $this->assertEquals(3, $res->SelectedRowsCount());
-        while($item = $res->Fetch()) {
-            $this->assertTrue(in_array($item['NAME'], array('Четыре', 'Тысячи', 'Чертей')));
         }
     }
 

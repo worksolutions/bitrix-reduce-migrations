@@ -33,47 +33,47 @@ class FormBuilderCase extends AbstractCase {
 
     public function testAdd() {
         $builder = new FormBuilder();
-        $builder
-            ->addForm('TestForm', 'TestForm')
-            ->setArSiteId(array('s1'))
-            ->setSort('10')
-            ->setDescription('Description')
-            ->setUseCaptcha(true)
-            ->setArGroup(array(
-                '2' => 10
-            ))
-            ->setArMenu(array("ru" => "Анкета посетителя", "en" => "Visitor Form"))
-            ->setDescriptionType('html')
-        ;
+        $newForm = $builder->addForm('TestForm', 'TestForm', function (Form $form) {
+              $form
+                  ->arSiteId(array('s1'))
+                  ->sort(10)
+                  ->description('Description')
+                  ->useCaptcha(true)
+                  ->arGroup(array(
+                      '2' => 10
+                  ))
+                  ->arMenu(array("ru" => "Анкета посетителя", "en" => "Visitor Form"))
+                  ->descriptionType('html');
 
-        $builder
-            ->addField('testQuestion')
-            ->setFieldType(FormField::FIELD_TYPE_INTEGER)
-            ->setSort(33)
-            ->setActive(false)
-            ->setRequired(true)
-            ->setTitle('testTitle')
-            ->setArFilterAnswerText(array("dropdown"))
-            ->setArFilterAnswerValue(array("dropdown"))
-            ->setArFilterUser(array("dropdown"))
-            ->setArFilterField(array("integer"))
-            ->setComments('test comment')
-            ->addAnswer('Привет мир!');
+            $form
+                ->addField('testQuestion')
+                ->fieldType(FormField::FIELD_TYPE_INTEGER)
+                ->sort(33)
+                ->active(false)
+                ->required(true)
+                ->title('testTitle')
+                ->arFilterAnswerText(array("dropdown"))
+                ->arFilterAnswerValue(array("dropdown"))
+                ->arFilterUser(array("dropdown"))
+                ->arFilterField(array("integer"))
+                ->comments('test comment')
+                ->addAnswer('Привет мир!');
 
-        $builder
-            ->addField('testField')
-            ->setAsField()
-            ->setTitle('test')
-        ;
-        $builder
-            ->addStatus('status')
-            ->setArGroupCanDelete(array(2))
-            ->setIsDefault(true);
+            $form
+                ->addField('testField')
+                ->asField()
+                ->title('test')
+            ;
 
-        $builder->commit();
+            $form
+                ->addStatus('status')
+                ->arGroupCanDelete(array(2))
+                ->byDefault(true);
+        });
+
 
         $form = \CForm::GetList($by, $order, array(
-            'ID' => $builder->getCurrentForm()->getId(),
+            'ID' => $newForm->getId(),
         ), $isFiltered)->Fetch();
 
         $this->assertNotEmpty($form);
@@ -82,7 +82,7 @@ class FormBuilderCase extends AbstractCase {
         $this->assertNotEmpty($form['NAME'], 'TestForm');
         $this->assertNotEmpty($form['USE_CAPTCHA'], 'Y');
 
-        $res = \CFormField::GetList($builder->getCurrentForm()->getId(), 'ALL', $by, $order, array(), $isFiltered);
+        $res = \CFormField::GetList($newForm->getId(), 'ALL', $by, $order, array(), $isFiltered);
 
         $this->assertEquals($res->SelectedRowsCount(), 2);
         while ($item = $res->fetch()) {
@@ -101,7 +101,7 @@ class FormBuilderCase extends AbstractCase {
             }
         }
 
-        $res = \CFormStatus::GetList($builder->getCurrentForm()->getId(), $by, $order, array(), $isFiltered)->Fetch();
+        $res = \CFormStatus::GetList($newForm->getId(), $by, $order, array(), $isFiltered)->Fetch();
         $this->assertEquals($res['TITLE'], 'status');
         $this->assertEquals($res['DEFAULT_VALUE'], 'Y');
     }
@@ -109,36 +109,33 @@ class FormBuilderCase extends AbstractCase {
 
     public function testUpdate() {
         $builder = new FormBuilder();
-        $builder
-            ->getForm('TestForm')
-            ->setName('MyTestForm');
+        $updatedForm = $builder->updateForm('TestForm', function (Form $form) {
+            $form->name('MyTestForm');
+            $field = $form
+                ->updateField('testQuestion')
+                ->active(true)
+                ->required(false);
 
-        $field = $builder
-            ->getField('testQuestion')
-            ->setActive(true)
-            ->setRequired(false);
+            $field->removeAnswer('Привет мир!');
 
-        $field->removeAnswer('Привет мир!');
+            $field
+                ->addAnswer('Test')
+                ->value('val1');
 
-        $field
-            ->addAnswer('Test')
-            ->setValue('val1');
-
-        $builder
-            ->getStatus('status')
-            ->setDescription('test22')
-            ->setArGroupCanDelete(array(2, 3));
-
-        $builder->commit();
+            $form
+                ->updateStatus('status')
+                ->description('test22')
+                ->arGroupCanDelete(array(2, 3));
+        });
 
         $form = \CForm::GetList($by, $order, array(
-            'ID' => $builder->getCurrentForm()->getId(),
+            'ID' => $updatedForm->getId(),
         ), $isFiltered)->Fetch();
 
         $this->assertNotEmpty($form);
         $this->assertNotEmpty($form['NAME'], 'MyTestForm');
 
-        $res = \CFormField::GetList($builder->getCurrentForm()->getId(), 'ALL', $by, $order, array(), $isFiltered);
+        $res = \CFormField::GetList($updatedForm->getId(), 'ALL', $by, $order, array(), $isFiltered);
 
         $this->assertEquals($res->SelectedRowsCount(), 2);
         while ($item = $res->fetch()) {
@@ -152,7 +149,7 @@ class FormBuilderCase extends AbstractCase {
             }
         }
 
-        $res = \CFormStatus::GetList($builder->getCurrentForm()->getId(), $by, $order, array(), $isFiltered)->Fetch();
+        $res = \CFormStatus::GetList($updatedForm->getId(), $by, $order, array(), $isFiltered)->Fetch();
         $this->assertEquals($res['DESCRIPTION'], 'test22');
     }
 

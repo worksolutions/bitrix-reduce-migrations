@@ -4,6 +4,7 @@ namespace WS\ReduceMigrations\Tests\Cases;
 
 use Bitrix\Main\Mail\Internal\EventMessageTable;
 use WS\ReduceMigrations\Builder\Entity\EventMessage;
+use WS\ReduceMigrations\Builder\Entity\EventType;
 use WS\ReduceMigrations\Builder\EventsBuilder;
 use WS\ReduceMigrations\Tests\AbstractCase;
 
@@ -17,11 +18,6 @@ class EventsBuilderCase extends AbstractCase {
         return $this->localization->message('description');
     }
 
-    public function init() {
-
-        \CModule::IncludeModule('iblock');
-    }
-
     public function close() {
         $eventType = \CEventType::GetList(array(
             'TYPE_ID' => 'WS_MIGRATION_TEST_EVENT',
@@ -33,34 +29,32 @@ class EventsBuilderCase extends AbstractCase {
 
     public function testAdd() {
         $builder = new EventsBuilder();
-        $builder
-            ->addEventType('WS_MIGRATION_TEST_EVENT', 'ru')
-            ->setName('Тестовое событие миграций')
-            ->setSort(10)
-            ->setDescription('#TEST# - test');
-
-        $builder
-            ->addEventMessage('#EMAIL_FROM#', '#EMAIL_TO#', 's1')
-            ->setSubject('Hello')
-            ->setBodyType(EventMessage::BODY_TYPE_HTML)
-            ->setActive(true)
-            ->setMessage('Hello #TEST#!')
-        ;
-
-        $builder
-            ->addEventMessage('#FROM#', '#TO#', 's1')
-            ->setSubject('Hi')
-            ->setActive(false)
-            ->setBodyType(EventMessage::BODY_TYPE_TEXT)
-            ->setMessage('Hi #TEST#!')
-        ;
-
-        $builder->commit();
+        $builder->createEventType('WS_MIGRATION_TEST_EVENT', 'ru', function (EventType $event) {
+            $event
+                ->name('Тестовое событие миграций')
+                ->sort(10)
+                ->description('#TEST# - test');
+            $event
+                ->addEventMessage('#EMAIL_FROM#', '#EMAIL_TO#', 's1')
+                ->subject('Hello')
+                ->body('Hello #TEST#!')
+                ->bodyType(EventMessage::BODY_TYPE_HTML)
+                ->active(true)
+            ;
+            $event
+                ->addEventMessage('#FROM#', '#TO#', 's1')
+                ->subject('Hi')
+                ->body('Hi #TEST#!')
+                ->active(false)
+                ->bodyType(EventMessage::BODY_TYPE_TEXT)
+            ;
+        });
 
         $eventType = \CEventType::GetList(array(
             'TYPE_ID' => 'WS_MIGRATION_TEST_EVENT',
             'LID' => 'ru'
         ))->Fetch();
+
         $this->assertNotEmpty($eventType);
         $this->assertEquals($eventType['SORT'], 10);
         $this->assertNotEmpty($eventType['DESCRIPTION'], '#TEST# - test');
@@ -87,19 +81,18 @@ class EventsBuilderCase extends AbstractCase {
 
     public function testUpdate() {
         $builder = new EventsBuilder();
-        $builder
-            ->getEventType('WS_MIGRATION_TEST_EVENT', 'ru')
-            ->setLid('en')
-            ->setName('Тестовое событие');
+        $builder->updateEventType('WS_MIGRATION_TEST_EVENT', 'ru', function (EventType $type) {
+            $type
+                ->lid('en')
+                ->name('Тестовое событие');
 
-        foreach ($builder->getEventMessages() as $message) {
-            if ($message->subject == 'Hello') {
-                $message->remove();
+            foreach ($type->loadEventMessages() as $message) {
+                if ($message->getAttribute('SUBJECT') == 'Hello') {
+                    $message->remove();
+                }
+                $message->bcc('#BCC#');
             }
-            $message->setBcc('#BCC#');
-        }
-
-        $builder->commit();
+        });
 
         $eventType = \CEventType::GetList(array(
             'TYPE_ID' => 'WS_MIGRATION_TEST_EVENT',

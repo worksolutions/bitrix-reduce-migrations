@@ -3,6 +3,7 @@
 namespace WS\ReduceMigrations\Tests\Cases;
 
 use Bitrix\Highloadblock\HighloadBlockTable;
+use WS\ReduceMigrations\Builder\Entity\HighLoadBlock;
 use WS\ReduceMigrations\Builder\Entity\UserField;
 use WS\ReduceMigrations\Builder\HighLoadBlockBuilder;
 use WS\ReduceMigrations\Tests\AbstractCase;
@@ -15,11 +16,6 @@ class HighLoadBlockBuilderCase extends AbstractCase {
 
     public function description() {
         return $this->localization->message('description');
-    }
-
-    public function init() {
-
-        \CModule::IncludeModule('iblock');
     }
 
     public function close() {
@@ -35,68 +31,70 @@ class HighLoadBlockBuilderCase extends AbstractCase {
 
     public function testAdd() {
         $builder = new HighLoadBlockBuilder();
-        $builder
-            ->addHLBlock('TestBlock', 'test_highloadblock')
-        ;
-        $prop = $builder
-            ->addField('uf_test1')
-            ->setSort(10)
-            ->setLabel(['ru' => 'Тест'])
-            ->setUserTypeId(UserField::TYPE_ENUMERATION)
-        ;
-        $prop->addEnum('Тест1');
-        $prop->addEnum('Тест2');
-        $prop->addEnum('Тест3');
+        $block = $builder->addHLBlock('TestBlock', 'test_highloadblock', function (HighLoadBlock $block) {
+            $prop = $block
+                ->addField('uf_test1')
+                ->sort(10)
+                ->label(['ru' => 'Тест'])
+                ->type(UserField::TYPE_ENUMERATION);
 
-        $builder
-            ->addField('uf_test2')
-            ->setLabel(['ru' => 'Тест2'])
-            ->setUserTypeId(UserField::TYPE_HLBLOCK);
+            $prop->addEnum('Тест1');
+            $prop->addEnum('Тест2');
+            $prop->addEnum('Тест3');
 
-        $builder
-            ->addField('uf_test3')
-            ->setLabel(['ru' => 'Тест2'])
-            ->setUserTypeId(UserField::TYPE_BOOLEAN);
+            $block
+                ->addField('uf_test2')
+                ->label(['ru' => 'Тест2'])
+                ->type(UserField::TYPE_HLBLOCK);
+            $block
+                ->addField('uf_test2')
+                ->label(['ru' => 'Тест2'])
+                ->type(UserField::TYPE_HLBLOCK);
 
-        $builder
-            ->addField('uf_test4')
-            ->setLabel(['ru' => 'Тест2'])
-            ->setUserTypeId(UserField::TYPE_DATETIME);
+            $block
+                ->addField('uf_test3')
+                ->label(['ru' => 'Тест2'])
+                ->type(UserField::TYPE_BOOLEAN);
 
-        $builder
-            ->addField('uf_test5')
-            ->setLabel(['ru' => 'Тест2'])
-            ->setUserTypeId(UserField::TYPE_IBLOCK_ELEMENT);
+            $block
+                ->addField('uf_test4')
+                ->label(['ru' => 'Тест2'])
+                ->type(UserField::TYPE_DATETIME);
 
-        $builder
-            ->addField('uf_test6')
-            ->setLabel(['ru' => 'Тест2'])
-            ->setUserTypeId(UserField::TYPE_VOTE);
+            $block
+                ->addField('uf_test5')
+                ->label(['ru' => 'Тест2'])
+                ->type(UserField::TYPE_IBLOCK_ELEMENT);
 
-        $builder
-            ->addField('uf_test7')
-            ->setLabel(['ru' => 'Тест2'])
-            ->setUserTypeId(UserField::TYPE_VIDEO);
+            $block
+                ->addField('uf_test6')
+                ->label(['ru' => 'Тест2'])
+                ->type(UserField::TYPE_VOTE);
 
-        $builder
-            ->addField('uf_test8')
-            ->setLabel(['ru' => 'Тест2'])
-            ->setUserTypeId(UserField::TYPE_IBLOCK_SECTION);
-        
-        $builder->commit();
+            $block
+                ->addField('uf_test7')
+                ->label(['ru' => 'Тест2'])
+                ->type(UserField::TYPE_VIDEO);
+
+            $block
+                ->addField('uf_test8')
+                ->label(['ru' => 'Тест2'])
+                ->type(UserField::TYPE_IBLOCK_SECTION);
+        });
+
 
         $arIblock = HighloadBlockTable::getList(array(
             'filter' => array(
-                'ID' => $builder->getCurrentHighLoadBlock()->getId()
+                'ID' => $block->getId()
             )
         ))->fetch();
 
         $this->assertNotEmpty($arIblock, "hlblock wasn't created");
-        $this->assertEquals($arIblock['TABLE_NAME'], $builder->getCurrentHighLoadBlock()->tableName);
-        $this->assertEquals($arIblock['NAME'], $builder->getCurrentHighLoadBlock()->name);
+        $this->assertEquals($arIblock['TABLE_NAME'], $block->getAttribute('TABLE_NAME'));
+        $this->assertEquals($arIblock['NAME'], $block->getAttribute('NAME'));
 
         $fields = \CUserTypeEntity::GetList(null, array(
-            'ENTITY_ID' => "HLBLOCK_" . $builder->getCurrentHighLoadBlock()->getId(),
+            'ENTITY_ID' => "HLBLOCK_" . $block->getId(),
         ));
 
         $this->assertEquals($fields->SelectedRowsCount(), 8);
@@ -106,35 +104,30 @@ class HighLoadBlockBuilderCase extends AbstractCase {
 
     }
 
-
     public function testUpdate() {
         $builder = new HighLoadBlockBuilder();
-        $builder
-            ->getHLBlock('test_highloadblock')
-            ->setName('TestBlock2')
-        ;
-
-        $prop = $builder
-            ->getField('uf_test1')
-            ->setMultiple(true)
-            ->setRequired(true)
-        ;
-        $prop->updateEnum('Тест1')->setXmlId('test1');
-        $prop->removeEnum('Тест2');
-
-        $builder->commit();
+        $block = $builder->updateHLBlock('test_highloadblock', function (HighLoadBlock $block) {
+            $block->name('TestBlock2');
+            $prop = $block
+                ->updateField('uf_test1')
+                ->multiple(true)
+                ->required(true);
+            $prop->updateEnum('Тест1')->xmlId('test1');
+            $prop->removeEnum('Тест2');
+        });
+        $prop = $block->updateField('uf_test1');
 
         $arIblock = HighloadBlockTable::getList(array(
             'filter' => array(
-                'ID' => $builder->getCurrentHighLoadBlock()->getId()
+                'ID' => $block->getId()
             )
         ))->fetch();
 
-        $this->assertEquals($arIblock['TABLE_NAME'], $builder->getCurrentHighLoadBlock()->tableName);
-        $this->assertEquals($arIblock['NAME'], $builder->getCurrentHighLoadBlock()->name);
+        $this->assertEquals($arIblock['TABLE_NAME'], $block->getAttribute('TABLE_NAME'));
+        $this->assertEquals($arIblock['NAME'], $block->getAttribute('NAME'));
 
         $res = \CUserFieldEnum::GetList(null, array(
-            'USER_FIELD_ID' => $builder->getCurrentHighLoadBlock()->getId(),
+            'USER_FIELD_ID' => $block->getId(),
             'VALUE' => 'Тест2',
         ))->Fetch();
 
