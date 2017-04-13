@@ -8,7 +8,7 @@ use WS\ReduceMigrations\Builder\BuilderException;
  * 
  * @method  UserField code(string $value)
  * @method UserField entityId
- * @method UserField userTypeId(string $value)
+ * @method UserField type(string $value)
  * @method UserField xmlId(string $value)
  * @method UserField editFormLabel(array $value) - ['ru' => 'name', 'en' => 'name']
  * @method UserField listLabel(array $value) - ['ru' => 'name', 'en' => 'name']
@@ -46,7 +46,7 @@ class UserField extends Base {
         return array(
             'code' => 'FIELD_NAME',
             'entityId' => 'ENTITY_ID',
-            'userTypeId' => 'USER_TYPE_ID',
+            'type' => 'USER_TYPE_ID',
             'xmlId' => 'XML_ID',
             'sort' => 'SORT',
             'multiple' => 'MULTIPLE',
@@ -78,6 +78,17 @@ class UserField extends Base {
         return $this->id;
     }
 
+    /**
+     * @param $label
+     *
+     * @return UserField $this
+     */
+    public function label($label) {
+        $this->listLabel($label);
+        $this->editFormLabel($label);
+        $this->filterLabel($label);
+        return $this;
+    }
     /**
      * @param bool $multiple
      * @return UserField
