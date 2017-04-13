@@ -17,7 +17,7 @@ class IblockBuilder {
      * @param string $type
      * @param \Closure $callback
      *
-     * @return string
+     * @return IblockType
      * @throws BuilderException
      */
     public function createIblockType($type, $callback) {
@@ -28,14 +28,14 @@ class IblockBuilder {
         if (!$res) {
             throw new BuilderException($gateway->LAST_ERROR);
         }
-        return $type;
+        return $iblockType;
     }
 
     /**
      * @param string $type
      * @param \Closure $callback
      *
-     * @return string
+     * @return IblockType
      * @throws BuilderException
      */
     public function updateIblockType($type, $callback) {
@@ -50,11 +50,11 @@ class IblockBuilder {
             }
         }
 
-        return $type;
+        return $iblockType;
     }
 
     /**
-     * @param $type
+     * @param string $type
      *
      * @throws BuilderException
      */
@@ -70,14 +70,14 @@ class IblockBuilder {
      * @param \Closure $callback
      *
      * @throws BuilderException
-     * @return $id
+     * @return Iblock
      */
     public function createIblock($iblockType, $name, $callback) {
         $iblock = Iblock::create($iblockType, $name);
         $callback($iblock);
-        $result = $this->commitIblock($iblock);
+        $this->commitIblock($iblock);
 
-        return $result;
+        return $iblock;
     }
 
 
@@ -85,7 +85,7 @@ class IblockBuilder {
      * @param integer $id
      * @param \Closure $callback
      *
-     * @return array
+     * @return Iblock
      * @throws BuilderException
      */
     public function updateIblock($id, $callback) {
@@ -98,19 +98,19 @@ class IblockBuilder {
         $iblock->markClean();
         $callback($iblock);
 
-        $result = $this->commitIblock($iblock);
+        $this->commitIblock($iblock);
 
-        return $result;
+        return $iblock;
     }
 
     /**
      * @param Iblock $iblock
      *
-     * @return array
+     * @return Iblock
      * @throws BuilderException
      */
     private function commitIblock($iblock) {
-        $result = array();
+
         $connection = Application::getConnection();
         try {
             $connection->startTransaction();
@@ -130,25 +130,24 @@ class IblockBuilder {
             }
 
             $iblock->setId($iblockId);
-            $result['IBLOCK_ID'] = $iblockId;
-            $result['PROPERTIES'] = $this->commitProperties($iblock);
+
+            $this->commitProperties($iblock);
             $connection->commitTransaction();
         } catch (\Exception $e) {
             $connection->rollbackTransaction();
             throw new BuilderException($e->getMessage());
         }
 
-        return $result;
+        return $iblock;
     }
 
     /**
      * @param Iblock $iblock
      *
-     * @return mixed
      * @throws BuilderException
      */
     private function commitProperties($iblock) {
-        $result = array();
+
         foreach ($iblock->getDeleteProperties() as $property) {
             \CIBlockProperty::Delete($property->getId());
         }
@@ -169,12 +168,10 @@ class IblockBuilder {
             if (!$propertyId) {
                 throw new BuilderException($propertyGateway->LAST_ERROR);
             }
-            $result[$property->getName()] = $propertyId;
             $property->setId($propertyId);
             $this->commitEnum($property);
         }
 
-        return $result;
     }
 
     /**
