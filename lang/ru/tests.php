@@ -9,7 +9,7 @@ return array(
     ),
     'cases' => array(
         \WS\ReduceMigrations\Tests\Cases\IblockBuilderCase::className() => array(
-            'name' => '???? IblockBuilder',
+            'name' => 'IblockBuilder',
             'description' => '',
             'errors' => array(
             )

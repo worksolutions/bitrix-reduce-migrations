@@ -3,13 +3,19 @@ return array(
     'main' => array(
         'title' => 'Migrations management',
         'list' => array(
-            'auto' => 'New auto migrations',
             'scenarios' => 'New scenarios'
         ),
-        'version' => 'The current version of the database',
-        'change_link' => 'change version',
+        'priority' => array(
+            'priority' => 'Migration priority:',
+            'high' => 'High:',
+            'medium' => 'Medium:',
+            'optional' => 'Optional:',
+        ),
+        'skipOptional' => 'Skip migrations with type "Optional"',
         'errorList' => 'Unsuccessful applied migrations',
         'appliedList' => 'Successful applied migrations',
+        'approximatelyTime' => 'Approximately time of migrations',
+        'time' => '#time# min',
         'btnRollback' => 'Undo last change',
         'btnApply' => 'Apply',
         'lastSetup' => array(
@@ -26,22 +32,20 @@ return array(
         'diagnostic' => 'Errors <a href=":url:"> </a> diagnosis, the use of the migration is possible only after the correction',
         'platformVersion' => array(
             'ok' => 'Platform version',
-            'error' => 'Incorrect platform version'
+            'error' => 'Incorrect platform version',
+            'setup' => 'Setup',
         )
     ),
     'changeversion' => array(
         'pageTitle' => 'Platform versions',
         'title' => 'Current platform version',
-        'version' => 'HASH',
         'setup' => 'setup',
-        'owner' => 'Signature',
-        'button_change' => 'Change HASH',
-        'description' => "Each project area has a unique identifier (HASH) to synchronize data.",
+        'owner' => 'Owner',
         'dialog' => array(
             'title' => 'Set the name of the project owner\'s version'
         ),
         'otherVersions' => array(
-            'tab' => 'Other versions of the project'
+            'tab' => 'Other project versions'
         )
     ),
     'applyError' => array(
@@ -56,7 +60,13 @@ return array(
         'title' => 'The script scenario',
         'field' => array(
             'name' => 'Title',
-            'description' => 'Description'
+            'priority' => 'Priority',
+            'time' => 'Approximately migration time(minutes)',
+        ),
+        'priority' => array(
+            'high' => 'High',
+            'medium' => 'Medium',
+            'optional' => 'Optional',
         ),
         'path-to-file' => 'Class file migration is #path#',
         'save-file-error' => 'An error occured save file',
@@ -64,23 +74,13 @@ return array(
             'create' => 'Create migration scenario'
         )
     ),
-    'diagnostic' => array(
-        'title' => 'Platform diagnostic',
-        'description' => 'Diagnostics status, problem-solving tips',
-        'last' => array(
-            'description' => 'Description',
-            'result' => 'Result',
-            'success' => 'Success',
-            'fail' => 'Fail'
-        ),
-        'run' => 'Run diagnostic',
-    ),
     'log' => array(
         'title' => 'Updates log',
         'fields' => array(
             'updateDate' => 'Date',
             'description' => 'Update features',
-            'source' => 'Source',
+            'hash' => 'Migration hash',
+            'owner' => 'Owner',
             'dispatcher' => 'Update by'
         ),
         'messages' => array(
