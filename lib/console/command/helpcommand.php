@@ -56,7 +56,7 @@ class HelpCommand extends BaseCommand {
                 'info' => 'Apply new migrations',
                 'params' => [
                     '-n=<name>' => 'migration name',
-                    '-p=<priority>' => 'migration priority: h - high, m - middle, o - optional',
+                    '-p=<priority>' => 'migration priority: h - high, m - medium, o - optional',
                     '-t=<time>' => 'migration approximately time in minutes',
                 ],
                 'examples' => [

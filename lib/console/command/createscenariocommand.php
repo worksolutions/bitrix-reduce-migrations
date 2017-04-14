@@ -13,7 +13,7 @@ class CreateScenarioCommand extends BaseCommand {
     private function availablePriorities() {
        return [
            'h' => 'high',
-           'm' => 'middle',
+           'm' => 'medium',
            'o' => 'optional',
        ];
     }
@@ -45,7 +45,7 @@ class CreateScenarioCommand extends BaseCommand {
         $priority = $this->normalizePriority($this->priority);
         while (!$priority) {
             $this->console
-                ->printLine("Enter priority(h - high, m - middle, o - optional):");
+                ->printLine("Enter priority(h - high, m - medium, o - optional):");
             $priority = $this->normalizePriority($this->console
                 ->readLine());
         }
