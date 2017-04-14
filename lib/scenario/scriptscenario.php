@@ -16,7 +16,7 @@ abstract class ScriptScenario implements IScriptScenario {
     /**
      * @var array
      */
-    private $_data;
+    private $data;
 
     /**
      * @param array $data
@@ -29,14 +29,14 @@ abstract class ScriptScenario implements IScriptScenario {
      * @return array
      */
     public function getData() {
-        return $this->_data;
+        return $this->data;
     }
 
     /**
      * @param array $value
      */
     protected function setData(array $value = array()) {
-        $this->_data = $value;
+        $this->data = $value;
     }
 
     /**

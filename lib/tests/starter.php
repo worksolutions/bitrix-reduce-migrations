@@ -38,7 +38,7 @@ class Starter {
         );
     }
 
-    static private function _getLocalizationByCase ($class) {
+    static private function getLocalizationByCase ($class) {
         return static::getLocalization()->fork('cases.'.$class);
     }
 
@@ -59,7 +59,7 @@ class Starter {
         };
         foreach (self::cases() as $caseClass) {
             /** @var $case AbstractCase */
-            $case = new $caseClass(static::_getLocalizationByCase($caseClass));
+            $case = new $caseClass(static::getLocalizationByCase($caseClass));
             $points[self::SECTION.'-'.$i++] = array(
                 'AUTO' => 'Y',
                 'NAME' => $case->name(),
@@ -91,7 +91,7 @@ class Starter {
             $result->setMessage('Params not is correct');
             return $result->toArray();
         }
-        $testCase = new $class(static::_getLocalizationByCase($class));
+        $testCase = new $class(static::getLocalizationByCase($class));
         if (!$testCase instanceof AbstractCase) {
             $result->setSuccess(false);
             $result->setMessage('Case class is not correct');

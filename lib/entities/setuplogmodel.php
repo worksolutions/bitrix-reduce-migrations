@@ -17,7 +17,7 @@ class SetupLogModel extends BaseEntity {
      */
     public $date;
 
-    private $_userData = false;
+    private $userData = false;
 
     public function __construct() {
         $this->date = DateTimeFactory::createBase();
@@ -71,10 +71,10 @@ class SetupLogModel extends BaseEntity {
      * @return array
      */
     private function getUserData() {
-        if ($this->_userData === false) {
-            $this->_userData = UserTable::getById($this->userId)->fetch();
+        if ($this->userData === false) {
+            $this->userData = UserTable::getById($this->userId)->fetch();
         }
-        return $this->_userData;
+        return $this->userData;
     }
 
     public function shortUserInfo() {

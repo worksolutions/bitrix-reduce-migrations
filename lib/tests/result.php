@@ -7,15 +7,15 @@ namespace WS\ReduceMigrations\Tests;
 
 
 class Result {
-    private $_success;
-    private $_message;
-    private $_trace;
+    private $success;
+    private $message;
+    private $trace;
 
     /**
      * @return mixed
      */
     public function getMessage() {
-        return $this->_message;
+        return $this->message;
     }
 
     /**
@@ -23,12 +23,12 @@ class Result {
      * @return $this
      */
     public function setMessage($value) {
-        $this->_message = $value;
+        $this->message = $value;
         return $this;
     }
 
     public function setTrace($aTrace) {
-        $this->_trace = $aTrace;
+        $this->trace = $aTrace;
         return $this;
     }
 
@@ -36,14 +36,14 @@ class Result {
      * @return mixed
      */
     public function getTrace() {
-        return $this->_trace;
+        return $this->trace;
     }
 
     /**
      * @return mixed
      */
     public function isSuccess() {
-        return $this->_success;
+        return $this->success;
     }
 
     /**
@@ -51,7 +51,7 @@ class Result {
      * @return $this
      */
     public function setSuccess($value) {
-        $this->_success = $value;
+        $this->success = $value;
         return $this;
     }
 

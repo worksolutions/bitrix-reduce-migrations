@@ -7,10 +7,10 @@ namespace WS\ReduceMigrations;
  */
 class Options implements \Serializable, \ArrayAccess {
 
-    private $_data = array();
+    private $data = array();
 
     public function __construct(array $data = null) {
-        $data && ($this->_data = $data);
+        $data && ($this->data = $data);
     }
 
     /**
@@ -32,7 +32,7 @@ class Options implements \Serializable, \ArrayAccess {
         }, $path);
 
         $arPath = explode('.', $rPath);
-        $data = $this->_data;
+        $data = $this->data;
         while (($pathItem = array_shift($arPath)) !== null) {
             if ($usesAliases[$pathItem]) {
                 $pathItem = $usesAliases[$pathItem];
@@ -95,7 +95,7 @@ class Options implements \Serializable, \ArrayAccess {
      */
     public function set($path, $value) {
         $arPath = explode('.', $path);
-        $data = &$this->_data;
+        $data = &$this->data;
         while (($key = array_shift($arPath)) !== null) {
             if (empty($arPath)) {
                 $key ? $data[$key] = $value : $data[] = $value;
@@ -126,15 +126,15 @@ class Options implements \Serializable, \ArrayAccess {
     }
 
     public function toArray() {
-        return $this->_data;
+        return $this->data;
     }
 
     public function serialize() {
-        return serialize($this->_data);
+        return serialize($this->data);
     }
 
     public function unserialize($serialized) {
-        $this->_data = unserialize($serialized);
+        $this->data = unserialize($serialized);
     }
 
     public function offsetExists($offset) {

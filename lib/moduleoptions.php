@@ -8,12 +8,9 @@ namespace WS\ReduceMigrations;
  * @author <sokolovsky@worksolutions.ru>
  */
 final class ModuleOptions {
-    private $_moduleName = 'ws.reducemigrations';
+    private $moduleName = 'ws.reducemigrations';
 
-    private $_cache = array();
-
-    private function __construct() {
-    }
+    private $cache = array();
 
     /**
      * @staticvar self $self
@@ -27,26 +24,26 @@ final class ModuleOptions {
         return $self;
     }
 
-    private function _setToDb($name, $value) {
-        \COption::SetOptionString($this->_moduleName, $name, serialize($value));
+    private function setToDb($name, $value) {
+        \COption::SetOptionString($this->moduleName, $name, serialize($value));
     }
 
-    private function _getFromDb($name) {
-        $value = \COption::GetOptionString($this->_moduleName, $name);
+    private function getFromDb($name) {
+        $value = \COption::GetOptionString($this->moduleName, $name);
         return unserialize($value);
     }
 
     public function __set($name, $value) {
-        $this->_setToCache($name, $value);
-        $this->_setToDb($name, $value);
+        $this->setToCache($name, $value);
+        $this->setToDb($name, $value);
         return $value;
     }
 
     public function __get($name) {
-        $value = $this->_getFormCache($name);
+        $value = $this->getFormCache($name);
         if (is_null($value)) {
-            $value = $this->_getFromDb($name);
-            $this->_setToCache($name, $value);
+            $value = $this->getFromDb($name);
+            $this->setToCache($name, $value);
         }
         return $value;
     }
@@ -62,15 +59,15 @@ final class ModuleOptions {
      * @param $name
      * @return mixed
      */
-    private function _getFormCache($name) {
-        return $this->_cache[$name];
+    private function getFormCache($name) {
+        return $this->cache[$name];
     }
 
     /**
      * @param $name
      * @param $value
      */
-    private function _setToCache($name, $value) {
-        $this->_cache[$name] = $value;
+    private function setToCache($name, $value) {
+        $this->cache[$name] = $value;
     }
 }

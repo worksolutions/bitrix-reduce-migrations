@@ -9,7 +9,7 @@ namespace WS\ReduceMigrations\Entities;
 abstract class BaseEntity {
     public $id;
 
-    private $_isNew = true;
+    private $isNew = true;
 
     private $_errors = array();
 
@@ -24,7 +24,7 @@ abstract class BaseEntity {
         foreach ($props as $name => $value) {
             $model->{$name} = $value;
         }
-        $model->_isNew = false;
+        $model->isNew = false;
         return $model;
     }
 
@@ -32,7 +32,7 @@ abstract class BaseEntity {
      * @param $fields
      * @return $this
      */
-    static private function _createByRow($fields) {
+    static private function createByRow($fields) {
         $props = array();
         $fieldsToProps = array_flip(static::map());
         foreach ($fields as $name => $value) {
@@ -43,7 +43,7 @@ abstract class BaseEntity {
         return self::create($props);
     }
 
-    private function _getRawFields() {
+    private function getRawFields() {
         $result = array();
         $data = array();
         foreach (static::map() as $property => $field) {
@@ -101,7 +101,7 @@ abstract class BaseEntity {
         $rows = $dbResult->fetchAll();
         $items = array();
         foreach ($rows as $row) {
-            $items[] = self::_createByRow($row);
+            $items[] = self::createByRow($row);
         }
         return $items;
     }
@@ -140,21 +140,21 @@ abstract class BaseEntity {
     }
 
     public function insert() {
-        $res = static::callGatewayMethod('add', $this->_getRawFields());
+        $res = static::callGatewayMethod('add', $this->getRawFields());
         $this->id = $res->getId();
         $this->_errors = $res->getErrors() ?: array();
-        $this->_isNew = false;
+        $this->isNew = false;
         return !(bool)$res->getErrors();
     }
 
     public function update() {
-        $res = static::callGatewayMethod('update', $this->id, $this->_getRawFields());
+        $res = static::callGatewayMethod('update', $this->id, $this->getRawFields());
         $this->_errors = $res->getErrors() ?: array();
         return !(bool)$res->getErrors();
     }
 
     public function save() {
-        return $this->_isNew ? $this->insert() : $this->update();
+        return $this->isNew ? $this->insert() : $this->update();
     }
 
     public function getErrors() {

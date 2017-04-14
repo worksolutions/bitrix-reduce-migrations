@@ -7,16 +7,16 @@ namespace WS\ReduceMigrations;
 
 
 class ApplyResult {
-    private $_success;
-    private $_message;
-    private $_id;
+    private $success;
+    private $message;
+    private $id;
 
     /**
      * @param string $value
      * @return $this
      */
     public function setMessage($value) {
-        $this->_message = $value;
+        $this->message = $value;
         return $this;
     }
 
@@ -24,14 +24,14 @@ class ApplyResult {
      * @return string
      */
     public function getMessage() {
-        return $this->_message;
+        return $this->message;
     }
 
     /**
      * @return boolean
      */
     public function isSuccess() {
-        return $this->_success;
+        return $this->success;
     }
 
     /**
@@ -39,7 +39,7 @@ class ApplyResult {
      * @return $this
      */
     public function setSuccess($value) {
-        $this->_success = $value;
+        $this->success = $value;
         return $this;
     }
 
@@ -47,7 +47,7 @@ class ApplyResult {
      * @return mixed
      */
     public function getId() {
-        return $this->_id;
+        return $this->id;
     }
 
     /**
@@ -55,7 +55,7 @@ class ApplyResult {
      * @return $this
      */
     public function setId($id) {
-        $this->_id = $id;
+        $this->id = $id;
         return $this;
     }
 
