@@ -32,7 +32,7 @@ $getShowProgress = function () use ($console) {
         }
         if ($type == 'start') {
             $counter->migrationNumber++;
-            $console->printLine("{$data['name']}({$counter->migrationNumber}/$counter->migrationCount)", Console::OUTPUT_PROGRESS);
+            $console->printLine("  {$data['name']}({$counter->migrationNumber}/$counter->migrationCount)", Console::OUTPUT_PROGRESS);
         }
         if ($type == 'end') {
             /**@var \WS\ReduceMigrations\Entities\AppliedChangesLogModel $log */
@@ -43,7 +43,7 @@ $getShowProgress = function () use ($console) {
                 $message .= $data['error'] . '. ';
             }
             $overallTime = round(microtime(true) - $counter->start, 2);
-            $message .= "$time sec ($overallTime sec)";
+            $message .= "  - $time sec ($overallTime sec)";
             $console->printLine($message, $log->isFailed() ? Console::OUTPUT_ERROR : Console::OUTPUT_SUCCESS);
         }
     };
