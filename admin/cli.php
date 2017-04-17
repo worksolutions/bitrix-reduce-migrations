@@ -21,7 +21,6 @@ $module = \WS\ReduceMigrations\Module::getInstance();
 $console = new Console($argv);
 
 $console
-    ->printLine('')
     ->printLine('Migrations module for CMS Bitrix. Worksolutions company https://worksolutions.ru');
 
 $getShowProgress = function () use ($console) {

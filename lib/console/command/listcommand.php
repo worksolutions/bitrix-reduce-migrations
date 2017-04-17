@@ -2,6 +2,7 @@
 
 namespace WS\ReduceMigrations\Console\Command;
 
+use WS\ReduceMigrations\Console\Console;
 use WS\ReduceMigrations\Console\Formatter\Table;
 use WS\ReduceMigrations\Scenario\ScriptScenario;
 
@@ -26,7 +27,7 @@ class ListCommand extends BaseCommand{
                 $has = true;
             }
         }
-        !$has && $this->console->printLine("Nothing to apply");
+        !$has && $this->console->printLine("Nothing to apply", Console::OUTPUT_SUCCESS);
         $has && $this->printRegisteredFixes($notAppliedScenarios->getApproximateTime());
     }
 
