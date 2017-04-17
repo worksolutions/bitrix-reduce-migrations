@@ -27,12 +27,6 @@ $form = new CAdminForm('ws_maigrations_import', array(
         "TAB" => $localization->getDataByPath('title'),
         "ICON" => "iblock",
         "TITLE" => $localization->getDataByPath('title'),
-    ),
-    array(
-        "DIV" => "edit2",
-        "TAB" => $localization->getDataByPath('otherVersions.tab'),
-        "ICON" => "iblock",
-        "TITLE" => $localization->getDataByPath('otherVersions.tab')
     )
 ));
 $module = \WS\ReduceMigrations\Module::getInstance();
@@ -50,16 +44,6 @@ $color = "green";
         <td width="55%"><b><?=$platformVersion->getOwner()?></b> [<a id="ownerSetupLink" href="#"><?=$localization->getDataByPath('setup')?></a>]</td>
     </tr><?
 $form->EndCustomField('version');
-$form->BeginNextFormTab();
-$form->BeginCustomField('owner', 'ww');
-foreach ($module->getOptions()->getOtherVersions() as $owner) {
-    ?>
-        <tr style="text-align: center">
-            <td colspan="2"><?=$owner?></td>
-        </tr>
-    <?
-}
-$form->EndCustomField('owner');
 $form->Buttons();
 $form->Show();
 CJSCore::Init(array('jquery'));

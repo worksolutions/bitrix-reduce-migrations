@@ -156,7 +156,7 @@ class Module {
      */
     public function getPlatformVersion() {
         if (!$this->version) {
-            $this->version = new PlatformVersion($this->getOptions()->getOtherVersions());
+            $this->version = new PlatformVersion();
         }
 
         return $this->version;

@@ -31,8 +31,7 @@ $models = AppliedChangesLogModel::find(array(
 ));
 
 $rowsData = array();
-$versions = $module->getPlatformVersion()->getMapVersions();
-array_walk($models, function (AppliedChangesLogModel $model) use (& $rowsData, $versions) {
+array_walk($models, function (AppliedChangesLogModel $model) use (& $rowsData) {
     $row = & $rowsData[$model->getGroupLabel()];
     if(!$row) {
         $row = array(

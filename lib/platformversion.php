@@ -1,7 +1,4 @@
 <?php
-/**
- * @author Maxim Sokolovsky <sokolovsky@worksolutions.ru>
- */
 
 namespace WS\ReduceMigrations;
 
@@ -13,13 +10,7 @@ class PlatformVersion
      */
     private $owner;
 
-    /**
-     * @var array ["Vasiliy Dubinin"]
-     */
-    private $mapOtherVersions;
-
-    public function __construct($mapOtherVersions) {
-        $this->mapOtherVersions = $mapOtherVersions ?: array();
+    public function __construct() {
         $filePath = $this->filePath();
         file_exists($filePath) ? $this->initFromFile() : $this->save();
     }
@@ -43,15 +34,6 @@ class PlatformVersion
         return $this->owner;
     }
 
-    /**
-     * @return array
-     */
-    public function getMapVersions() {
-        return array_merge(
-            array($this->getOwner()),
-            $this->mapOtherVersions
-        );
-    }
 
     public function setOwner($owner) {
         $this->owner = $owner;

@@ -2,7 +2,7 @@
 
 return array(
     'title' => 'Data migrations',
-    'changeversion' => 'Platform versions',
+    'changeversion' => 'Platform',
     'apply' => 'Update',
     'log' => 'Log',
     'createScenario' => 'Scenario',

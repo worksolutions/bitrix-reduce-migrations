@@ -37,15 +37,12 @@ return array(
         )
     ),
     'changeversion' => array(
-        'pageTitle' => 'Platform versions',
-        'title' => 'Current platform version',
+        'pageTitle' => 'Platform',
+        'title' => 'Current platform',
         'setup' => 'setup',
         'owner' => 'Owner',
         'dialog' => array(
-            'title' => 'Set the name of the project owner\'s version'
-        ),
-        'otherVersions' => array(
-            'tab' => 'Other project versions'
+            'title' => 'Set the name of the project owner'
         )
     ),
     'applyError' => array(

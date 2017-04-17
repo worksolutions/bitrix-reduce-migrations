@@ -37,15 +37,12 @@ return array(
         )
     ),
     'changeversion' => array(
-        'pageTitle' => 'Владельцы платформ',
-        'title' => 'Текущая владелец',
+        'pageTitle' => 'Платформа',
+        'title' => 'Владелец',
         'setup' => 'установить',
         'owner' => 'Подпись',
         'dialog' => array(
             'title' => 'Установка имени владельца версии проекта'
-        ),
-        'otherVersions' => array(
-            'tab' => 'Другие версии проекта'
         )
     ),
     'applyError' => array(
