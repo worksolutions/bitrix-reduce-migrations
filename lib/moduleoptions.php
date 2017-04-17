@@ -49,13 +49,6 @@ final class ModuleOptions {
     }
 
     /**
-     * @return array
-     */
-    public function getOtherVersions() {
-        return $this->otherVersions;
-    }
-
-    /**
      * @param $name
      * @return mixed
      */
