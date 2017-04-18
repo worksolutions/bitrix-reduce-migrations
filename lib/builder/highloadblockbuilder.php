@@ -41,7 +41,7 @@ class HighLoadBlockBuilder {
         $highLoadBlock = new HighLoadBlock($block['NAME'], $tableName, $block['ID']);
         $highLoadBlock->markClean();
         $callback($highLoadBlock);
-
+        $this->commit($highLoadBlock);
         return $highLoadBlock;
     }
 
@@ -123,7 +123,6 @@ class HighLoadBlockBuilder {
                     $field->setId($res);
                 }
             }
-
             if (!$res) {
                 throw new BuilderException($APPLICATION->GetException()->GetString());
             }
