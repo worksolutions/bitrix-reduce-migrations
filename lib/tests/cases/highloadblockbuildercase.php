@@ -46,10 +46,6 @@ class HighLoadBlockBuilderCase extends AbstractCase {
                 ->addField('uf_test2')
                 ->label(['ru' => 'Тест2'])
                 ->type(UserField::TYPE_HLBLOCK);
-            $block
-                ->addField('uf_test2')
-                ->label(['ru' => 'Тест2'])
-                ->type(UserField::TYPE_HLBLOCK);
 
             $block
                 ->addField('uf_test3')
@@ -123,7 +119,6 @@ class HighLoadBlockBuilderCase extends AbstractCase {
             )
         ))->fetch();
 
-        $this->assertEquals($arIblock['TABLE_NAME'], $block->getAttribute('TABLE_NAME'));
         $this->assertEquals($arIblock['NAME'], $block->getAttribute('NAME'));
 
         $res = \CUserFieldEnum::GetList(null, array(
