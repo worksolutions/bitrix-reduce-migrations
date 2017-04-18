@@ -38,7 +38,7 @@ class UserField extends Base {
     private $id;
 
     public function __construct($code) {
-        $this->code = strtoupper($code);
+        $this->code(strtoupper($code));
         $this->enumVariants = array();
     }
 
