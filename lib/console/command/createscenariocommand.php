@@ -3,6 +3,7 @@
 namespace WS\ReduceMigrations\Console\Command;
 
 use WS\ReduceMigrations\Console\Console;
+use WS\ReduceMigrations\Scenario\ScriptScenario;
 
 class CreateScenarioCommand extends BaseCommand {
 
@@ -12,9 +13,9 @@ class CreateScenarioCommand extends BaseCommand {
 
     private function availablePriorities() {
        return [
-           'h' => 'high',
-           'm' => 'medium',
-           'o' => 'optional',
+           'h' => ScriptScenario::PRIORITY_HIGH,
+           'm' => ScriptScenario::PRIORITY_MEDIUM,
+           'o' => ScriptScenario::PRIORITY_OPTIONAL,
        ];
     }
 
