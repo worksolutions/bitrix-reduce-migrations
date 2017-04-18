@@ -2,14 +2,18 @@
 
 ### Работа со скриптами миграций
 
-Часто стандартного функционала автоматических миграций не хватает для поддержки версий (копий) проекта в актуальном состоянии, `модуль миграций` предоставляет
+`Модуль миграций` предоставляет
 функционал создания "гибкой миграции" путем определения сценария миграции программистом. Также имеется набор классов для быстрого и удобного
 создания новых данных.
 
 #### 1. Создание класса сценария миграции
 
 Создание класса сценария осуществляется из меню `Миграции данных -> Сценарий обновления`,
-где необходимо ввести название сценария и описание
+где необходимо ввести название сценария, выбрать тип миграции и примерное время выполнения
+
+Миграций выполняются в порядке приоритета:
+Высокий, Средний, Опциональный. В пределах типа сортировка миграций осуществляется по дате создания файла.
+Миграции типа "Опциональный" могут быть скипнуты.
 
 ###### Создание сценария. Ввод названия
 
@@ -17,7 +21,7 @@
 
 Название можно задавать кириллицей. После создания появляется сообщение с информацией о местонахождении файла класса
 
-![Создание сценария. Ввод названия](../data/update_scenario.png)
+![Создание сценария. Ввод названия](../data/update_scenario.jpg)
 
 #### 2. Редактирование. Определение алгоритма исполнения скрипта
 
@@ -31,27 +35,41 @@
 /**
  * Class definition update migrations scenario actions
  **/
-class ws_m_1458654949_pervoe_migrirovanie_na_platformu extends \WS\ReduceMigrations\ScriptScenario {
+class ws_m_1492519399_sozdanie_veb_formy_obratnoy_svyazi extends \WS\ReduceMigrations\Scenario\ScriptScenario {
 
     /**
      * Name of scenario
      **/
     static public function name() {
-        return "Первое мигрирование на платформу";
+        return "Создание веб-формы обратной связи";
     }
 
     /**
-     * Description of scenario
+     * Priority of scenario
      **/
-    static public function description() {
-        return "";
+    static public function priority() {
+        return "high";
     }
 
     /**
-     * @return array First element is hash, second is owner name
+     * @return string hash
      */
-    public function version() {
-        return array("0b293915ef769882aa400eb10cfa2540", "Master");
+    static public function hash() {
+        return "55925bade27806617493ee99588050aca0463073";
+    }
+
+    /**
+     * @return string is owner name
+     */
+    static public function owner() {
+        return "Igor Pomiluyko";
+    }
+
+    /**
+     * @return string approximately time
+     */
+    static public function approximatelyTime() {
+        return "2";
     }
 
     /**
@@ -77,18 +95,15 @@ class ws_m_1458654949_pervoe_migrirovanie_na_platformu extends \WS\ReduceMigrati
 
 Методы `getData` и `setData` предоставляют доступ к данным и их сохранение соответственно, необходимо для сохранения данных для отката.
 
-В случае, если скрипты миграций работают в тандеме с автоматическими миграциями классу сценария предоставлен доступ к контроллеру ссылок `$this->getReferenceController()` для
-регистрации или получения идентификаторов записей согласно версиям копий проекта, он необходим для работы с сущностями, которые также затрагиваются автомиграциями.
-
 #### 3. Применение
 
 Применение сценариев миграций осуществляется через функционал общего применения.
 
 ###### Применение сценариев миграций
 
-![Применение сценариев миграций](../data/main.png)
+![Применение сценариев миграций](../data/main.jpg)
 
-Данные по сценариям миграций также попадают в журнал изменений. В анализе изменений можно просмотреть промежуточную информацию.
+Данные по сценариям миграций также попадают в журнал изменений.
 
 #### Классы для упрощения работы с предметной областью
 
@@ -100,14 +115,21 @@ class ws_m_1458654949_pervoe_migrirovanie_na_platformu extends \WS\ReduceMigrati
 <?php
 
 $ibBuilder = new \WS\ReduceMigrations\Builder\IblockBuilder();
-$ibBuilder->getIblock("Каталог товаров");
+$ibBuilder->createIblock('type_content', 'Новости', function (\WS\ReduceMigrations\Builder\Entity\Iblock $iblock) {
+    $iblock
+        ->siteId('s1')
+        ->sort(100)
+        ->code('news')
+        ->groupId([
+           '2' => 'R' 
+        ]);
+    $iblock
+        ->addProperty('Выводить на главной')
+        ->code('showOnMain')
+        ->typeCheckbox()
+        ->addEnum('да');
+});
 
-$ibBuilder
-    ->getSection("Бытовая техника")
-    ->setName("Техника для дома");
-
-// сохранение изменений в базу данных
-$ibBuilder->commit();
 ```
 
 Перечень классов:
