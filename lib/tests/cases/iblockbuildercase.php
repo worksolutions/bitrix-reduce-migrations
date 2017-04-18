@@ -122,8 +122,8 @@ class IblockBuilderCase extends AbstractCase {
         });
 
         $arType = \CIBlockType::GetList(null, array(
-                'IBLOCK_TYPE_ID' => 'testAddType')
-        )->Fetch();
+            '=ID' => 'testAddType'
+        ))->Fetch();
 
         $this->assertEquals($arType['SORT'], $type->getAttribute('SORT'));
     }
@@ -150,8 +150,7 @@ class IblockBuilderCase extends AbstractCase {
 
 
         $this->assertEquals($arIblock['CODE'], $iblock->getAttribute('CODE'));
-        $this->assertEquals($arIblock['NAME'], $iblock->getAttribute('NAME'));
-        $this->assertEquals($arIblock['SORT'], $iblock->getAttribute('SORT'));
+        $this->assertEquals($arIblock['VERSION'], $iblock->getAttribute('VERSION'));
 
         $properties = \CIBlockProperty::GetList(null, array(
             'IBLOCK_ID' => $iblockId
