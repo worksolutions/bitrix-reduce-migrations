@@ -3,8 +3,8 @@ return array(
     'run' => array(
         'name' => 'WorkSolutions. Миграции 2.0',
         'report' => array(
-            'completed' => '',
-            'assertions' => ''
+            'completed' => 'Тестов',
+            'assertions' => 'Проверок'
         )
     ),
     'cases' => array(
