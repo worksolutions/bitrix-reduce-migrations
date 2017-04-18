@@ -134,6 +134,7 @@ $ibBuilder->createIblock('type_content', 'Новости', function (\WS\ReduceMigratio
 
 Перечень классов:
 
+* \WS\ReduceMigrations\Builder\TableBuilder
 * \WS\ReduceMigrations\Builder\IblockBuilder
 * \WS\ReduceMigrations\Builder\HighLoadBlockBuilder
 * \WS\ReduceMigrations\Builder\FormBuilder
