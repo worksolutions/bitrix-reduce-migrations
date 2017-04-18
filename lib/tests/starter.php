@@ -53,10 +53,7 @@ class Starter {
         }
         $points = array();
         $i = 1;
-        $fGetCaseId = function ($className) {
-            $arClass = implode('\\', $className);
-            return array_pop($arClass);
-        };
+
         foreach (self::cases() as $caseClass) {
             /** @var $case AbstractCase */
             $case = new $caseClass(static::getLocalizationByCase($caseClass));
