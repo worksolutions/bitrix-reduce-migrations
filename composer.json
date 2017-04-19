@@ -21,6 +21,13 @@
         "composer/installers": "~1"
     },
     "scripts": {
-        "post-update-cmd": "php -r \"echo 1\";file_put_contents('test999.txt', 'it works');"
+        "post-install-cmd": [
+            "php -r \"echo 1\;",
+            "php -r \"file_put_contents('test999.txt', 'install');\""
+        ],
+        "post-update-cmd": [
+            "php -r \"echo 1\;",
+            "php -r \"file_put_contents('test9999.txt', 'update');\""
+        ]
     }
 }
