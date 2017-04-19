@@ -11,11 +11,14 @@ class TableBuilder {
     /**
      * @param $tableName
      * @param \Closure $callback
+     *
+     * @return Table
      */
     public function create($tableName, $callback) {
         $table = new Table($tableName);
         $callback($table);
         $this->createTable($table);
+        return $table;
     }
 
     /**
