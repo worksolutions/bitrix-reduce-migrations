@@ -12,6 +12,7 @@ use WS\ReduceMigrations\Tests\Cases\EventsBuilderCase;
 use WS\ReduceMigrations\Tests\Cases\FormBuilderCase;
 use WS\ReduceMigrations\Tests\Cases\HighLoadBlockBuilderCase;
 use WS\ReduceMigrations\Tests\Cases\IblockBuilderCase;
+use WS\ReduceMigrations\Tests\Cases\TableBuilderCase;
 
 class Starter {
 
@@ -35,6 +36,7 @@ class Starter {
             AgentBuilderCase::className(),
             EventsBuilderCase::className(),
             FormBuilderCase::className(),
+            TableBuilderCase::className(),
         );
     }
 

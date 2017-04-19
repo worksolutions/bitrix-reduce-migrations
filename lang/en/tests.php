@@ -38,5 +38,11 @@ return array(
             'errors' => array(
             )
         ),
+        \WS\ReduceMigrations\Tests\Cases\TableBuilderCase::className() => array(
+            'name' => 'TableBuilder',
+            'description' => '',
+            'errors' => array(
+            )
+        ),
     )
 );
