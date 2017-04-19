@@ -18,6 +18,7 @@ class EventsBuilder {
         $eventType = new EventType($type, $lid);
         $callback($eventType);
         $this->commit($eventType);
+        return $eventType;
     }
 
     /**
@@ -34,6 +35,7 @@ class EventsBuilder {
         $eventType->markClean();
         $callback($eventType);
         $this->commit($eventType);
+        return $eventType;
     }
 
     /**
