@@ -4,12 +4,12 @@
 
 ###### Marketplace
 
-[ссылка на модуль](http://marketplace.1c-bitrix.ru/solutions/ws.migrations/)
+[ссылка на модуль](http://marketplace.1c-bitrix.ru/solutions/ws.reducemigrations/)
 
 Для установки в адресную строку сайта, после доменного имени, прописать:
 
 ```
-/bitrix/admin/update_system_partner.php?addmodule=ws.migrations
+/bitrix/admin/update_system_partner.php?addmodule=ws.reducemigrations
 ```
 
 При установке модуля необходимо определить основные параметры.
