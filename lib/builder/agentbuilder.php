@@ -34,6 +34,7 @@ class AgentBuilder {
         $agent = new Agent($agentFunction);
         $agent->setId($data['ID']);
         $agent->markClean();
+        $callback($agent);
         $this->commit($agent);
         return $agent;
     }
@@ -60,7 +61,7 @@ class AgentBuilder {
                     $agent->getAttribute('MODULE_ID'),
                     $agent->getAttribute('IS_PERIOD'),
                     $agent->getAttribute('AGENT_INTERVAL'),
-                    '',
+                    '',//bitrix doesn't use this parameter
                     $agent->getAttribute('ACTIVE'),
                     $agent->getAttribute('NEXT_EXEC'),
                     $agent->getAttribute('SORT'),
