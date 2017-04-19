@@ -59,12 +59,13 @@ class ws_reducemigrations extends CModule{
         return true;
     }
 
-    function DoInstall() {
+    function DoInstall($extendData = array()) {
         global $APPLICATION, $data;
         $loc = \WS\ReduceMigrations\Module::getInstance()->getLocalization('setup');
         $options = \WS\ReduceMigrations\Module::getInstance()->getOptions();
         $this->createPlatformDirIfNotExists();
         global $errors;
+        $data = array_merge((array)$data, $extendData);
         $errors = array();
         if ($data['catalog']) {
             $dir = $this->docRoot() . $data['catalog'];
@@ -80,6 +81,7 @@ class ws_reducemigrations extends CModule{
                 \Bitrix\Main\Loader::includeModule('iblock');
 
                 $this->createCli();
+                RegisterModuleDependences("main", "OnCheckListGet", self::MODULE_ID, \WS\ReduceMigrations\Tests\Starter::className(), 'items');
             }
         }
         if (!$data || $errors) {

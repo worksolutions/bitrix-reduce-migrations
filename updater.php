@@ -20,4 +20,3 @@ $modulePath = rtrim($docRoot, '/').$updater->kernelPath.'/modules/'.$updater->mo
 $updatePath = $docRoot.$updater->curModulePath;
 
 $isInstalled = \Bitrix\Main\ModuleManager::isModuleInstalled($updater->moduleID);
-RegisterModuleDependences("main", "OnCheckListGet", "ws.reducemigrations", '\WS\ReduceMigrations\Tests\Starter', 'items');
