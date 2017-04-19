@@ -28,14 +28,14 @@ class AgentBuilderCase extends AbstractCase {
         $date = new DateTime();
         $date->add('+1 day');
         $builder = new \WS\ReduceMigrations\Builder\AgentBuilder();
-        $builder->addAgent('abs(0);', function (Agent $agent) use ($date) {
+        $obAgent = $builder->addAgent('abs(0);', function (Agent $agent) use ($date) {
             $agent
                 ->sort(23)
                 ->active(true)
                 ->nextExec($date);
         });
         $agent = \CAgent::GetList(null, array(
-            'NAME' => 'abs(0);'
+            'ID' => $obAgent->getId()
         ))->Fetch();
 
         $this->assertNotEmpty($agent);
@@ -48,7 +48,7 @@ class AgentBuilderCase extends AbstractCase {
 
     public function testUpdate() {
         $builder = new \WS\ReduceMigrations\Builder\AgentBuilder();
-        $builder
+        $obAgent = $builder
             ->updateAgent('abs(0);', function (Agent $agent) {
                 $agent
                     ->active(false)
@@ -56,7 +56,7 @@ class AgentBuilderCase extends AbstractCase {
             });
 
         $agent = \CAgent::GetList(null, array(
-            'NAME' => $builder->getCurrentAgent()->callback
+            'ID' => $obAgent->getId()
         ))->Fetch();
 
         $this->assertNotEmpty($agent);
