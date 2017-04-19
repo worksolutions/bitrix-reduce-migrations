@@ -7,7 +7,7 @@ define("NOT_CHECK_PERMISSIONS",true);
 define('CHK_EVENT', true);
 
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");
-require(__DIR__ . '/install/index.php');
+require(__DIR__ . '/../install/index.php');
 
 $module = new ws_reducemigrations();
 $module->DoInstall(array('catalog' => '/reducemigrations'));
