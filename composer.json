@@ -22,11 +22,11 @@
     },
     "scripts": {
         "post-install-cmd": [
-            "php -r \"echo 1\;",
+            "php -r \"echo 1;\"",
             "php -r \"file_put_contents('test999.txt', 'install');\""
         ],
         "post-update-cmd": [
-            "php -r \"echo 1\;",
+            "php -r \"echo 1;\"",
             "php -r \"file_put_contents('test9999.txt', 'update');\""
         ]
     }
