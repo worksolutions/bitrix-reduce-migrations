@@ -23,6 +23,9 @@ class EventMessage extends Base {
     private $id;
 
     public function __construct($from, $to, $siteId, $data = array()) {
+        foreach ($data as $code => $value) {
+            $this->setAttribute($code, $value);
+        }
         $this
             ->emailFrom($from)
             ->active()

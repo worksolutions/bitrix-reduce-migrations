@@ -78,7 +78,7 @@ class EventType extends Base {
     public function loadEventMessages() {
         $messages = $this->findMessages();
         foreach ($messages as $message) {
-            $eventMessage = new EventMessage($message['EMAIL_FROM'], $message['EMAIL_TO'], $message['LID']);
+            $eventMessage = new EventMessage($message['EMAIL_FROM'], $message['EMAIL_TO'], $message['LID'], $message);
             $eventMessage->setId($message['ID']);
             $eventMessage->markClean();
             $this->eventMessages[] = $eventMessage;
