@@ -50,4 +50,4 @@ composer run-script post-install-cmd -d bitrix/modules/ws.reducemigrations
 либо по требованию в административном интерфейсе.
 Версия патформы хранится в файле `uploads/ws.reducemigrations/version.dat`. При импорте данных с другой площадки не нужно менять этот файл.
 
-![Версия платформы.](../data/versions_developer.png)
+![Версия платформы.](../data/developer_version.jpg)
