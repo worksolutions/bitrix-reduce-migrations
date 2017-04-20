@@ -1,7 +1,7 @@
 <?php
 return array(
     'run' => array(
-        'name' => 'WorkSolutions. Миграции 2.0',
+        'name' => 'WorkSolutions. Reduce Migrations',
         'report' => array(
             'completed' => 'Тестов',
             'assertions' => 'Проверок'

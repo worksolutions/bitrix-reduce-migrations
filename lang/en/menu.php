@@ -1,7 +1,7 @@
 <?php
 
 return array(
-    'title' => 'Data migrations',
+    'title' => 'Reduce Migrations',
     'changeversion' => 'Platform',
     'apply' => 'Update',
     'log' => 'Log',

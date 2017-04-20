@@ -1,7 +1,7 @@
 <?php
 return array(
     'run' => array(
-        'name' => 'WorkSolutions. Migrations module',
+        'name' => 'WorkSolutions. Reduce Migrations module',
         'report' => array(
             'completed' => 'Completed',
             'assertions' => 'Assertions'

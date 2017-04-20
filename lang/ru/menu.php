@@ -1,7 +1,7 @@
 <?php
 
 return array(
-    'title' => 'Миграции данных 2.0',
+    'title' => 'Reduce Migrations',
     'changeversion' => 'Платформа',
     'apply' => 'Обновление',
     'log' => 'Журнал обновлений',
