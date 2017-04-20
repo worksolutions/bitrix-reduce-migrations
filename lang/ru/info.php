@@ -1,6 +1,6 @@
 <?php
 return array(
-    'name' => 'Миграции данных 2.0',
+    'name' => 'Reduce Migrations',
     'description' => 'Позволяет производить синхронизацию данных разных копий сайта',
     'partner' => array(
         'name' => 'Рабочие Решения',
