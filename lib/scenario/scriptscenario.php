@@ -37,8 +37,25 @@ abstract class ScriptScenario implements IScriptScenario {
     /**
      * @param array $value
      */
-    protected function setData(array $value = array()) {
+    public function setData(array $value = array()) {
         $this->data = $value;
+    }
+
+    /**
+     * @param $key
+     * @param $value
+     */
+    public function setDataByKey($key, $value) {
+        $this->data[$key] = $value;
+    }
+
+    /**
+     * @param $key
+     *
+     * @return mixed|null
+     */
+    public function getDataByKey($key) {
+        return isset($this->data[$key]) ? $this->data[$key] : null;
     }
 
     /**
