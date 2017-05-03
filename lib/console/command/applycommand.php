@@ -23,8 +23,6 @@ class ApplyCommand extends BaseCommand{
     public function execute($callback = false) {
         $this->confirmAction();
 
-        $this->validatePlatform();
-
         $this->console
             ->printLine("Applying new migrations started....", Console::OUTPUT_PROGRESS);
 
@@ -61,14 +59,6 @@ class ApplyCommand extends BaseCommand{
         $answer = $this->console->readLine();
 
         if ($answer != 'yes') {
-            exit();
-        }
-    }
-
-    private function validatePlatform() {
-        if (!$this->module->getPlatformVersion()->isValid()) {
-            $this->console
-                ->printLine("Diagnostic is not valid");
             exit();
         }
     }

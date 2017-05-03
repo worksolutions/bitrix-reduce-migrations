@@ -24,11 +24,6 @@ class Module {
 
     private static $name = 'ws.reducemigrations';
 
-    /**
-     * @var PlatformVersion
-     */
-    private $version;
-
     private $applier;
 
     private $rollback;
@@ -93,7 +88,7 @@ class Module {
      * @return string
      */
     private function getScenariosDir() {
-        return Application::getDocumentRoot() . $this->getOptions()->catalogPath;
+        return Application::getDocumentRoot() . static::getOptions()->catalogPath;
     }
 
     /**
@@ -150,19 +145,6 @@ class Module {
     }
 
     /**
-     * Value db version
-     *
-     * @return PlatformVersion
-     */
-    public function getPlatformVersion() {
-        if (!$this->version) {
-            $this->version = new PlatformVersion();
-        }
-
-        return $this->version;
-    }
-
-    /**
      * @param $name
      * @param $priority
      * @param $time
@@ -178,7 +160,6 @@ class Module {
             '#priority#' => $priority,
             '#time#' => (int)$time,
             '#hash#' => sha1($className),
-            '#owner#' => $this->getPlatformVersion()->getOwner(),
         );
         $classContent = str_replace(array_keys($arReplace), array_values($arReplace), $templateContent);
         $fileName = $className . '.php';

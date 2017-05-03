@@ -4,9 +4,7 @@
 /** @var $localization \WS\ReduceMigrations\Localization */
 $localization;
 $module = \WS\ReduceMigrations\Module::getInstance();
-/** @var \WS\ReduceMigrations\PlatformVersion $platformVersion */
-$platformVersion = \WS\ReduceMigrations\Module::getInstance()->getPlatformVersion();
-$isDiagnosticValid = $platformVersion->isValid();
+
 $request = \Bitrix\Main\Application::getInstance()->getContext()->getRequest();
 $apply = false;
 
@@ -17,7 +15,7 @@ if ($request->get('rollback')) {
 
 $skipOptional = $request->get('skipOptional') == 'Y';
 
-if ($request->get('apply') && $isDiagnosticValid) {
+if ($request->get('apply')) {
     $module->applyMigrations($skipOptional);
     $apply = true;
 }
@@ -55,12 +53,6 @@ $module = \WS\ReduceMigrations\Module::getInstance();
     )
 );
 
-CAdminMessage::ShowMessage(array(
-    'MESSAGE' => $localization->getDataByPath('platformVersion.'.($isDiagnosticValid ? 'ok' : 'error'))
-        .' <a href="/bitrix/admin/ws_reducemigrations.php?q=changeversion&lang=' . LANGUAGE_ID . '">'.($platformVersion->getOwner() ? : $localization->getDataByPath('platformVersion.setup')).'</a>',
-    'TYPE' => $isDiagnosticValid ? 'OK' : 'ERROR',
-    'HTML' => true,
-));
 ?><form method="POST" action="<?=$APPLICATION->GetCurUri()?>" ENCTYPE="multipart/form-data" name="apply"><?
 $form = new CAdminForm('ws_maigrations_main', array(
     array(
@@ -160,7 +152,7 @@ if ($lastSetupLog) {
 $form->EndTab();
 !$scenarios && !$lastSetupLog && $form->bPublicMode = true;
 $form->Buttons(array('btnSave' => false, 'btnApply' => false));
-$isDiagnosticValid && $scenarios
+$scenarios
     && $form->sButtonsContent .=
         '<input type="submit" class="adm-btn-save" name="apply" value="'.$localization->getDataByPath('btnApply').'" title="'.$localization->getDataByPath('btnApply').'"/>';
 $lastSetupLog
