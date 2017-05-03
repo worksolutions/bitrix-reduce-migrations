@@ -41,7 +41,7 @@ class Table {
     public function __toString() {
         $result = '';
         $result .= $this->title . "\n";
-        $maxLen = [];
+        $maxLen = array();
         foreach ($this->rows as $row) {
             foreach ($row as $index => $value) {
                 if (!$maxLen[$index]) {

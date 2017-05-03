@@ -35,7 +35,7 @@ class HighLoadBlockBuilderCase extends AbstractCase {
             $prop = $block
                 ->addField('uf_test1')
                 ->sort(10)
-                ->label(['ru' => 'Тест'])
+                ->label(array('ru' => 'Тест'))
                 ->type(UserField::TYPE_ENUMERATION);
 
             $prop->addEnum('Тест1');
@@ -44,37 +44,37 @@ class HighLoadBlockBuilderCase extends AbstractCase {
 
             $block
                 ->addField('uf_test2')
-                ->label(['ru' => 'Тест2'])
+                ->label(array('ru' => 'Тест2'))
                 ->type(UserField::TYPE_HLBLOCK);
 
             $block
                 ->addField('uf_test3')
-                ->label(['ru' => 'Тест2'])
+                ->label(array('ru' => 'Тест2'))
                 ->type(UserField::TYPE_BOOLEAN);
 
             $block
                 ->addField('uf_test4')
-                ->label(['ru' => 'Тест2'])
+                ->label(array('ru' => 'Тест2'))
                 ->type(UserField::TYPE_DATETIME);
 
             $block
                 ->addField('uf_test5')
-                ->label(['ru' => 'Тест2'])
+                ->label(array('ru' => 'Тест2'))
                 ->type(UserField::TYPE_IBLOCK_ELEMENT);
 
             $block
                 ->addField('uf_test6')
-                ->label(['ru' => 'Тест2'])
+                ->label(array('ru' => 'Тест2'))
                 ->type(UserField::TYPE_VOTE);
 
             $block
                 ->addField('uf_test7')
-                ->label(['ru' => 'Тест2'])
+                ->label(array('ru' => 'Тест2'))
                 ->type(UserField::TYPE_VIDEO);
 
             $block
                 ->addField('uf_test8')
-                ->label(['ru' => 'Тест2'])
+                ->label(array('ru' => 'Тест2'))
                 ->type(UserField::TYPE_IBLOCK_SECTION);
         });
 

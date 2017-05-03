@@ -17,63 +17,63 @@ class HelpCommand extends BaseCommand {
      * @return array
      */
     private function commandsInfo() {
-        $commands = [
-            'list' => [
+        $commands = array(
+            'list' => array(
                 'info' => 'List of new migrations',
-                'params' => [],
-                'examples' => [
+                'params' => array(),
+                'examples' => array(
                     $this->getCommandTemplate('list')
-                ],
-            ],
-            'apply' => [
+                ),
+            ),
+            'apply' => array(
                 'info' => 'Apply new migrations',
-                'params' => [
+                'params' => array(
                     'hash' => 'apply migration with `hash`',
                     '-f' => 'apply migration without approve',
                     '--skip-optional' => 'skip migration with priority `optional`',
-                ],
-                'examples' => [
+                ),
+                'examples' => array(
                     $this->getCommandTemplate('apply', '49ea590e'),
                     $this->getCommandTemplate('apply', '-f'),
                     $this->getCommandTemplate('apply', '-f --skip-optional'),
-                ],
-            ],
-            'rollback' => [
+                ),
+            ),
+            'rollback' => array(
                 'info' => 'Rollback last applied migrations',
-                'params' => [
+                'params' => array(
                     'hash' => 'rollback migration with `hash`',
                     '--count=<count>' => 'rollback last `count` of migrations',
                     '--to-hash=<hash>' => 'rollback migrations from last to migration with hash=`hash`',
-                ],
-                'examples' => [
+                ),
+                'examples' => array(
                     $this->getCommandTemplate('rollback'),
                     $this->getCommandTemplate('rollback', '49ea590e'),
                     $this->getCommandTemplate('rollback', '--count=5'),
                     $this->getCommandTemplate('rollback', '--to-hash=49ea590e'),
-                ],
-            ],
-            'createScenario' => [
+                ),
+            ),
+            'createScenario' => array(
                 'info' => 'Apply new migrations',
-                'params' => [
+                'params' => array(
                     '-n=<name>' => 'migration name',
                     '-p=<priority>' => 'migration priority: h - high, m - medium, o - optional',
                     '-t=<time>' => 'migration approximately time in minutes',
-                ],
-                'examples' => [
+                ),
+                'examples' => array(
                     $this->getCommandTemplate('createScenario', '-n="Hello world" -p=h -t=5'),
-                ],
-            ],
-            'history' => [
+                ),
+            ),
+            'history' => array(
                 'info' => 'Create new migration scenario',
-                'params' => [
+                'params' => array(
                     'count' => 'show last `count` applied migrations'
-                ],
-                'examples' => [
+                ),
+                'examples' => array(
                     $this->getCommandTemplate('history'),
                     $this->getCommandTemplate('history', 4),
-                ],
-            ],
-        ];
+                ),
+            ),
+        );
 
         return $commands;
     }

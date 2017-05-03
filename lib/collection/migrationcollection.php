@@ -58,7 +58,7 @@ class MigrationCollection {
      */
     public function toArray() {
         $migrations = $this->groupByPriority();
-        $result = [];
+        $result = array();
         array_walk_recursive($migrations, function($item) use (& $result) {
             $result[] = $item;
         });

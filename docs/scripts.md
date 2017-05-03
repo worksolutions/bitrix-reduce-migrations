@@ -120,9 +120,9 @@ $ibBuilder->createIblock('type_content', 'Новости', function (\WS\ReduceM
         ->siteId('s1')
         ->sort(100)
         ->code('news')
-        ->groupId([
+        ->groupId(array(
            '2' => 'R' 
-        ]);
+        ));
     $iblock
         ->addProperty('Выводить на главной')
         ->code('showOnMain')

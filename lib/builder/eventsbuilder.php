@@ -83,7 +83,7 @@ class EventsBuilder {
         $gw = new \CEventType();
         if ($eventType->getId() > 0) {
             if ($eventType->isDirty()) {
-                $result = $gw->Update(['ID' => $eventType->getId()], $eventType->getData());
+                $result = $gw->Update(array('ID' => $eventType->getId()), $eventType->getData());
                 if (!$result) {
                     throw new BuilderException('EventType update failed with error: ' . $APPLICATION->GetException()->GetString());
                 }
