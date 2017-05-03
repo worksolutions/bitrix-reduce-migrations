@@ -20,7 +20,7 @@ class HelpCommand extends BaseCommand {
         $commands = array(
             'list' => array(
                 'info' => 'List of new migrations',
-                'params' => array(),
+                'params' => array('' => 'Command without params'),
                 'examples' => array(
                     $this->getCommandTemplate('list')
                 ),
@@ -92,12 +92,12 @@ class HelpCommand extends BaseCommand {
         $commandInfo = $commands[$command];
 
         $params = implode(' ', array_map(function ($item) {
-            return "[" . $item . "]";
+            return '[' . $item . ']';
         }, array_keys($commandInfo['params'])));
 
         $table = new Table($this->console->colorize('Params:', Console::OUTPUT_PROGRESS), $this->console);
         foreach ($commandInfo['params'] as $param => $info) {
-            $table->addRow($this->console->colorize("   " . $param, Console::OUTPUT_SUCCESS), $info);
+            $table->addRow($this->console->colorize('   ' . $param, Console::OUTPUT_SUCCESS), $info);
         }
         $exampleTable = new Table($this->console->colorize('Examples:', Console::OUTPUT_PROGRESS), $this->console);
         foreach ($commandInfo['examples'] as $example) {
@@ -117,14 +117,14 @@ class HelpCommand extends BaseCommand {
         $table = new Table($this->console->colorize('Commands:', Console::OUTPUT_PROGRESS), $this->console);
 
         foreach ($commandsInfo as $param => $info) {
-            $table->addRow($this->console->colorize("   " . $param, Console::OUTPUT_SUCCESS), $info['info']);
+            $table->addRow($this->console->colorize('   ' . $param, Console::OUTPUT_SUCCESS), $info['info']);
         }
         $this->console
-            ->printLine("Usage:", Console::OUTPUT_PROGRESS)
-            ->printLine($this->getCommandTemplate("<command>", "<command_params>"))
-            ->printLine("")
+            ->printLine('Usage:', Console::OUTPUT_PROGRESS)
+            ->printLine($this->getCommandTemplate('<command>', '<command_params>'))
+            ->printLine('')
             ->printLine($table)
-            ->printLine("Command params:", Console::OUTPUT_PROGRESS)
+            ->printLine('Command params:', Console::OUTPUT_PROGRESS)
             ->printLine(sprintf('   %s           %s',
                 $this->console->colorize('--help', Console::OUTPUT_SUCCESS),
                 'Show full info for command'
