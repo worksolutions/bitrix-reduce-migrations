@@ -11,18 +11,26 @@ class CreateScenarioCommand extends BaseCommand {
     private $priority;
     private $time;
 
+    const PARAM_NAME = '-n';
+    const PARAM_PRIORITY = '-p';
+    const PARAM_TIME = '-t';
+
+    const HIGH_PRIORITY_SHORTCUT = 'h';
+    const MEDIUM_PRIORITY_SHORTCUT = 'm';
+    const OPTIONAL_PRIORITY_SHORTCUT = 'o';
+
     private function availablePriorities() {
        return array(
-           'h' => ScriptScenario::PRIORITY_HIGH,
-           'm' => ScriptScenario::PRIORITY_MEDIUM,
-           'o' => ScriptScenario::PRIORITY_OPTIONAL,
+           self::HIGH_PRIORITY_SHORTCUT => ScriptScenario::PRIORITY_HIGH,
+           self::MEDIUM_PRIORITY_SHORTCUT => ScriptScenario::PRIORITY_MEDIUM,
+           self::OPTIONAL_PRIORITY_SHORTCUT => ScriptScenario::PRIORITY_OPTIONAL,
        );
     }
 
     protected function initParams($params) {
-        $this->name = isset($params['-n']) ? trim($params['-n']) : false;
-        $this->priority = isset($params['-p']) ? trim($params['-p']) : false;
-        $this->time = isset($params['-t']) ? trim($params['-t']) : false;
+        $this->name = isset($params[self::PARAM_NAME]) ? trim($params[self::PARAM_NAME]) : false;
+        $this->priority = isset($params[self::PARAM_PRIORITY]) ? trim($params[self::PARAM_PRIORITY]) : false;
+        $this->time = isset($params[self::PARAM_TIME]) ? trim($params[self::PARAM_TIME]) : false;
     }
 
     private function getName() {
@@ -46,7 +54,7 @@ class CreateScenarioCommand extends BaseCommand {
         $priority = $this->normalizePriority($this->priority);
         while (!$priority) {
             $this->console
-                ->printLine("Enter priority(h - high, m - medium, o - optional):");
+                ->printLine('Enter priority(h - high, m - medium, o - optional):');
             $priority = $this->normalizePriority($this->console
                 ->readLine());
         }
@@ -58,7 +66,7 @@ class CreateScenarioCommand extends BaseCommand {
         if ($priorities[$priority]) {
             return $priorities[$priority];
         }
-        if (in_array($priority, $priorities)) {
+        if (in_array($priority, $priorities, true)) {
             return $priority;
         }
 
@@ -69,7 +77,7 @@ class CreateScenarioCommand extends BaseCommand {
         try {
             $fileName = $this->module->createScenario($this->getName(), $this->getPriority(), (int)$this->time);
         } catch (\Exception $e) {
-            $this->console->printLine("An error occurred saving file", Console::OUTPUT_ERROR);
+            $this->console->printLine('An error occurred saving file', Console::OUTPUT_ERROR);
             return;
         }
         $this->console->printLine($fileName, Console::OUTPUT_SUCCESS);

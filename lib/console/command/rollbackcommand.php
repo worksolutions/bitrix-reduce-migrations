@@ -16,13 +16,16 @@ class RollbackCommand extends BaseCommand {
     private $toHash;
     private $type;
 
+    const PARAM_COUNT = '--count';
+    const PARAM_TO_HASH = '--to-hash';
+
     protected function initParams($params) {
         $this->migrationHash = isset($params[0]) ? $params[0] : null;
-        $this->count = isset($params['--count']) ? (int)$params['--count'] : null;
+        $this->count = isset($params[self::PARAM_COUNT]) ? (int)$params[self::PARAM_COUNT] : null;
         if ($this->count && $this->count < 0) {
             $this->count = 0;
         }
-        $this->toHash = isset($params['--to-hash']) ? $params['--to-hash'] : null;
+        $this->toHash = isset($params[self::PARAM_TO_HASH]) ? $params[self::PARAM_TO_HASH] : null;
         $this->type = $this->identifyType();
     }
 
@@ -69,7 +72,7 @@ class RollbackCommand extends BaseCommand {
                 $this->module->rollbackToHash($this->toHash, $callback);
                 break;
             case self::TYPE_LAST_BATCH:
-                $this->confirm("Rollback last batch.");
+                $this->confirm('Rollback last batch.');
                 $this->module->rollbackLastBatch($callback);
                 break;
         }
@@ -78,17 +81,17 @@ class RollbackCommand extends BaseCommand {
 
     private function confirm($message) {
         $this->console
-            ->printLine($message . " Are you sure? (yes|no):");
+            ->printLine($message . ' Are you sure? (yes|no):');
 
         $answer = $this->console
             ->readLine();
 
-        if ($answer != 'yes') {
+        if ($answer !== self::CONFIRM_WORD) {
             throw new ConsoleException('Operation cancelled');
         }
 
         $this->console
-            ->printLine("Rollback action started...", Console::OUTPUT_PROGRESS);
+            ->printLine('Rollback action started...', Console::OUTPUT_PROGRESS);
     }
 
 }

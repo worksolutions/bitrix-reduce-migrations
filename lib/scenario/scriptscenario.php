@@ -13,6 +13,8 @@ abstract class ScriptScenario implements IScriptScenario {
     const PRIORITY_MEDIUM = 'medium';
     const PRIORITY_OPTIONAL = 'optional';
 
+    const SHORTENED_HASH_LENGTH = 8;
+
     /**
      * @var array
      */
@@ -48,6 +50,9 @@ abstract class ScriptScenario implements IScriptScenario {
         return static::name();
     }
 
+    static public function getShortenedHash() {
+        return substr(self::hash(), 0 , self::SHORTENED_HASH_LENGTH);
+    }
     /**
      * @return array
      */
@@ -63,7 +68,7 @@ abstract class ScriptScenario implements IScriptScenario {
      * @return bool
      */
     public function isOptional() {
-        return $this->priority() == self::PRIORITY_OPTIONAL;
+        return $this->priority() === self::PRIORITY_OPTIONAL;
     }
 
 }

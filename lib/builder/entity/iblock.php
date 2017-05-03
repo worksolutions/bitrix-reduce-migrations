@@ -34,6 +34,11 @@ class Iblock  extends Base {
     private $updateProperties;
     private $deleteProperties;
 
+    const DEFAULT_SORT = 500;
+
+    const IBLOCK_FIRST_VERSION = 1;
+    const IBLOCK_SECOND_VERSION = 2;
+
     public function __construct() {
         $this->dateUpdate(new DateTime());
     }
@@ -50,8 +55,8 @@ class Iblock  extends Base {
             ->name($name)
             ->iblockType($iblockType)
             ->active()
-            ->sort(500)
-            ->version(1)
+            ->sort(self::DEFAULT_SORT)
+            ->version(self::IBLOCK_FIRST_VERSION)
             ->indexElement()
             ->indexSection()
             ->workFlow(false)

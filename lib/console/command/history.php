@@ -63,14 +63,14 @@ class History extends BaseCommand {
                     $appliedLog->getDate()->format('d.m.Y H:i:s'),
                     $appliedLog->getName(),
                     $appliedLog->getHash(),
-                    "Error: " . $appliedLog->getErrorMessage()
+                    'Error: ' . $appliedLog->getErrorMessage()
                 ), Console::OUTPUT_ERROR);
             } elseif($appliedLog->isSkipped()) {
                 $table->addColorRow(array(
                     $appliedLog->getDate()->format('d.m.Y H:i:s'),
                     $appliedLog->getName(),
                     $appliedLog->getHash(),
-                    "skipped"
+                    'skipped'
                 ), Console::OUTPUT_PROGRESS);
             } else {
                 $table->addColorRow(array(

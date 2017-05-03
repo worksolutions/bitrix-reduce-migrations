@@ -6,6 +6,7 @@ use WS\ReduceMigrations\Console\Console;
 use WS\ReduceMigrations\Module;
 
 abstract class BaseCommand {
+    const CONFIRM_WORD = 'yes';
     /** @var Console  */
     protected $console;
     /** @var Module  */

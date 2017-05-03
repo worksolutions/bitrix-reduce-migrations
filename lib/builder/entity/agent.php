@@ -17,6 +17,10 @@ class Agent extends Base {
 
     private $id;
 
+    const DEFAULT_SORT = 100;
+
+    const DEFAULT_INTERVAL = 86400;
+
     public function __construct($callback) {
         $this->callback($callback);
     }
@@ -53,9 +57,9 @@ class Agent extends Base {
     public static function create($callback) {
         $agent = new Agent($callback);
         $agent
-            ->sort(100)
+            ->sort(self::DEFAULT_SORT)
             ->active(true)
-            ->interval(86400)
+            ->interval(self::DEFAULT_INTERVAL)
             ->isPeriod(false)
             ->nextExec(new DateTime());
 

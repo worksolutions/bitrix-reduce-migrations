@@ -6,6 +6,9 @@ use WS\ReduceMigrations\Console\Console;
 use WS\ReduceMigrations\Console\ConsoleException;
 
 class ApplyCommand extends BaseCommand{
+    const FLAG_FORCE = '-f';
+    const FLAG_SKIP_OPTIONAL = '--skip-optional';
+
     /** @var  bool */
     private $force;
     /** @var  bool */
@@ -14,8 +17,8 @@ class ApplyCommand extends BaseCommand{
     private $migrationHash;
 
     protected function initParams($params) {
-        $this->force = isset($params['-f']) ? $params['-f'] : false;
-        $this->skipOptional = isset($params['--skip-optional']) ? $params['--skip-optional'] : false;
+        $this->force = isset($params[self::FLAG_FORCE]) ? $params[self::FLAG_FORCE] : false;
+        $this->skipOptional = isset($params[self::FLAG_SKIP_OPTIONAL]) ? $params[self::FLAG_SKIP_OPTIONAL] : false;
         $this->migrationHash = isset($params[0]) ? $params[0] : null;
 
     }
@@ -68,7 +71,7 @@ class ApplyCommand extends BaseCommand{
 
         $answer = $this->console->readLine();
 
-        if ($answer != 'yes') {
+        if ($answer !== self::CONFIRM_WORD) {
             exit();
         }
     }

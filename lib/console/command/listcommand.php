@@ -4,6 +4,7 @@ namespace WS\ReduceMigrations\Console\Command;
 
 use WS\ReduceMigrations\Console\Console;
 use WS\ReduceMigrations\Console\Formatter\Table;
+use WS\ReduceMigrations\Module;
 use WS\ReduceMigrations\Scenario\ScriptScenario;
 
 class ListCommand extends BaseCommand{
@@ -14,7 +15,7 @@ class ListCommand extends BaseCommand{
 
     protected function initParams($params) {
         $this->registeredFixes = array();
-        $this->localization = \WS\ReduceMigrations\Module::getInstance()->getLocalization('admin')->fork('cli');
+        $this->localization = Module::getInstance()->getLocalization('admin')->fork('cli');
     }
 
     public function execute($callback = false) {
@@ -27,7 +28,7 @@ class ListCommand extends BaseCommand{
                 $has = true;
             }
         }
-        !$has && $this->console->printLine("Nothing to apply", Console::OUTPUT_SUCCESS);
+        !$has && $this->console->printLine('Nothing to apply', Console::OUTPUT_SUCCESS);
         $has && $this->printRegisteredFixes($notAppliedScenarios->getApproximateTime());
     }
 
@@ -38,14 +39,14 @@ class ListCommand extends BaseCommand{
     private function registerFix($priority, $notAppliedScenario) {
         $this->registeredFixes[$priority][] = array(
             'name' => $notAppliedScenario::name(),
-            'hash' => substr($notAppliedScenario::hash(), 0, 8),
-            'time' => $notAppliedScenario::approximatelyTime() . " min",
+            'hash' => $notAppliedScenario::getShortenedHash(),
+            'time' => $notAppliedScenario::approximatelyTime() . ' min',
         );
     }
 
     private function printRegisteredFixes($time) {
         $table = new Table('List of migrations:', $this->console);
-        $table->addRow("\tMigrationName", "Hash", "Approximate time");
+        $table->addRow("\tMigrationName", 'Hash', 'Approximate time');
         foreach ($this->registeredFixes as $priority => $fixList) {
             $table->addRow(" {$priority}:");
             foreach ($fixList as $fix) {

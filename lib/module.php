@@ -178,7 +178,7 @@ class Module {
         $file = new File($this->getScenariosDir() . DIRECTORY_SEPARATOR . $fileName);
         $success = $file->putContents($content);
         if (!$success) {
-            throw new \Exception("Could'nt save file");
+            throw new \Exception("Couldn't save file");
         }
 
         return $file->getPath();
@@ -261,14 +261,14 @@ class Module {
 function jsonToArray($json) {
     global $APPLICATION;
     $value = json_decode($json, true);
-    $value = $APPLICATION->ConvertCharsetArray($value, "UTF-8", LANG_CHARSET);
+    $value = $APPLICATION->ConvertCharsetArray($value, 'UTF-8', LANG_CHARSET);
 
     return $value;
 }
 
 function arrayToJson($data) {
     global $APPLICATION;
-    $data = $APPLICATION->ConvertCharsetArray($data, LANG_CHARSET, "UTF-8");
+    $data = $APPLICATION->ConvertCharsetArray($data, LANG_CHARSET, 'UTF-8');
 
     return json_encode($data);
 }

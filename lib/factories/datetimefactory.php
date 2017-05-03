@@ -6,6 +6,8 @@ use Bitrix\Main\Type\DateTime;
 
 class DateTimeFactory {
 
+    const DEFAULT_TIME_ZONE = 'Europe/Moscow';
+
     static public function createBase($time = null) {
         return new \DateTime($time, self::timeZone());
     }
@@ -29,9 +31,8 @@ class DateTimeFactory {
             $obj = new \DateTime();
             return $obj->getTimezone();
         } catch (\Exception $e) {
-            $timezoneIdentifier = 'Europe/Moscow';
-            date_default_timezone_set($timezoneIdentifier);
-            return new \DateTimeZone($timezoneIdentifier);
+            date_default_timezone_set(self::DEFAULT_TIME_ZONE);
+            return new \DateTimeZone(self::DEFAULT_TIME_ZONE);
         }
     }
 }
