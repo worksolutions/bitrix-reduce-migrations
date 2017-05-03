@@ -16,20 +16,20 @@
 
   * `ws_migrations.php` - вызов помощи, отображает список доступных действий
   
-  ![Помощь](../data/cli_help.jpg)
+  ![Помощь](cli_help.jpg)
   
   * `ws_migrations.php list` - просмотр списка подготовленных миграций
   
-  ![Список миграций](../data/cli_list.jpg)
+  ![Список миграций](cli_list.jpg)
   
   * `ws_migrations.php apply` - применение подготовленных миграций
   
-  ![Применение](../data/cli_apply.jpg)
+  ![Применение](cli_apply.jpg)
   
   * `ws_migrations.php rollback` - откат последнего применения
   
-  ![Отмена изменений](../data/cli_rollback.jpg)
+  ![Отмена изменений](cli_rollback.jpg)
 
   * `ws_migrations.php history` - просмотр истории миграций
   
-  ![Просмотр истории](../data/cli_history.jpg)
+  ![Просмотр истории](cli_history.jpg)
