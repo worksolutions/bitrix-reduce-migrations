@@ -12,11 +12,11 @@ class CreateScenarioCommand extends BaseCommand {
     private $time;
 
     private function availablePriorities() {
-       return [
+       return array(
            'h' => ScriptScenario::PRIORITY_HIGH,
            'm' => ScriptScenario::PRIORITY_MEDIUM,
            'o' => ScriptScenario::PRIORITY_OPTIONAL,
-       ];
+       );
     }
 
     protected function initParams($params) {
