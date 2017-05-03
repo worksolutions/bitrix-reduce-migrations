@@ -36,15 +36,6 @@ return array(
             'setup' => 'Setup',
         )
     ),
-    'changeversion' => array(
-        'pageTitle' => 'Platform',
-        'title' => 'Current platform',
-        'setup' => 'setup',
-        'owner' => 'Owner',
-        'dialog' => array(
-            'title' => 'Set the name of the project owner'
-        )
-    ),
     'applyError' => array(
         'message' => 'Message',
         'data' => 'Data',
@@ -77,7 +68,6 @@ return array(
             'updateDate' => 'Date',
             'description' => 'Update features',
             'hash' => 'Migration hash',
-            'owner' => 'Owner',
             'dispatcher' => 'Update by'
         ),
         'messages' => array(

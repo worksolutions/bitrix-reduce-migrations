@@ -36,15 +36,6 @@ return array(
             'setup' => 'Установить',
         )
     ),
-    'changeversion' => array(
-        'pageTitle' => 'Платформа',
-        'title' => 'Владелец',
-        'setup' => 'установить',
-        'owner' => 'Подпись',
-        'dialog' => array(
-            'title' => 'Установка имени владельца версии проекта'
-        )
-    ),
     'applyError' => array(
         'message' => 'Сообщение',
         'data' => 'Данные',
