@@ -36,6 +36,9 @@ abstract class BaseEntity {
         $props = array();
         $fieldsToProps = array_flip(static::map());
         foreach ($fields as $name => $value) {
+            if (!isset($fieldsToProps[$name])) {
+                continue;
+            }
             $name = $fieldsToProps[$name];
             $props[$name] = $value;
         }

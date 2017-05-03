@@ -18,7 +18,6 @@ $arHeaders = array(
     array("id" => "updateDate", "content" => $localization->getDataByPath('fields.updateDate'), "default"=>true),
     array("id" => "description", "content" => $localization->getDataByPath('fields.description'), "default" => true),
     array("id" => "hash", "content" => $localization->getDataByPath('fields.hash'), "default" => true),
-    array("id" => "owner", "content" => $localization->getDataByPath('fields.owner'), "default" => true),
     array("id" => "dispatcher", "content" => $localization->getDataByPath('fields.dispatcher'), "default" => true)
 );
 $lAdmin->AddHeaders($arHeaders);
@@ -38,7 +37,6 @@ array_walk($models, function (AppliedChangesLogModel $model) use (& $rowsData) {
             'label' => $model->getGroupLabel(),
             'updateDate' => $model->getDate()->format('d.m.Y H:i:s'),
             'hash' => $model->getHash(),
-            'owner' => $model->getOwner(),
             'dispatcher' => $model->getSetupLog() ? $model->getSetupLog()->shortUserInfo() : ''
         );
     }

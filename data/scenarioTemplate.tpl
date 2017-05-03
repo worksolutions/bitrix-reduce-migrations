@@ -27,13 +27,6 @@ class #class_name# extends \WS\ReduceMigrations\Scenario\ScriptScenario {
     }
 
     /**
-     * @return string is owner name
-     */
-    static public function owner() {
-        return "#owner#";
-    }
-
-    /**
      * @return string approximately time
      */
     static public function approximatelyTime() {

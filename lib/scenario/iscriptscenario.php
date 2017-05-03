@@ -27,11 +27,6 @@ interface IScriptScenario {
     public static function hash();
 
     /**
-     * @return string - is owner name
-     */
-    public static function owner();
-
-    /**
      * @return string approximately time
      */
     public static function approximatelyTime();

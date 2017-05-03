@@ -16,7 +16,7 @@ class AppliedChangesLogModel extends BaseEntity {
     public
         $id, $groupLabel, $date, $status,
         $migrationClassName, $hash, $updateData,
-        $owner, $description, $setupLogId;
+        $description, $setupLogId;
 
     private $setupLog;
 
@@ -69,7 +69,6 @@ class AppliedChangesLogModel extends BaseEntity {
         $element->groupLabel = $class . '.php';
         $element->setName($class::name());
         $element->hash = $class::hash();
-        $element->owner = $class::owner();
 
         return $element;
     }
@@ -116,7 +115,6 @@ class AppliedChangesLogModel extends BaseEntity {
             'date' => 'DATE',
             'migrationClassName' => 'SUBJECT',
             'hash' => 'HASH',
-            'owner' => 'OWNER',
             'updateData' => 'UPDATE_DATA',
             'status' => 'STATUS',
             'description' => 'DESCRIPTION'
@@ -268,13 +266,6 @@ class AppliedChangesLogModel extends BaseEntity {
      */
     public function setUpdateData($updateData) {
         $this->updateData = $updateData;
-    }
-
-    /**
-     * @return string
-     */
-    public function getOwner() {
-        return $this->owner;
     }
 
     /**
