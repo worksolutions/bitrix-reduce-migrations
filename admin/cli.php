@@ -30,7 +30,11 @@ $getShowProgress = function () use ($console) {
         }
         if ($type == 'start') {
             $counter->migrationNumber++;
-            $console->printLine("  {$data['name']}({$counter->migrationNumber}/$counter->migrationCount)", Console::OUTPUT_PROGRESS);
+            $console->printLine(sprintf(
+                '%s (%s/%s)',
+                $console->colorize($data['name'], Console::OUTPUT_PROGRESS),
+                $counter->migrationNumber, $counter->migrationCount
+            ));
         }
         if ($type == 'end') {
             /**@var \WS\ReduceMigrations\Entities\AppliedChangesLogModel $log */

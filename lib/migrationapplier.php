@@ -141,6 +141,7 @@ class MigrationApplier {
         if (empty($list)) {
             throw new NothingToApplyException(sprintf('Not found migration with hash `%s`', $migrationHash));
         }
+        is_callable($callback) && $callback(count($list), 'setCount');
         $this->applyScenario($list[0], $callback);
     }
 
