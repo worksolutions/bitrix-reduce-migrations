@@ -5,45 +5,44 @@ include __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'include.ph
 
 class ws_reducemigrations extends CModule{
     const MODULE_ID = 'ws.reducemigrations';
-    var $MODULE_ID = 'ws.reducemigrations';
-    var $MODULE_VERSION;
-    var $MODULE_VERSION_DATE;
-    var $MODULE_NAME;
-    var $PARTNER_NAME = 'WorkSolutions';
-    var $PARTNER_URI = 'http://worksolutions.ru';
-    var $MODULE_DESCRIPTION;
-    var $MODULE_CSS;
-    var $strError = '';
+    public $MODULE_ID = 'ws.reducemigrations';
+    public $MODULE_VERSION;
+    public $MODULE_VERSION_DATE;
+    public $MODULE_NAME;
+    public $PARTNER_NAME = 'WorkSolutions';
+    public $PARTNER_URI = 'http://worksolutions.ru';
+    public $MODULE_DESCRIPTION;
+    public $MODULE_CSS;
+    public $strError = '';
 
-    function __construct() {
+    public function __construct() {
         $arModuleVersion = array();
-        include(dirname(__FILE__) . "/version.php");
-        $this->MODULE_VERSION = $arModuleVersion["VERSION"];
-        $this->MODULE_VERSION_DATE = $arModuleVersion["VERSION_DATE"];
+        include __DIR__ . '/version.php';
+        $this->MODULE_VERSION = $arModuleVersion['VERSION'];
+        $this->MODULE_VERSION_DATE = $arModuleVersion['VERSION_DATE'];
 
         $localization = \WS\ReduceMigrations\Module::getInstance()->getLocalization('info');
-        $this->MODULE_NAME = $localization->getDataByPath("name");
-        $this->MODULE_DESCRIPTION = $localization->getDataByPath("description");
-        $this->PARTNER_NAME = GetMessage('PARTNER_NAME');
-        $this->PARTNER_NAME = $localization->getDataByPath("partner.name");
+        $this->MODULE_NAME = $localization->getDataByPath('name');
+        $this->MODULE_DESCRIPTION = $localization->getDataByPath('description');
+        $this->PARTNER_NAME = $localization->getDataByPath('partner.name');
         $this->PARTNER_URI = 'http://worksolutions.ru';
     }
 
-    function InstallDB($arParams = array()) {
+    public function InstallDB($arParams = array()) {
         global $DB;
-        $DB->RunSQLBatch(Application::getDocumentRoot() . '/' . Application::getPersonalRoot() . "/modules/" . $this->MODULE_ID . "/install/db/install.sql");
+        $DB->RunSQLBatch(Application::getDocumentRoot() . '/' . Application::getPersonalRoot() . '/modules/' . $this->MODULE_ID . '/install/db/install.sql');
 
         return true;
     }
 
-    function UnInstallDB($arParams = array()) {
+    public function UnInstallDB($arParams = array()) {
         global $DB;
-        $DB->RunSQLBatch(Application::getDocumentRoot() . '/' . Application::getPersonalRoot() . "/modules/" . $this->MODULE_ID . "/install/db/uninstall.sql");
+        $DB->RunSQLBatch(Application::getDocumentRoot() . '/' . Application::getPersonalRoot() . '/modules/' . $this->MODULE_ID . '/install/db/uninstall.sql');
 
         return true;
     }
 
-    function InstallFiles() {
+    public function InstallFiles() {
         $rootDir = Application::getDocumentRoot() . '/' . Application::getPersonalRoot();
         $adminGatewayFile = '/admin/ws_reducemigrations.php';
         copy(__DIR__ . $adminGatewayFile, $rootDir . $adminGatewayFile);
@@ -51,7 +50,7 @@ class ws_reducemigrations extends CModule{
         return true;
     }
 
-    function UnInstallFiles() {
+    public function UnInstallFiles() {
         $rootDir = Application::getDocumentRoot() . '/' . Application::getPersonalRoot();
         $adminGatewayFile = '/admin/ws_reducemigrations.php';
         unlink($rootDir . $adminGatewayFile);
@@ -59,11 +58,10 @@ class ws_reducemigrations extends CModule{
         return true;
     }
 
-    function DoInstall($extendData = array()) {
+    public function DoInstall($extendData = array()) {
         global $APPLICATION, $data;
         $loc = \WS\ReduceMigrations\Module::getInstance()->getLocalization('setup');
         $options = \WS\ReduceMigrations\Module::getInstance()->getOptions();
-        $this->createPlatformDirIfNotExists();
         global $errors;
         $data = array_merge((array)$data, $extendData);
         $errors = array();
@@ -81,7 +79,7 @@ class ws_reducemigrations extends CModule{
                 \Bitrix\Main\Loader::includeModule('iblock');
 
                 $this->createCli();
-                RegisterModuleDependences("main", "OnCheckListGet", self::MODULE_ID, \WS\ReduceMigrations\Tests\Starter::className(), 'items');
+                RegisterModuleDependences('main', 'OnCheckListGet', self::MODULE_ID, \WS\ReduceMigrations\Tests\Starter::className(), 'items');
             }
         }
         if (!$data || $errors) {
@@ -91,7 +89,7 @@ class ws_reducemigrations extends CModule{
         }
     }
 
-    function DoUninstall() {
+    public function DoUninstall() {
         global $APPLICATION, $data;
         global $errors;
         $errors = array();
@@ -102,11 +100,10 @@ class ws_reducemigrations extends CModule{
 
             return;
         }
-        if ($data['removeAll'] == "Y") {
+        if ($data['removeAll'] == 'Y') {
             $this->removeFiles();
             $this->UnInstallDB();
             $this->removeOptions();
-            $this->removePlatformDir();
         }
         $this->UnInstallFiles();
         UnRegisterModule(self::MODULE_ID);
@@ -127,7 +124,7 @@ class ws_reducemigrations extends CModule{
     }
 
     private function removeOptions() {
-        COption::RemoveOption("ws.reducemigrations");
+        COption::RemoveOption('ws.reducemigrations');
     }
 
     private function createCli() {
@@ -137,19 +134,6 @@ class ws_reducemigrations extends CModule{
 
     private function removeCli() {
         unlink(Application::getDocumentRoot() . Application::getPersonalRoot() . '/tools/ws_reducemigrations.php');
-    }
-
-    private function createPlatformDirIfNotExists() {
-        $uploadDir = $this->docRoot() . \COption::GetOptionString("main", "upload_dir", "upload");
-        if (is_dir($uploadDir . '/ws.reducemigrations')) {
-            return;
-        }
-        CopyDirFiles(__DIR__ . '/upload', $uploadDir, false, true);
-    }
-
-    private function removePlatformDir() {
-        $uploadDir = $this->docRoot() . \COption::GetOptionString("main", "upload_dir", "upload");
-        \Bitrix\Main\IO\Directory::deleteDirectory($uploadDir . '/ws.reducemigrations');
     }
 
     /**
