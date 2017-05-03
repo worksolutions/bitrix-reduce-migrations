@@ -24,7 +24,7 @@ class ApplyCommand extends BaseCommand{
         $this->confirmAction();
 
         $this->console
-            ->printLine("Applying new migrations started....", Console::OUTPUT_PROGRESS);
+            ->printLine('Applying new migrations started....', Console::OUTPUT_PROGRESS);
 
         $time = microtime(true);
 
@@ -52,9 +52,19 @@ class ApplyCommand extends BaseCommand{
         if ($this->force) {
             return true;
         }
-
+        $notAppliedScenarios = $this->module->getNotAppliedScenarios();
+        $count = count($notAppliedScenarios->toArray());
+        $time = $notAppliedScenarios->getApproximateTime();
+        if ($this->migrationHash) {
+            $migrations = $notAppliedScenarios->findByHash($this->migrationHash);
+            $count = count($migrations);
+            $time = array_reduce($migrations, function ($result, $item) {
+                return $result + (int)$item::approximatelyTime();
+            }, 0);
+        }
         $this->console
-            ->printLine("Are you sure? (yes|no):");
+            ->printLine(sprintf('Migrations for apply - %s, approximate time - %s min', $count, $time))
+            ->printLine('Are you sure? (yes|no):');
 
         $answer = $this->console->readLine();
 
