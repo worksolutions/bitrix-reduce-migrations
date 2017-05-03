@@ -20,8 +20,6 @@ class AppliedChangesLogModel extends BaseEntity {
 
     private $setupLog;
 
-    const SECONDS_IN_MINUTE = 60;
-
     public function __construct() {
         $this->date = DateTimeFactory::createBase();
     }
@@ -169,7 +167,7 @@ class AppliedChangesLogModel extends BaseEntity {
      * @return double
      */
     public function getTime() {
-        return round((int)$this->description['time'] / self::SECONDS_IN_MINUTE, 2);
+        return $this->description['time'];
     }
 
     /**
