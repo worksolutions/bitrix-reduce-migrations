@@ -124,14 +124,13 @@ abstract class BaseEntity {
     }
 
     /**
-     * @param $name
      * @return mixed
      * @internal param $p1
      * @internal param $p2
      * @internal param $p3
      *
      */
-    static public function callGatewayMethod($name) {
+    static public function callGatewayMethod() {
         $params = func_get_args();
         $name = array_shift($params);
         return call_user_func_array(array(static::gatewayClass(), $name), $params);
