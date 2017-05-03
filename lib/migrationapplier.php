@@ -22,7 +22,8 @@ class MigrationApplier {
 
     public function __construct($scenarioDir) {
         $this->scenarioDir = $scenarioDir;
-        $this->userId = Module::getInstance()->getCurrentUser()->GetID();
+        $userId = Module::getInstance()->getCurrentUser()->GetID();
+        $this->userId = $userId ? : 0;
     }
 
     /**
