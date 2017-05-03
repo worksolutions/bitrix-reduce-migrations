@@ -16,7 +16,7 @@ class #class_name# extends \WS\ReduceMigrations\Scenario\ScriptScenario {
      * Priority of scenario
      **/
     static public function priority() {
-        return "#priority#";
+        return #priority#;
     }
 
     /**
@@ -27,10 +27,10 @@ class #class_name# extends \WS\ReduceMigrations\Scenario\ScriptScenario {
     }
 
     /**
-     * @return string approximately time
+     * @return int approximately time in minutes
      */
     static public function approximatelyTime() {
-        return "#time#";
+        return #time#;
     }
 
     /**

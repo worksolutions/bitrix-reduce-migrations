@@ -5,6 +5,7 @@ namespace WS\ReduceMigrations;
 use Bitrix\Main\Application;
 use Bitrix\Main\IO\File;
 use Bitrix\Main\IO\Path;
+use ReflectionClass;
 use WS\ReduceMigrations\Collection\MigrationCollection;
 use WS\ReduceMigrations\Entities\SetupLogModel;
 use WS\ReduceMigrations\Exceptions\MultipleEqualHashException;
@@ -157,7 +158,7 @@ class Module {
         $arReplace = array(
             '#class_name#' => $className = 'ws_m_' . time(). '_' . \CUtil::translit($name, LANGUAGE_ID),
             '#name#' => addslashes($name),
-            '#priority#' => $priority,
+            '#priority#' => $this->getPriorityConstant($priority),
             '#time#' => (int)$time,
             '#hash#' => sha1($className),
         );
@@ -165,6 +166,27 @@ class Module {
         $fileName = $className . '.php';
 
         return $this->putScriptClass($fileName, $classContent);
+    }
+
+    /**
+     * @param $priority
+     *
+     * @return string
+     * @throws \Exception
+     */
+    private function getPriorityConstant($priority) {
+        $obj = new ReflectionClass(\WS\ReduceMigrations\Scenario\ScriptScenario::class);
+
+        $priorityList = array_filter($obj->getConstants(), function ($key) {
+            return strpos($key, 'PRIORITY') === 0;
+        }, ARRAY_FILTER_USE_KEY);
+
+        $constantName = array_search($priority, $priorityList, true);
+
+        if (!$constantName) {
+            throw new \Exception('Priority not found');
+        }
+        return 'self::' . $constantName;
     }
 
     /**
