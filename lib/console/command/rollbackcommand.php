@@ -4,6 +4,7 @@ namespace WS\ReduceMigrations\Console\Command;
 
 use WS\ReduceMigrations\Console\Console;
 use WS\ReduceMigrations\Console\ConsoleException;
+use WS\ReduceMigrations\Timer;
 
 class RollbackCommand extends BaseCommand {
     const TYPE_HASH = 0;
@@ -18,6 +19,13 @@ class RollbackCommand extends BaseCommand {
 
     const PARAM_COUNT = '--count';
     const PARAM_TO_HASH = '--to-hash';
+    /** @var Timer  */
+    private $timer;
+
+    public function __construct(Console $console, $params) {
+        parent::__construct($console, $params);
+        $this->timer = new Timer();
+    }
 
     protected function initParams($params) {
         $this->migrationHash = isset($params[0]) ? $params[0] : null;
@@ -44,35 +52,39 @@ class RollbackCommand extends BaseCommand {
     }
 
     public function execute($callback = false) {
-        $start = microtime(true);
+
         try {
             $this->rollback($callback);
         } catch (\Exception $e) {
             throw new ConsoleException($e->getMessage());
         }
 
-        $interval = round(microtime(true) - $start, 2);
+        $this->timer->stop();
 
         $this->console
-            ->printLine("Rollback action finished! Time $interval sec", Console::OUTPUT_PROGRESS);
+            ->printLine("Rollback action finished! Time {$this->timer} sec", Console::OUTPUT_PROGRESS);
     }
 
     private function rollback($callback = false) {
         switch ($this->type) {
             case self::TYPE_HASH:
                 $this->confirm("Rollback migration with hash={$this->migrationHash}.");
+                $this->timer->start();
                 $this->module->rollbackByHash($this->migrationHash);
                 break;
             case self::TYPE_COUNT:
                 $this->confirm("Rollback last {$this->count} migrations.");
+                $this->timer->start();
                 $this->module->rollbackLastFewMigrations($this->count, $callback);
                 break;
             case self::TYPE_TO_HASH:
                 $this->confirm("Rollback migrations to hash={$this->toHash}.");
+                $this->timer->start();
                 $this->module->rollbackToHash($this->toHash, $callback);
                 break;
             case self::TYPE_LAST_BATCH:
                 $this->confirm('Rollback last batch.');
+                $this->timer->start();
                 $this->module->rollbackLastBatch($callback);
                 break;
         }

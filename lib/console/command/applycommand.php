@@ -4,6 +4,7 @@ namespace WS\ReduceMigrations\Console\Command;
 
 use WS\ReduceMigrations\Console\Console;
 use WS\ReduceMigrations\Console\ConsoleException;
+use WS\ReduceMigrations\Timer;
 
 class ApplyCommand extends BaseCommand{
     const FLAG_FORCE = '-f';
@@ -29,8 +30,8 @@ class ApplyCommand extends BaseCommand{
         $this->console
             ->printLine('Applying new migrations started....', Console::OUTPUT_PROGRESS);
 
-        $time = microtime(true);
-
+        $timer = new Timer();
+        $timer->start();
         try {
             if ($this->migrationHash) {
                 $count = 1;
@@ -45,10 +46,10 @@ class ApplyCommand extends BaseCommand{
         }
 
 
-        $interval = round(microtime(true) - $time, 2);
+        $timer->stop();
 
         $this->console
-            ->printLine("Apply action finished! $count items, time $interval sec", Console::OUTPUT_PROGRESS);
+            ->printLine("Apply action finished! $count items, time {$timer} sec", Console::OUTPUT_PROGRESS);
     }
 
     private function confirmAction() {
