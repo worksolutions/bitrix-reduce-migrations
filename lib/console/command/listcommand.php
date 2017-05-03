@@ -3,7 +3,7 @@
 namespace WS\ReduceMigrations\Console\Command;
 
 use WS\ReduceMigrations\Console\Console;
-use WS\ReduceMigrations\Console\Formatter\Table;
+use WS\ReduceMigrations\Console\Pear\Console_Table;
 use WS\ReduceMigrations\Module;
 use WS\ReduceMigrations\Scenario\ScriptScenario;
 
@@ -45,17 +45,31 @@ class ListCommand extends BaseCommand{
     }
 
     private function printRegisteredFixes($time) {
-        $table = new Table('List of migrations:', $this->console);
-        $table->addRow("\tMigrationName", 'Hash', 'Approximate time');
+        $table = new Console_Table();
+
+        $table->setHeaders(array(
+            'Priority', 'Name', 'Hash', '~time'
+        ));
+
         foreach ($this->registeredFixes as $priority => $fixList) {
-            $table->addRow(" {$priority}:");
+
+            $table->addRow(array(
+                $priority, '', '', ''
+            ));
+
             foreach ($fixList as $fix) {
-                $table->addRow("\t" . $fix['name'], $fix['hash'], $fix['time']);
+                $table->addRow(array(
+                    '', $fix['name'], $fix['hash'], $fix['time']
+                ));
             }
         }
-        $this->console->printLine($table);
+        $this->console
+            ->printLine('List of migrations:')
+            ->printLine($table->getTable());
         if ($time) {
-            $this->console->printLine("Approximately applying time: $time min");
+            $this->console
+                ->printLine("Approximately applying time: $time min")
+                ->printLine('');
         }
     }
 
