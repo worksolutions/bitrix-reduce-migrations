@@ -51,7 +51,7 @@ abstract class ScriptScenario implements IScriptScenario {
     }
 
     static public function getShortenedHash() {
-        return substr(self::hash(), 0 , self::SHORTENED_HASH_LENGTH);
+        return substr(static::hash(), 0 , self::SHORTENED_HASH_LENGTH);
     }
     /**
      * @return array
