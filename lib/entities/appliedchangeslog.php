@@ -56,9 +56,6 @@ class AppliedChangesLogTable extends DataManager {
             'HASH' => array(
                 'data_type' => 'string'
             ),
-            'OWNER' => array(
-                'data_type' => 'string'
-            ),
         );
     }
 }
