@@ -14,7 +14,7 @@ final class ModuleOptions {
 
     /**
      * @staticvar self $self
-     * @return Options
+     * @return ModuleOptions
      */
     static public function getInstance() {
         static $self = null;
