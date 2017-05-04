@@ -75,12 +75,20 @@ class CreateScenarioCommand extends BaseCommand {
 
     public function execute($callback = false) {
         try {
-            $fileName = $this->module->createScenario($this->getName(), $this->getPriority(), (int)$this->time);
+            $fileName = $this->module->createScenario($this->prepareName($this->getName()), $this->getPriority(), (int)$this->time);
         } catch (\Exception $e) {
             $this->console->printLine('An error occurred saving file', Console::OUTPUT_ERROR);
             return;
         }
         $this->console->printLine($fileName, Console::OUTPUT_SUCCESS);
+    }
+
+    public function prepareName($name) {
+        if (LANG_CHARSET !== 'UTF-8' && mb_detect_encoding($name, 'UTF-8, Windows-1251') === 'UTF-8') {
+            $name = iconv('UTF-8', 'Windows-1251', $name);
+        }
+
+        return $name;
     }
 
 }
