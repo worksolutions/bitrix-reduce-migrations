@@ -6,6 +6,8 @@
 namespace WS\ReduceMigrations\Entities;
 
 
+use Bitrix\Main\NotImplementedException;
+
 abstract class BaseEntity {
     public $id;
 
@@ -163,9 +165,21 @@ abstract class BaseEntity {
         return $this->_errors;
     }
 
-    abstract static protected function map();
+    /**
+     * @throws NotImplementedException
+     * @return array
+     */
+    static protected function map() {
+        throw new NotImplementedException('You should implement method `map`');
+    }
 
-    abstract static protected function gatewayClass();
+    /**
+     * @throws NotImplementedException
+     * @return string
+     */
+    static protected function gatewayClass() {
+        throw new NotImplementedException('You should implement method `gatewayClass`');
+    }
 
     static protected function modifyFromDb($data) {
         return $data;
