@@ -5,15 +5,15 @@ include __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'include.ph
 
 class ws_reducemigrations extends CModule{
     const MODULE_ID = 'ws.reducemigrations';
-    public $MODULE_ID = 'ws.reducemigrations';
-    public $MODULE_VERSION;
-    public $MODULE_VERSION_DATE;
-    public $MODULE_NAME;
-    public $PARTNER_NAME = 'WorkSolutions';
-    public $PARTNER_URI = 'http://worksolutions.ru';
-    public $MODULE_DESCRIPTION;
-    public $MODULE_CSS;
-    public $strError = '';
+    var $MODULE_ID = 'ws.reducemigrations';
+    var $MODULE_VERSION;
+    var $MODULE_VERSION_DATE;
+    var $MODULE_NAME;
+    var $PARTNER_NAME = 'WorkSolutions';
+    var $PARTNER_URI = 'http://worksolutions.ru';
+    var $MODULE_DESCRIPTION;
+    var $MODULE_CSS;
+    var $strError = '';
 
     public function __construct() {
         $arModuleVersion = array();
@@ -25,6 +25,7 @@ class ws_reducemigrations extends CModule{
         $needToConvert = LANG_CHARSET === 'UTF-8' && !$this->isUtfLangFiles();
         $this->MODULE_NAME = $this->message($localization->getDataByPath('name'), $needToConvert);
         $this->MODULE_DESCRIPTION = $this->message($localization->getDataByPath('description'), $needToConvert);
+        $this->PARTNER_NAME = GetMessage('PARTNER_NAME');
         $this->PARTNER_NAME = $this->message($localization->getDataByPath('partner.name'), $needToConvert);
         $this->PARTNER_URI = 'http://worksolutions.ru';
     }
