@@ -7,7 +7,7 @@ namespace WS\ReduceMigrations\Scenario;
  *
  * @package WS\ReduceMigrations
  */
-abstract class ScriptScenario implements IScriptScenario {
+abstract class ScriptScenario {
 
     const PRIORITY_HIGH = 'high';
     const PRIORITY_MEDIUM = 'medium';
@@ -85,7 +85,49 @@ abstract class ScriptScenario implements IScriptScenario {
      * @return bool
      */
     public function isOptional() {
-        return $this->priority() === self::PRIORITY_OPTIONAL;
+        return self::priority() === self::PRIORITY_OPTIONAL;
+    }
+
+    /**
+     * Runs to commit migration
+     */
+    abstract public function commit();
+
+    /**
+     * Runs by rollback migration
+     */
+    abstract public function rollback();
+
+    /**
+     * Returns name of migration
+     *
+     * @return string
+     */
+    public static function name() {
+        return null;
+    }
+
+    /**
+     * @return string - is hash
+     */
+    public static function hash() {
+        return null;
+    }
+
+    /**
+     * @return int approximately time
+     */
+    public static function approximatelyTime() {
+        return 0;
+    }
+
+    /**
+     * Returns priority of migration
+     *
+     * @return string
+     */
+    public static function priority() {
+        return self::PRIORITY_HIGH;
     }
 
 }
