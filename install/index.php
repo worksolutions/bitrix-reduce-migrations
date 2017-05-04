@@ -133,7 +133,7 @@ class ws_reducemigrations extends CModule{
     }
 
     private function removeCli() {
-        unlink(Application::getDocumentRoot() . Application::getPersonalRoot() . '/tools/ws_reducemigrations.php');
+        unlink(Application::getDocumentRoot() . Application::getPersonalRoot() . '/tools/migrate');
     }
 
     /**
