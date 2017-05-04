@@ -22,22 +22,30 @@ class ws_reducemigrations extends CModule{
         $this->MODULE_VERSION_DATE = $arModuleVersion['VERSION_DATE'];
 
         $localization = \WS\ReduceMigrations\Module::getInstance()->getLocalization('info');
-        $this->MODULE_NAME = $localization->getDataByPath('name');
-        $this->MODULE_DESCRIPTION = $localization->getDataByPath('description');
-        $this->PARTNER_NAME = $localization->getDataByPath('partner.name');
+        $needToConvert = LANG_CHARSET === 'UTF-8' && !$this->isUtfLangFiles();
+        $this->MODULE_NAME = $this->message($localization->getDataByPath('name'), $needToConvert);
+        $this->MODULE_DESCRIPTION = $this->message($localization->getDataByPath('description'), $needToConvert);
+        $this->PARTNER_NAME = $this->message($localization->getDataByPath('partner.name'), $needToConvert);
         $this->PARTNER_URI = 'http://worksolutions.ru';
+    }
+
+    private function message($message, $needToConvert) {
+        if ($needToConvert) {
+            return iconv('Windows-1251', 'UTF-8', $message);
+        }
+        return $message;
     }
 
     public function InstallDB($arParams = array()) {
         global $DB;
-        $DB->RunSQLBatch(Application::getDocumentRoot() . '/' . Application::getPersonalRoot() . '/modules/' . $this->MODULE_ID . '/install/db/install.sql');
+        $DB->RunSQLBatch(self::getModuleDir() . '/install/db/install.sql');
 
         return true;
     }
 
     public function UnInstallDB($arParams = array()) {
         global $DB;
-        $DB->RunSQLBatch(Application::getDocumentRoot() . '/' . Application::getPersonalRoot() . '/modules/' . $this->MODULE_ID . '/install/db/uninstall.sql');
+        $DB->RunSQLBatch(self::getModuleDir() .  '/install/db/uninstall.sql');
 
         return true;
     }
@@ -60,6 +68,9 @@ class ws_reducemigrations extends CModule{
 
     public function DoInstall($extendData = array()) {
         global $APPLICATION, $data;
+        if (LANG_CHARSET === 'UTF-8' && !$this->isUtfLangFiles()) {
+            $this->convertLangFilesToUtf();
+        }
         $loc = \WS\ReduceMigrations\Module::getInstance()->getLocalization('setup');
         $options = \WS\ReduceMigrations\Module::getInstance()->getOptions();
         global $errors;
@@ -89,6 +100,14 @@ class ws_reducemigrations extends CModule{
         }
     }
 
+    /**
+     * @return mixed|string
+     */
+    public function isUtfLangFiles() {
+        $localization = new \WS\ReduceMigrations\Localization(include static::getModuleDir() . '/lang/ru/info.php');
+        return mb_detect_encoding($localization->getDataByPath('encoding'), 'UTF-8, Windows-1251') === 'UTF-8';
+    }
+
     public function DoUninstall() {
         global $APPLICATION, $data;
         global $errors;
@@ -100,7 +119,7 @@ class ws_reducemigrations extends CModule{
 
             return;
         }
-        if ($data['removeAll'] == 'Y') {
+        if ($data['removeAll'] === 'Y') {
             $this->removeFiles();
             $this->UnInstallDB();
             $this->removeOptions();
@@ -134,6 +153,28 @@ class ws_reducemigrations extends CModule{
 
     private function removeCli() {
         unlink(Application::getDocumentRoot() . Application::getPersonalRoot() . '/tools/migrate');
+    }
+
+    /**
+     * @return bool|string
+     */
+    public static function getModuleDir() {
+        return dirname(__DIR__.'../');
+    }
+
+    public function convertLangFilesToUtf() {
+        /** @var CMain $APPLICATION */
+        global $APPLICATION;
+        $di = new RecursiveDirectoryIterator(static::getModuleDir() . '/lang/ru');
+        /** @var SplFileInfo $fileInfo */
+        foreach ($di as $fileInfo) {
+            if ($fileInfo->isDir()) {
+                continue;
+            }
+            $content = file_get_contents($fileInfo->getRealPath());
+            $convertedContent = $APPLICATION->ConvertCharset($content, 'windows-1251', 'UTF-8');
+            file_put_contents($fileInfo->getRealPath(), $convertedContent);
+        }
     }
 
     /**
