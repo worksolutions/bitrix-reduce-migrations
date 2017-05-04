@@ -4,6 +4,8 @@ namespace WS\ReduceMigrations\Console\Command;
 
 use WS\ReduceMigrations\Console\Console;
 use WS\ReduceMigrations\Console\ConsoleException;
+use WS\ReduceMigrations\Console\Pear\Console_Table;
+use WS\ReduceMigrations\Entities\AppliedChangesLogModel;
 use WS\ReduceMigrations\Timer;
 
 class RollbackCommand extends BaseCommand {
@@ -68,21 +70,25 @@ class RollbackCommand extends BaseCommand {
     private function rollback($callback = false) {
         switch ($this->type) {
             case self::TYPE_HASH:
+                $this->showBatch(AppliedChangesLogModel::findByHash($this->migrationHash));
                 $this->confirm("Rollback migration with hash={$this->migrationHash}.");
                 $this->timer->start();
                 $this->module->rollbackByHash($this->migrationHash);
                 break;
             case self::TYPE_COUNT:
+                $this->showBatch(AppliedChangesLogModel::findLastFewMigrations($this->count));
                 $this->confirm("Rollback last {$this->count} migrations.");
                 $this->timer->start();
                 $this->module->rollbackLastFewMigrations($this->count, $callback);
                 break;
             case self::TYPE_TO_HASH:
+                $this->showBatch(AppliedChangesLogModel::findToHash($this->toHash));
                 $this->confirm("Rollback migrations to hash={$this->toHash}.");
                 $this->timer->start();
                 $this->module->rollbackToHash($this->toHash, $callback);
                 break;
             case self::TYPE_LAST_BATCH:
+                $this->showBatch(AppliedChangesLogModel::findLastBatch());
                 $this->confirm('Rollback last batch.');
                 $this->timer->start();
                 $this->module->rollbackLastBatch($callback);
@@ -104,6 +110,33 @@ class RollbackCommand extends BaseCommand {
 
         $this->console
             ->printLine('Rollback action started...', Console::OUTPUT_PROGRESS);
+    }
+
+    /**
+     * @param AppliedChangesLogModel[] $logs
+     */
+    private function showBatch($logs) {
+        if (empty($logs)) {
+            return;
+        }
+        $table = new Console_Table();
+        $table->setHeaders(array(
+            'Date', 'Name', 'Hash', 'Status'
+        ));
+        foreach ($logs as $log) {
+            $status = 'successful';
+            if ($log->isSkipped()) {
+                $status = 'skipped';
+            } elseif ($log->isFailed()) {
+                $status = 'failed';
+            }
+            $table->addRow(array(
+                $log->getDate()->format('d.m.Y H:i:s'), $log->getName(), $log->getHash(), $status
+            ));
+        }
+        $this->console
+            ->printLine('Migrations for rollback:')
+            ->printLine($table->getTable());
     }
 
 }

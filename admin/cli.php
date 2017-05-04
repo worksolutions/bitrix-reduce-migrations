@@ -42,10 +42,13 @@ $getShowProgress = function () use ($console) {
             $time = round($data['time'], 2);
             $message = '';
             if (!empty($data['error'])) {
-                $message .= $data['error'] . '. ';
+                $message .= '  ' . $data['error'];
             }
             $overallTime = round(microtime(true) - $counter->start, 2);
             $message .= "  - $time sec ($overallTime sec)";
+            if ($log->isSkipped()) {
+                $message = '  - skipped';
+            }
             $console->printLine($message, $log->isFailed() ? Console::OUTPUT_ERROR : Console::OUTPUT_SUCCESS);
         }
     };

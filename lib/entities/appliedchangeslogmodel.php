@@ -7,6 +7,7 @@ namespace WS\ReduceMigrations\Entities;
 
 use Bitrix\Main\Type\DateTime;
 use WS\ReduceMigrations\factories\DateTimeFactory;
+use WS\ReduceMigrations\Module;
 use WS\ReduceMigrations\Scenario\ScriptScenario;
 
 class AppliedChangesLogModel extends BaseEntity {
@@ -35,6 +36,50 @@ class AppliedChangesLogModel extends BaseEntity {
             'filter' => array(
                 'hash' => $hash . '%'
             )
+        ));
+
+        return $logs;
+    }
+
+    /**
+     * @param $hash
+     *
+     * @return AppliedChangesLogModel[]
+     */
+    public static function findToHash($hash) {
+        $logsByHash = AppliedChangesLogModel::findByHash($hash);
+
+        if (empty($logsByHash)) {
+            return array();
+        }
+        $logs = AppliedChangesLogModel::find(array(
+            'order' => array('id' => 'desc'),
+            'filter' => array('>id' => $logsByHash[0]->getId())
+        ));
+
+        return $logs;
+    }
+
+    /**
+     * @return AppliedChangesLogModel[]
+     */
+    public static function findLastBatch() {
+        $setupLog = Module::getInstance()->getLastSetupLog();
+        if (!$setupLog) {
+            return array();
+        }
+        return $setupLog->getAppliedLogs() ?: array();
+    }
+
+    /**
+     * @param int $count
+     *
+     * @return AppliedChangesLogModel[]
+     */
+    public static function findLastFewMigrations($count) {
+        $logs = AppliedChangesLogModel::find(array(
+            'order' => array('id' => 'desc'),
+            'limit' => $count,
         ));
 
         return $logs;

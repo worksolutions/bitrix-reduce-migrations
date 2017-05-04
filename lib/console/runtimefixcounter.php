@@ -25,7 +25,7 @@ class RuntimeFixCounter {
      */
     public function setFixNamesByLogs($list) {
         foreach ($list as $log) {
-            if ($log->isFailed()) {
+            if ($log->isFailed() || $log->isSkipped()) {
                 continue;
             }
             $this->migrationCount++;

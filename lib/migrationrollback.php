@@ -24,10 +24,7 @@ class MigrationRollback {
      * @throws NothingToApplyException
      */
     public function rollbackLastFewMigrations($count, $callback = false) {
-        $logs = AppliedChangesLogModel::find(array(
-            'order' => array('id' => 'desc'),
-            'limit' => $count,
-        ));
+        $logs = AppliedChangesLogModel::findLastFewMigrations($count);
 
         if (empty($logs)) {
             throw new NothingToApplyException(sprintf('Nothing to rollback'));
@@ -57,15 +54,7 @@ class MigrationRollback {
      * @throws NothingToApplyException
      */
     public function rollbackToHash($toHash, $callback = false) {
-        $logsByHash = AppliedChangesLogModel::findByHash($toHash);
-
-        if (empty($logsByHash)) {
-            throw new NothingToApplyException(sprintf('Nothing to rollback'));
-        }
-        $logs = AppliedChangesLogModel::find(array(
-            'order' => array('id' => 'desc'),
-            'filter' => array('>id' => $logsByHash[0]->getId())
-        ));
+        $logs = AppliedChangesLogModel::findToHash($toHash);
         if (empty($logs)) {
             throw new NothingToApplyException(sprintf('Nothing to rollback'));
         }
@@ -89,16 +78,15 @@ class MigrationRollback {
     /**
      * @param $callback
      *
-     * @return null
+     * @throws \WS\ReduceMigrations\Exceptions\NothingToApplyException
      */
     public function rollbackLastBatch($callback = false) {
-        $setupLog = Module::getInstance()->getLastSetupLog();
-        if (!$setupLog) {
-            return null;
+        $logs = AppliedChangesLogModel::findLastBatch();
+        if (empty($logs)) {
+            throw new NothingToApplyException(sprintf('Nothing to rollback'));
         }
-        $logs = $setupLog->getAppliedLogs() ?: array();
-        $this->rollbackByLogs(array_reverse($logs), $callback);
-        $setupLog->delete();
+        $this->rollbackByLogs($logs, $callback);
+        Module::getInstance()->getLastSetupLog()->delete();
     }
 
     /**
