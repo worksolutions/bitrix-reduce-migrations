@@ -141,6 +141,6 @@ class HelpCommand extends BaseCommand {
      * @return string
      */
     private function getCommandTemplate($command, $params = '') {
-        return "   php ws_reducemigrations.php {$command} {$params}";
+        return "   php migrate {$command} {$params}";
     }
 }
