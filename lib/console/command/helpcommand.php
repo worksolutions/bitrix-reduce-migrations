@@ -55,7 +55,7 @@ class HelpCommand extends BaseCommand {
                 'params' => array(
                     '-n=<name>' => 'migration name',
                     '-p=<priority>' => 'migration priority: h - high, m - medium, o - optional',
-                    '-t=<time>' => 'migration approximately time in minutes',
+                    '-t=<time>' => 'migration approximately time in seconds',
                 ),
                 'examples' => array(
                     $this->getCommandTemplate('createScenario', '-n="Hello world" -p=h -t=5'),

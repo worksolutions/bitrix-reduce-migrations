@@ -47,9 +47,9 @@ class ApplyCommand extends BaseCommand{
 
 
         $timer->stop();
-
+        $time = $this->console->formatTime($timer->getTime());
         $this->console
-            ->printLine("Apply action finished! $count items, time {$timer} sec", Console::OUTPUT_PROGRESS);
+            ->printLine("Apply action finished! $count items, time {$time}", Console::OUTPUT_PROGRESS);
     }
 
     private function confirmAction() {
@@ -67,7 +67,7 @@ class ApplyCommand extends BaseCommand{
             }, 0);
         }
         $this->console
-            ->printLine(sprintf('Migrations for apply - %s, approximate time - %s min', $count, $time))
+            ->printLine(sprintf('Migrations for apply - %s, approximate time - %s', $count, $this->console->formatTime($time)))
             ->printLine('Are you sure? (yes|no):');
 
         $answer = $this->console->readLine();

@@ -40,7 +40,7 @@ class ListCommand extends BaseCommand{
         $this->registeredFixes[$priority][] = array(
             'name' => $notAppliedScenario::name(),
             'hash' => $notAppliedScenario::getShortenedHash(),
-            'time' => $notAppliedScenario::approximatelyTime() . ' min',
+            'time' => $this->console->formatTime($notAppliedScenario::approximatelyTime()),
         );
     }
 
@@ -68,7 +68,7 @@ class ListCommand extends BaseCommand{
             ->printLine($table->getTable());
         if ($time) {
             $this->console
-                ->printLine("Approximately applying time: $time min")
+                ->printLine(sprintf('Approximately applying time: %s', $this->console->formatTime($time)))
                 ->printLine('');
         }
     }

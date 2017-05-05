@@ -62,9 +62,9 @@ class RollbackCommand extends BaseCommand {
         }
 
         $this->timer->stop();
-
+        $time = $this->console->formatTime($this->timer->getTime());
         $this->console
-            ->printLine("Rollback action finished! Time {$this->timer} sec", Console::OUTPUT_PROGRESS);
+            ->printLine("Rollback action finished! Time $time", Console::OUTPUT_PROGRESS);
     }
 
     private function rollback($callback = false) {
