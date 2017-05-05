@@ -115,7 +115,7 @@ abstract class ScriptScenario {
     }
 
     /**
-     * @return int approximately time
+     * @return int approximately time in seconds
      */
     public static function approximatelyTime() {
         return 0;

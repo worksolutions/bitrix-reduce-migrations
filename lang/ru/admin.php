@@ -15,7 +15,7 @@ return array(
         'errorList' => 'Ошибки',
         'appliedList' => 'Список обновлений',
         'approximatelyTime' => 'Примерное время применения миграций:',
-        'time' => '#time# мин.',
+        'time' => '#time# сек.',
         'btnRollback' => 'Отменить последнее обновление',
         'btnApply' => 'Обновить',
         'lastSetup' => array(
@@ -49,7 +49,7 @@ return array(
         'field' => array(
             'name' => 'Название',
             'priority' => 'Приоритет',
-            'time' => 'Примерное время выполнения миграции(минуты)',
+            'time' => 'Примерное время выполнения миграции(секунды)',
         ),
         'priority' => array(
             'high' => 'Высокий',

@@ -15,7 +15,7 @@ return array(
         'errorList' => 'Unsuccessful applied migrations',
         'appliedList' => 'Successful applied migrations',
         'approximatelyTime' => 'Approximately time of migrations',
-        'time' => '#time# min',
+        'time' => '#time# sec',
         'btnRollback' => 'Undo last change',
         'btnApply' => 'Apply',
         'lastSetup' => array(
@@ -49,7 +49,7 @@ return array(
         'field' => array(
             'name' => 'Title',
             'priority' => 'Priority',
-            'time' => 'Approximately migration time(minutes)',
+            'time' => 'Approximately migration time(seconds)',
         ),
         'priority' => array(
             'high' => 'High',

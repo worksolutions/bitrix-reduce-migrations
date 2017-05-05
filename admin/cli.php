@@ -45,7 +45,7 @@ $getShowProgress = function () use ($console) {
                 $message .= '  ' . $data['error'];
             }
             $overallTime = round(microtime(true) - $counter->start, 2);
-            $message .= "  - $time sec ($overallTime sec)";
+            $message .= sprintf('  - %s (%s)', $console->formatTime($time), $console->formatTime($overallTime));
             if ($log->isSkipped()) {
                 $message = '  - skipped';
             }
@@ -54,7 +54,7 @@ $getShowProgress = function () use ($console) {
     };
 };
 try {
-    $console->printLine("");
+    $console->printLine('');
     $command = $console->getCommand();
     $command->execute($getShowProgress());
 } catch (\WS\ReduceMigrations\Console\ConsoleException $e) {

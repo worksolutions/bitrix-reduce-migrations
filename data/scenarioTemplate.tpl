@@ -27,7 +27,7 @@ class #class_name# extends \WS\ReduceMigrations\Scenario\ScriptScenario {
     }
 
     /**
-     * @return int approximately time in minutes
+     * @return int approximately time in seconds
      */
     static public function approximatelyTime() {
         return #time#;
