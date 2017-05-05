@@ -20,10 +20,8 @@ class HelpCommand extends BaseCommand {
         $commands = array(
             'list' => array(
                 'info' => 'List of new migrations',
-                'params' => array('' => 'Command without params'),
-                'examples' => array(
-                    $this->getCommandTemplate('list')
-                ),
+                'params' => array(),
+                'examples' => array(),
             ),
             'apply' => array(
                 'info' => 'Apply new migrations',
@@ -95,21 +93,30 @@ class HelpCommand extends BaseCommand {
             return '[' . $item . ']';
         }, array_keys($commandInfo['params'])));
 
-        $table = new Table($this->console->colorize('Params:', Console::OUTPUT_PROGRESS), $this->console);
-        foreach ($commandInfo['params'] as $param => $info) {
-            $table->addRow($this->console->colorize('   ' . $param, Console::OUTPUT_SUCCESS), $info);
+        if (!empty($commandInfo['params'])) {
+            $table = new Table($this->console->colorize('Params:', Console::OUTPUT_PROGRESS), $this->console);
+            foreach ($commandInfo['params'] as $param => $info) {
+                $table->addRow($this->console->colorize('   ' . $param, Console::OUTPUT_SUCCESS), $info);
+            }
+
         }
-        $exampleTable = new Table($this->console->colorize('Examples:', Console::OUTPUT_PROGRESS), $this->console);
-        foreach ($commandInfo['examples'] as $example) {
-            $exampleTable->addRow($example);
+        if (!empty($commandInfo['examples'])) {
+            $exampleTable = new Table($this->console->colorize('Examples:', Console::OUTPUT_PROGRESS), $this->console);
+            foreach ($commandInfo['examples'] as $example) {
+                $exampleTable->addRow($example);
+            }
         }
         $this->console
             ->printLine('Usage:', Console::OUTPUT_PROGRESS)
             ->printLine($this->getCommandTemplate($command, $params))
             ->printLine('')
-            ->printLine($table)
-            ->printLine($exampleTable)
         ;
+        if ($table) {
+            $this->console->printLine($table);
+        }
+        if ($exampleTable) {
+            $this->console->printLine($exampleTable);
+        }
     }
 
     private function showConsoleInfo() {
