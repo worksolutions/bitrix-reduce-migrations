@@ -62,14 +62,14 @@ class Console {
      * @return Console
      */
     public function printLine($str, $type = false) {
+        global $APPLICATION;
+        $str = $APPLICATION->ConvertCharset($str, LANG_CHARSET, "UTF-8");
         $str = $this->colorize($str, $type);
         fwrite($this->out, $str . "\n");
         return $this;
     }
 
     public function colorize($str, $type = false) {
-        global $APPLICATION;
-        $str = $APPLICATION->ConvertCharset($str, LANG_CHARSET, "UTF-8");
         if ($type) {
             $str = $this->getOutput($type)->colorize($str);
         }
