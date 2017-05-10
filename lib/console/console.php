@@ -10,7 +10,7 @@ use WS\ReduceMigrations\Console\Command\History;
 use WS\ReduceMigrations\Console\Command\ListCommand;
 use WS\ReduceMigrations\Console\Command\RollbackCommand;
 use WS\ReduceMigrations\Console\Formatter\Output;
-use WS\ReduceMigrations\Console\Formatter\Time;
+use WS\ReduceMigrations\TimeFormatter;
 
 class Console {
     const OUTPUT_ERROR = 'error';
@@ -29,7 +29,7 @@ class Console {
     private $progressOutput;
     /** @var  Output */
     private $defaultOutput;
-    /** @var Time  */
+    /** @var TimeFormatter  */
     private $timeFormatter;
 
     public function __construct($args) {
@@ -53,7 +53,10 @@ class Console {
         $this->errorOutput = new Output('red');
         $this->progressOutput = new Output('yellow');
         $this->defaultOutput = new Output();
-        $this->timeFormatter = new Time();
+        $this->timeFormatter = new TimeFormatter(array(
+            'minutes' => 'min',
+            'seconds' => 'sec'
+        ));
     }
 
     /**

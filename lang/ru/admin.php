@@ -15,7 +15,10 @@ return array(
         'errorList' => 'Îøèáêè',
         'appliedList' => 'Ñïèñîê îáíîâëåíèé',
         'approximatelyTime' => 'Ïğèìåğíîå âğåìÿ ïğèìåíåíèÿ ìèãğàöèé:',
-        'time' => '#time# ñåê.',
+        'timeLang' => [
+            'minutes' => 'ìèí.',
+            'seconds' => 'ñåê.'
+        ],
         'btnRollback' => 'Îòìåíèòü ïîñëåäíåå îáíîâëåíèå',
         'btnApply' => 'Îáíîâèòü',
         'lastSetup' => array(

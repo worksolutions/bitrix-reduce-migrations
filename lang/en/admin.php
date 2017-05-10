@@ -15,7 +15,10 @@ return array(
         'errorList' => 'Unsuccessful applied migrations',
         'appliedList' => 'Successful applied migrations',
         'approximatelyTime' => 'Approximately time of migrations',
-        'time' => '#time# sec',
+        'timeLang' => [
+            'minutes' => 'min',
+            'seconds' => 'sec'
+        ],
         'btnRollback' => 'Undo last change',
         'btnApply' => 'Apply',
         'lastSetup' => array(

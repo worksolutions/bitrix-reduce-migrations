@@ -7,7 +7,7 @@ $module = \WS\ReduceMigrations\Module::getInstance();
 
 $request = \Bitrix\Main\Application::getInstance()->getContext()->getRequest();
 $apply = false;
-
+$timeFormatter = new \WS\ReduceMigrations\TimeFormatter($localization->getDataByPath('timeLang'));
 if ($request->get('rollback')) {
     $module->rollbackLastBatch();
     $apply = true;
@@ -37,7 +37,19 @@ if ($lastSetupLog) {
 
     foreach ($lastSetupLog->getAppliedLogs() as $appliedLog) {
         $appliedLog->isFailed() && $errorFixes[] = $appliedLog;
-        !$appliedLog->isFailed() && $appliedFixes[$appliedLog->getName()]++;
+        if (!$appliedLog->isFailed()) {
+            if (isset($appliedFixes[$appliedLog->getName()])) {
+                $appliedFixes[$appliedLog->getName()] = array(
+                    'time' => $appliedFixes[$appliedLog->getName()]['time'] + $appliedLog->getTime(),
+                    'count' =>  $appliedFixes[$appliedLog->getName()]['count'] + 1
+                );
+            } else {
+                $appliedFixes[$appliedLog->getName()] = array(
+                    'time' => $appliedLog->getTime(),
+                    'count' =>  1
+                );
+            }
+        }
     }
 }
 //--------------------------------------------------------------------------
@@ -103,9 +115,7 @@ if ($scenarios) {
     if (isset($scenarios[\WS\ReduceMigrations\Scenario\ScriptScenario::PRIORITY_OPTIONAL])) {
         $form->AddCheckBoxField('skipOptional', $localization->message('skipOptional'), false, 'Y', false);
     }
-    $form->AddViewField('time', $localization->message('approximatelyTime'), $localization->message('time', array(
-        '#time#' => $notAppliedScenarios->getApproximateTime()
-    )));
+    $form->AddViewField('time', $localization->message('approximatelyTime'), $timeFormatter->format($notAppliedScenarios->getApproximateTime()));
 }
 //--------------------
 if ($lastSetupLog) {
@@ -120,9 +130,11 @@ if ($lastSetupLog) {
         <td width="30%" valign="top"><b><?= $localization->getDataByPath('appliedList') ?>:</b></td>
         <td width="70%">
             <ol style="list-style-type: none; padding-left: 0px; margin-top: 0px;">
-                <? foreach ($appliedFixes as $fixName => $fixCount):
+                <? foreach ($appliedFixes as $fixName => $item):
+                    $fixCount = $item['count'];
+                    $time = $item['time'];
                 ?>
-                    <li><?= $fixName ?> <?= $fixCount > 1 ? '['.$fixCount.']' : '' ?></li>
+                    <li><?= $fixName ?> <?= $fixCount > 1 ? '['.$fixCount.']' : '' ?> (<?=$timeFormatter->format($time)?>)</li>
                 <?endforeach; ?>
             </ol>
         </tr>

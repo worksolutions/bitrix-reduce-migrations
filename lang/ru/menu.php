@@ -4,6 +4,6 @@ return array(
     'title' => 'Reduce Migrations',
     'apply' => 'Обновление',
     'log' => 'Журнал обновлений',
-    'createScenario' => 'Сценарий обновления',
+    'createScenario' => 'Новый сценарий обновления',
     'diagnostic' => 'Диагностика'
 );
