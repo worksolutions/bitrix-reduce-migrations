@@ -20,6 +20,10 @@ abstract class ScriptScenario {
      */
     private $data;
 
+    public static function className() {
+        return get_called_class();
+    }
+
     /**
      * @param array $data
      */

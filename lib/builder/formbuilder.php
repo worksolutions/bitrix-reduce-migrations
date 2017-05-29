@@ -150,7 +150,7 @@ class FormBuilder {
     private function findForm($sid) {
         $data = \CForm::GetList($by = 'ID', $order = 'ASC', array(
             'SID' => $sid
-        ), $isFiltered)->Fetch();
+        ), $isFiltered = false)->Fetch();
 
         if (!$data) {
             throw new BuilderException("Form '{$sid}' not found");

@@ -170,9 +170,9 @@ class FormField extends Base {
     }
 
     private function findAnswer($message) {
-        $data = \CFormAnswer::GetList($this->getId(), $by, $order, array(
+        $data = \CFormAnswer::GetList($this->getId(), $by = null, $order = null, array(
             'MESSAGE' => $message
-        ), $isFiltered)->Fetch();
+        ), $isFiltered = false)->Fetch();
 
         if (empty($data)) {
             throw new BuilderException("Answer '{$message}' not found");

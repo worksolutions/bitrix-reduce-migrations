@@ -175,7 +175,7 @@ class Module {
      * @throws \Exception
      */
     private function getPriorityConstant($priority) {
-        $obj = new ReflectionClass(\WS\ReduceMigrations\Scenario\ScriptScenario::class);
+        $obj = new ReflectionClass(\WS\ReduceMigrations\Scenario\ScriptScenario::className());
 
         $priorityList = array_filter($obj->getConstants(), function ($key) {
             return strpos($key, 'PRIORITY') === 0;
