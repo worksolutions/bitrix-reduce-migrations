@@ -177,9 +177,12 @@ class Module {
     private function getPriorityConstant($priority) {
         $obj = new ReflectionClass(\WS\ReduceMigrations\Scenario\ScriptScenario::className());
 
-        $priorityList = array_filter($obj->getConstants(), function ($key) {
-            return strpos($key, 'PRIORITY') === 0;
-        }, ARRAY_FILTER_USE_KEY);
+        $priorityList = array();
+        foreach ($obj->getConstants() as $cName => $cValue) {
+            if (strpos($cName, 'PRIORITY') === 0) {
+                $priorityList[$cName] = $cValue;
+            }
+        }
 
         $constantName = array_search($priority, $priorityList, true);
 

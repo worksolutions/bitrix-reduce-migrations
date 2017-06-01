@@ -78,6 +78,7 @@ class CreateScenarioCommand extends BaseCommand {
             $fileName = $this->module->createScenario($this->prepareName($this->getName()), $this->getPriority(), (int)$this->time);
         } catch (\Exception $e) {
             $this->console->printLine('An error occurred saving file', Console::OUTPUT_ERROR);
+            $this->console->printLine($e->getMessage());
             return;
         }
         $this->console->printLine($fileName, Console::OUTPUT_SUCCESS);
