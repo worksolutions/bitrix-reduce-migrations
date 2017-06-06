@@ -3,7 +3,7 @@
 namespace WS\ReduceMigrations\Console\Command;
 
 use WS\ReduceMigrations\Console\Console;
-use WS\ReduceMigrations\Console\Pear\Console_Table;
+use WS\ReduceMigrations\Console\Pear\ConsoleTable;
 use WS\ReduceMigrations\Module;
 use WS\ReduceMigrations\Scenario\ScriptScenario;
 
@@ -45,33 +45,35 @@ class ListCommand extends BaseCommand{
     }
 
     private function printRegisteredFixes($time) {
-        $table = new Console_Table();
+        $table = new ConsoleTable();
 
         $table->setHeaders(array(
-            'Priority', 'Name', 'Hash', '~time'
+            'Priority', 'Name', 'Hash', '~Time'
         ));
 
+        $table->setCellsLength(array(10, 80, 10, 10));
+
+        $count = 0;
         foreach ($this->registeredFixes as $priority => $fixList) {
+            $priorityPos = (int) (count($fixList) / 2);
 
-            $table->addRow(array(
-                $priority, '', '', ''
-            ));
-
-            foreach ($fixList as $fix) {
+            $fixList = array_values($fixList);
+            foreach ($fixList as $k => $fix) {
                 $table->addRow(array(
-                    '', $fix['name'], $fix['hash'], $fix['time']
+                    $k == $priorityPos ? $priority : '', $fix['name'], $fix['hash'], $fix['time']
                 ));
+                $count++;
             }
+            $table->addRow();
         }
+        $table->addRow(array(
+            '----------', '---------------------', '----------', '----------'
+        ));
+        $table->addRow(array(
+            '', 'Total: '.$count, '', $this->console->formatTime($time)
+        ));
         $this->console
             ->printLine('List of migrations:')
             ->printLine($table->getTable());
-        if ($time) {
-            $this->console
-                ->printLine(sprintf('Approximately applying time: %s', $this->console->formatTime($time)))
-                ->printLine('');
-        }
     }
-
-
 }

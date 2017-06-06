@@ -4,7 +4,7 @@ namespace WS\ReduceMigrations\Console\Command;
 
 use WS\ReduceMigrations\Console\Console;
 use WS\ReduceMigrations\Console\ConsoleException;
-use WS\ReduceMigrations\Console\Pear\Console_Table;
+use WS\ReduceMigrations\Console\Pear\ConsoleTable;
 use WS\ReduceMigrations\Entities\AppliedChangesLogModel;
 use WS\ReduceMigrations\Timer;
 
@@ -119,7 +119,7 @@ class RollbackCommand extends BaseCommand {
         if (empty($logs)) {
             return;
         }
-        $table = new Console_Table();
+        $table = new ConsoleTable();
         $table->setHeaders(array(
             'Date', 'Name', 'Hash', 'Status'
         ));

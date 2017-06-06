@@ -18,8 +18,10 @@ require_once(__DIR__."/../prolog.php");
 $module = \WS\ReduceMigrations\Module::getInstance();
 $console = new Console($argv);
 
-$console
-    ->printLine('Migrations module for CMS Bitrix. Worksolutions company https://worksolutions.ru');
+$fCompanyLabel = function () use ($console) {
+    $console
+        ->printLine("Migrations module for CMS Bitrix. Worksolutions company https://worksolutions.ru \n");
+};
 
 $getShowProgress = function () use ($console) {
     $counter = new \WS\ReduceMigrations\Console\RuntimeCounter();
@@ -57,7 +59,10 @@ try {
     $console->printLine('');
     $command = $console->getCommand();
     $command->execute($getShowProgress());
+    $fCompanyLabel();
 } catch (\WS\ReduceMigrations\Console\ConsoleException $e) {
     $console->printLine($e->getMessage());
+    $fCompanyLabel();
+
 }
 
