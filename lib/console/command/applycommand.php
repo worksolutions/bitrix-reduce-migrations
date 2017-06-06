@@ -77,16 +77,7 @@ class ApplyCommand extends BaseCommand{
         if ($this->force) {
             return true;
         }
-        $notAppliedScenarios = $this->module->getNotAppliedScenarios();
-        $count = count($notAppliedScenarios->toArray());
-        $time = $notAppliedScenarios->getApproximateTime();
-        if ($this->migrationHash) {
-            $migrations = $notAppliedScenarios->findByHash($this->migrationHash);
-            $count = count($migrations);
-            $time = array_reduce($migrations, function ($result, $item) {
-                return $result + (int)$item::approximatelyTime();
-            }, 0);
-        }
+
         $this->console
             ->printLine('Are you sure? (yes|no):');
 

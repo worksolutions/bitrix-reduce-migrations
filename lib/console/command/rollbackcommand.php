@@ -123,6 +123,9 @@ class RollbackCommand extends BaseCommand {
         $table->setHeaders(array(
             'Date', 'Name', 'Hash', 'Status'
         ));
+        $table->setCellsLength(array(
+            19, 80, 10, 10
+        ));
         foreach ($logs as $log) {
             $status = 'successful';
             if ($log->isSkipped()) {
@@ -134,6 +137,12 @@ class RollbackCommand extends BaseCommand {
                 $log->getDate()->format('d.m.Y H:i:s'), $log->getName(), $log->getHash(), $status
             ));
         }
+        $table->addRow(array(
+            '-------------------', '---------------------', '----------', '----------'
+        ));
+        $table->addRow(array(
+            '', 'Total: '.count($logs)
+        ));
         $this->console
             ->printLine('Migrations for rollback:')
             ->printLine($table->getTable());
