@@ -95,6 +95,7 @@ class Console {
             'rollback' => RollbackCommand::className(),
             'history' => History::className(),
             'createScenario' => CreateScenarioCommand::className(),
+            'create' => CreateScenarioCommand::className(),
         );
         if (!$commands[$this->action]) {
             throw new ConsoleException("Action `{$this->action}` is not supported");

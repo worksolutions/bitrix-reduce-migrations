@@ -25,10 +25,32 @@ class ApplyCommand extends BaseCommand{
     }
 
     public function execute($callback = false) {
+        $listCommand = new ListCommand($this->console, array($this->migrationHash));
+        $listCommand->execute();
+
+        $notAppliedScenarios  = $this->module->getNotAppliedScenarios();
+        $count = $notAppliedScenarios->count();
+
+        if ($count == 0) {
+            return;
+        }
+        if ($this->migrationHash) {
+            $hasByHash = false;
+            foreach ($notAppliedScenarios->toArray() as $notAppliedScenario) {
+                if (strpos($notAppliedScenario::getShortenedHash(), $this->migrationHash) !== false) {
+                    $hasByHash = true;
+                    break;
+                }
+            }
+            if (!$hasByHash) {
+                return;
+            }
+        }
+
         $this->confirmAction();
 
         $this->console
-            ->printLine('Applying new migrations started....', Console::OUTPUT_PROGRESS);
+            ->printLine("\nApplying new migrations started...\n", Console::OUTPUT_PROGRESS);
 
         $timer = new Timer();
         $timer->start();
@@ -44,7 +66,6 @@ class ApplyCommand extends BaseCommand{
         } catch (\Exception $e) {
             throw new ConsoleException($e->getMessage());
         }
-
 
         $timer->stop();
         $time = $this->console->formatTime($timer->getTime());
@@ -67,7 +88,6 @@ class ApplyCommand extends BaseCommand{
             }, 0);
         }
         $this->console
-            ->printLine(sprintf('Migrations for apply - %s, approximate time - %s', $count, $this->console->formatTime($time)))
             ->printLine('Are you sure? (yes|no):');
 
         $answer = $this->console->readLine();

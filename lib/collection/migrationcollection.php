@@ -54,7 +54,7 @@ class MigrationCollection {
     }
 
     /**
-     * @return array
+     * @return ScriptScenario[]
      */
     public function toArray() {
         $migrations = $this->groupByPriority();
@@ -63,6 +63,13 @@ class MigrationCollection {
             $result[] = $item;
         });
         return $result;
+    }
+
+    /**
+     * @return int
+     */
+    public function count() {
+        return count($this->elements);
     }
 
     /**

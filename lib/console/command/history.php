@@ -2,11 +2,9 @@
 
 namespace WS\ReduceMigrations\Console\Command;
 
-use WS\ReduceMigrations\Console\Console;
 use WS\ReduceMigrations\Console\ConsoleException;
-use WS\ReduceMigrations\Console\Formatter\Table;
+use WS\ReduceMigrations\Console\Pear\ConsoleTable;
 use WS\ReduceMigrations\Entities\AppliedChangesLogModel;
-use WS\ReduceMigrations\Entities\SetupLogModel;
 
 class History extends BaseCommand {
 
@@ -18,70 +16,81 @@ class History extends BaseCommand {
 
     public function execute($callback = false) {
         $lastSetupLog = \WS\ReduceMigrations\Module::getInstance()->getLastSetupLog();
+
         if (!$lastSetupLog) {
             throw new ConsoleException('Nothing to show');
         }
 
-        if (!$this->count) {
-            $this->showLastBatch($lastSetupLog);
-        } else {
-            $this->showLastFewMigrations($this->count);
-        }
+        $table = new ConsoleTable();
 
-    }
-
-    /**
-     * @param $count
-     */
-    private function showLastFewMigrations($count) {
-        $this->console->printLine("Last {$count} applied migrations");
-        $logs = AppliedChangesLogModel::find(array(
-            'order' => array('id' => 'desc'),
-            'limit' => $count
+        $table->setHeaders(array(
+            'Date', 'Name', 'Hash', 'Duration'
         ));
-        $this->show($logs);
-    }
+        $table->setCellsLength(array(
+            19, 80, 10, 10
+        ));
 
-    /**
-     * @param SetupLogModel $lastSetupLog
-     */
-    private function showLastBatch($lastSetupLog) {
-        $this->console->printLine('Last applied migrations:');
-        $this->show($lastSetupLog->getAppliedLogs());
-    }
-
-    /**
-     * @param AppliedChangesLogModel[] $logs
-     */
-    private function show($logs) {
-
-        $table = new Table('', $this->console);
-        /** @var AppliedChangesLogModel $appliedLog */
-        foreach ($logs as $appliedLog) {
-            if ($appliedLog->isFailed()) {
-                $table->addColorRow(array(
-                    $appliedLog->getDate()->format('d.m.Y H:i:s'),
-                    $appliedLog->getName(),
-                    $appliedLog->getHash(),
-                    'Error: ' . $appliedLog->getErrorMessage()
-                ), Console::OUTPUT_ERROR);
-            } elseif($appliedLog->isSkipped()) {
-                $table->addColorRow(array(
-                    $appliedLog->getDate()->format('d.m.Y H:i:s'),
-                    $appliedLog->getName(),
-                    $appliedLog->getHash(),
-                    'skipped'
-                ), Console::OUTPUT_PROGRESS);
-            } else {
-                $table->addColorRow(array(
-                    $appliedLog->getDate()->format('d.m.Y H:i:s'),
-                    $appliedLog->getName(),
-                    $appliedLog->getHash(),
-                    $this->console->formatTime($appliedLog->getTime())
-                ), Console::OUTPUT_SUCCESS);
-            }
+        if (!$this->count) {
+            $logs = $lastSetupLog->getAppliedLogs();
+        } else {
+            $logs = AppliedChangesLogModel::find(array(
+                'order' => array('id' => 'desc'),
+                'limit' => $this->count
+            ));
         }
-        $this->console->printLine($table);
+
+        $count = 0;
+        $duration = 0;
+        $setupPaddings = $this->getVerticalPaddingsForSetups($logs);
+        $currentSetupId = 0;
+        /** @var AppliedChangesLogModel $log */
+        foreach ($logs as $log) {
+            if ($currentSetupId == 0) {
+                $currentSetupId = $log->setupLogId;
+            }
+            if ($currentSetupId != $log->setupLogId) {
+                $currentSetupId = $log->setupLogId;
+                $table->addRow();
+            }
+            $date = '';
+            if ($setupPaddings[$log->setupLogId] == 0) {
+                $date = $log->getDate()->format('d.m.Y H:i:s');
+            }
+            $setupPaddings[$log->setupLogId]--;
+
+            $duration = $this->console->formatTime($log->getTime());
+            $log->isFailed() && $duration = "failed";
+            $log->isSkipped() && $duration = "skipped";
+
+            $table->addRow(array(
+                $date, $log->getName(), $log->getHash(), $duration
+            ));
+            if ($log->isFailed()) {
+                $table->addRow(array('', 'Error: '.$log->getErrorMessage(), '', ''));
+            }
+            $count++;
+            $duration += $log->getTime();
+        }
+        $table->addRow(array(
+            '-------------------', '----------------------------------------', '----------', '---------'
+        ));
+        $table->addRow(array(
+            '', 'Total: '.$count, '', $this->console->formatTime($duration)
+        ));
+
+        $this->console->printLine("{$count} Last applied migrations:");
+        $this->console->printLine($table->getTable());
     }
 
+
+    private function getVerticalPaddingsForSetups($logs) {
+        $arTrackSetup = array();
+        foreach ($logs as $log) {
+            $arTrackSetup[$log->setupLogId]++;
+        }
+        foreach ($arTrackSetup as & $countRecords) {
+            $countRecords = (int) (($countRecords - 1) / 2);
+        }
+        return $arTrackSetup;
+    }
 }

@@ -284,6 +284,7 @@ class Module {
 
 
 function jsonToArray($json) {
+    /** @var \CMain $APPLICATION */
     global $APPLICATION;
     $value = json_decode($json, true);
     $value = $APPLICATION->ConvertCharsetArray($value, 'UTF-8', LANG_CHARSET);
@@ -292,6 +293,7 @@ function jsonToArray($json) {
 }
 
 function arrayToJson($data) {
+    /** @var \CMain $APPLICATION */
     global $APPLICATION;
     $data = $APPLICATION->ConvertCharsetArray($data, LANG_CHARSET, 'UTF-8');
 

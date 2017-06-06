@@ -52,6 +52,7 @@ $getShowProgress = function () use ($console) {
                 $message = '  - skipped';
             }
             $console->printLine($message, $log->isFailed() ? Console::OUTPUT_ERROR : Console::OUTPUT_SUCCESS);
+            $console->printLine("");
         }
     };
 };
@@ -63,6 +64,4 @@ try {
 } catch (\WS\ReduceMigrations\Console\ConsoleException $e) {
     $console->printLine($e->getMessage());
     $fCompanyLabel();
-
 }
-

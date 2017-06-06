@@ -13,9 +13,15 @@ class ListCommand extends BaseCommand{
     /** @var  \WS\ReduceMigrations\Localization */
     private $localization;
 
+    /**
+     * @var string
+     */
+    private $hash = "";
+
     protected function initParams($params) {
         $this->registeredFixes = array();
         $this->localization = Module::getInstance()->getLocalization('admin')->fork('cli');
+        $this->hash = $params[0];
     }
 
     public function execute($callback = false) {
@@ -24,11 +30,15 @@ class ListCommand extends BaseCommand{
         foreach ($notAppliedScenarios->groupByPriority() as $priority => $list) {
             /** @var ScriptScenario $notAppliedScenario */
             foreach ($list as $notAppliedScenario) {
+                if ($this->hash && strpos($notAppliedScenario::hash(), $this->hash) === false) {
+                    continue;
+                }
+
                 $this->registerFix($priority, $notAppliedScenario);
                 $has = true;
             }
         }
-        !$has && $this->console->printLine('Nothing to apply', Console::OUTPUT_SUCCESS);
+        !$has && $this->console->printLine("Nothing to apply\n", Console::OUTPUT_SUCCESS);
         $has && $this->printRegisteredFixes($notAppliedScenarios->getApproximateTime());
     }
 
@@ -48,14 +58,14 @@ class ListCommand extends BaseCommand{
         $table = new ConsoleTable();
 
         $table->setHeaders(array(
-            'Priority', 'Name', 'Hash', '~Time'
+            'Priority', 'Name', 'Hash', '~Duration'
         ));
 
         $table->setCellsLength(array(10, 80, 10, 10));
 
         $count = 0;
         foreach ($this->registeredFixes as $priority => $fixList) {
-            $priorityPos = (int) (count($fixList) / 2);
+            $priorityPos = (int) ((count($fixList) - 1) / 2);
 
             $fixList = array_values($fixList);
             foreach ($fixList as $k => $fix) {

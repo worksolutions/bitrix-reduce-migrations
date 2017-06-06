@@ -23,8 +23,19 @@ class HelpCommand extends BaseCommand {
                 'params' => array(),
                 'examples' => array(),
             ),
+            'create' => array(
+                'info' => 'Create new migrations',
+                'params' => array(
+                    '-n=<name>' => 'migration name',
+                    '-p=<priority>' => 'migration priority: h - high, m - medium, o - optional',
+                    '-t=<time>' => 'migration approximately time in seconds',
+                ),
+                'examples' => array(
+                    $this->getCommandTemplate('createScenario', '-n="Hello world" -p=h -t=5'),
+                ),
+            ),
             'apply' => array(
-                'info' => 'Apply new migrations',
+                'info' => 'Apply prepared migrations from `list`',
                 'params' => array(
                     'hash' => 'apply migration with `hash`',
                     '-f' => 'apply migration without approve',
@@ -50,17 +61,6 @@ class HelpCommand extends BaseCommand {
                     $this->getCommandTemplate('rollback', '--to-hash=49ea590e'),
                 ),
             ),
-            'createScenario' => array(
-                'info' => 'Apply new migrations',
-                'params' => array(
-                    '-n=<name>' => 'migration name',
-                    '-p=<priority>' => 'migration priority: h - high, m - medium, o - optional',
-                    '-t=<time>' => 'migration approximately time in seconds',
-                ),
-                'examples' => array(
-                    $this->getCommandTemplate('createScenario', '-n="Hello world" -p=h -t=5'),
-                ),
-            ),
             'history' => array(
                 'info' => 'Create new migration scenario',
                 'params' => array(
@@ -71,6 +71,9 @@ class HelpCommand extends BaseCommand {
                     $this->getCommandTemplate('history', 4),
                 ),
             ),
+            'createScenario' => array(
+                'info' => 'Alias for `create`',
+            )
         );
 
         return $commands;
@@ -148,6 +151,6 @@ class HelpCommand extends BaseCommand {
      * @return string
      */
     private function getCommandTemplate($command, $params = '') {
-        return "   php migrate {$command} {$params}";
+        return "   php bitrix/tools/migrate {$command} {$params}";
     }
 }
