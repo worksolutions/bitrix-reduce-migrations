@@ -41,7 +41,7 @@ class History extends BaseCommand {
         }
 
         $count = 0;
-        $duration = 0;
+        $commonDuration = 0;
         $setupPaddings = $this->getVerticalPaddingsForSetups($logs);
         $currentSetupId = 0;
         /** @var AppliedChangesLogModel $log */
@@ -70,13 +70,13 @@ class History extends BaseCommand {
                 $table->addRow(array('', 'Error: '.$log->getErrorMessage(), '', ''));
             }
             $count++;
-            $duration += $log->getTime();
+            $commonDuration += $log->getTime();
         }
         $table->addRow(array(
             '-------------------', '----------------------------------------', '----------', '---------'
         ));
         $table->addRow(array(
-            '', 'Total: '.$count, '', $this->console->formatTime($duration)
+            '', 'Total: '.$count, '', $this->console->formatTime($commonDuration)
         ));
 
         $this->console->printLine("{$count} Last applied migrations:");
