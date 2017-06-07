@@ -154,7 +154,6 @@ class Module {
      */
     public function createScenario($name, $priority, $time) {
         $templateContent = file_get_contents( $this->getModuleDir() . '/data/scenarioTemplate.tpl');
-
         $arReplace = array(
             '#class_name#' => $className = 'ws_m_' . time(). '_' . \CUtil::translit($name, LANGUAGE_ID),
             '#name#' => addslashes($name),

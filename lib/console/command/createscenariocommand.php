@@ -85,11 +85,9 @@ class CreateScenarioCommand extends BaseCommand {
     }
 
     public function prepareName($name) {
-        if (LANG_CHARSET !== 'UTF-8' && mb_detect_encoding($name, 'UTF-8, Windows-1251') === 'UTF-8') {
-            $name = iconv('UTF-8', 'Windows-1251', $name);
-        }
-
+        /* @var \CMain */
+        global $APPLICATION;
+        $name = $APPLICATION->ConvertCharset($name, mb_detect_encoding($name), LANG_CHARSET);
         return $name;
     }
-
 }
