@@ -137,6 +137,8 @@ class ConsoleTable
         }
 
         $table = new ConsoleTable();
+        $table->setCharset(LANG_CHARSET);
+
         $table->setHeaders($headers);
 
         foreach ($data as $row) {
@@ -772,14 +774,10 @@ class ConsoleTable
         }
 
         if ($mbstring) {
-            return mb_strlen($str);
-        }
-        $k = 1;
-        if ($this->charset == "utf-8") {
-            $k = 0.5;
+            return mb_strlen($str, $this->charset);
         }
 
-        return (int) ($k * strlen($str));
+        return strlen($str);
     }
 
     /**
@@ -803,7 +801,7 @@ class ConsoleTable
             $length = $this->strlen($string);
         }
         if ($mbstring) {
-            $ret = @mb_substr($string, $start, $length);
+            $ret = @mb_substr($string, $start, $length, $this->charset);
             if (!empty($ret)) {
                 return $ret;
             }

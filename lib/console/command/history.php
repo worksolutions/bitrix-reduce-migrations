@@ -22,6 +22,7 @@ class History extends BaseCommand {
         }
 
         $table = new ConsoleTable();
+        $table->setCharset(LANG_CHARSET);
 
         $table->setHeaders(array(
             'Date', 'Name', 'Hash', 'Duration'

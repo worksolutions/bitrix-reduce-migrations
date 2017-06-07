@@ -56,6 +56,7 @@ class ListCommand extends BaseCommand{
 
     private function printRegisteredFixes($time) {
         $table = new ConsoleTable();
+        $table->setCharset(LANG_CHARSET);
 
         $table->setHeaders(array(
             'Priority', 'Name', 'Hash', '~Duration'

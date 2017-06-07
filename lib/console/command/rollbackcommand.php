@@ -120,6 +120,8 @@ class RollbackCommand extends BaseCommand {
             return;
         }
         $table = new ConsoleTable();
+        $table->setCharset(LANG_CHARSET);
+
         $table->setHeaders(array(
             'Date', 'Name', 'Hash', 'Status'
         ));
