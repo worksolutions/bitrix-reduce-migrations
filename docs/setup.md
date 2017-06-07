@@ -19,19 +19,24 @@ composer run-script post-install-cmd -d bitrix/modules/ws.reducemigrations
 Результатом регистрации будут следующие пункты:
 1. Модуль будет зарегистрирован в системе;
 2. Будет создан каталог в корне проекта ```reducemigrations```;
-3. Появится файл bitrix/tools/migrate для работы миграций через командную строку.
+3. В каталог bitrix/admin переносится файл-контроллер модуля. Для работы модуля через административный интерфейс.
+4. Появится файл ```bitrix/tools/migrate``` для работы миграций через командную строку.
 
 Также регистрацию модуля можно запустить через страницу "Установленные решения":
 ```
-/bitrix/admin/partner_modules.php?lang=ru
+http://my-site.ru/bitrix/admin/partner_modules.php?lang=ru
 ```
 
 ## Marketplace
 
 Для установки в адресную строку браузера, после доменного имени, прописать:
-
 ```
 /bitrix/admin/update_system_partner.php?addmodule=ws.reducemigrations
+```
+
+К примеру:
+```
+http://my-site.ru/bitrix/admin/update_system_partner.php?addmodule=ws.reducemigrations
 ```
 
 При установке модуля необходимо определить основные параметры.
