@@ -75,7 +75,7 @@ class ListCommand extends BaseCommand{
                 ));
                 $count++;
             }
-            $table->addRow();
+            $table->addRow(array());
         }
         $table->addRow(array(
             '----------', '---------------------', '----------', '----------'
