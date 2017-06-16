@@ -28,7 +28,7 @@ class IblockType extends Base {
     }
 
     /**
-     * @return int
+     * @return string
      */
     public function getId() {
         return $this->getAttribute('ID');
