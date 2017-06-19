@@ -534,22 +534,22 @@ $block = $builder->addHLBlock('account_social', 'account_social_highloadblock', 
 
     $block
         ->addField('uf_active')
-        ->label(array('ru' => 'Активность'))
+        ->label(['ru' => 'Активность'])
         ->type(UserField::TYPE_BOOLEAN);
 
     $block
         ->addField('uf_date_create')
-        ->label(array('ru' => 'Дата создания'))
+        ->label(['ru' => 'Дата создания'])
         ->type(UserField::TYPE_DATETIME);
     
     $block
         ->addField('uf_reference')
-        ->label(array('ru' => 'Внешняя ссылка'))
+        ->label(['ru' => 'Внешняя ссылка'])
         ->type(UserField::TYPE_STRING);
 
     $block
         ->addField('uf_icon')
-        ->label(array('ru' => 'Иконка'))
+        ->label(['ru' => 'Иконка'])
         ->type(UserField::TYPE_IBLOCK_ELEMENT)
         ->required(true);
 });
