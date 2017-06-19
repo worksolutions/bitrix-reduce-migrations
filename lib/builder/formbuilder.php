@@ -43,6 +43,17 @@ class FormBuilder {
         return $form;
     }
 
+    /**
+     * @param string $sid
+     * @return boolean
+     */
+    public function removeForm($sid) {
+        $formData = $this->findForm($sid);
+        if (!$formData['ID']) {
+            return false;
+        }
+        return \CForm::Delete($formData['ID']);
+    }
 
     /**
      * @param Form $form
