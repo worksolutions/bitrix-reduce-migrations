@@ -19,6 +19,7 @@ class MigrationApplier {
     private $notAppliedScenarios;
     private $skipOptional = false;
     private $setupLog;
+    protected $migrationFileAllowedExt = array('php');
 
     public function __construct($scenarioDir) {
         $this->scenarioDir = $scenarioDir;
@@ -76,10 +77,14 @@ class MigrationApplier {
 
         $files = array();
         foreach ($dir->getChildren() as $file) {
+            $name = $file->getName();
             if ($file->isDirectory()) {
                 continue;
             }
-            if (in_array($file->getName(), $usesGroups)) {
+            if (in_array($name, $usesGroups)) {
+                continue;
+            }
+            if(!$this->isCorrectMigrationFile($name)) {
                 continue;
             }
             $files[$file->getName()] = $file;
@@ -143,6 +148,19 @@ class MigrationApplier {
         }
         is_callable($callback) && $callback(count($list), 'setCount');
         $this->applyScenario($list[0], $callback);
+    }
+
+    /**
+     * @param string $fileName
+     * @return bool
+     */
+    protected function isCorrectMigrationFile($fileName) {
+        $ext = pathinfo($fileName, PATHINFO_EXTENSION);
+        if($ext) {
+            return in_array($ext, $this->migrationFileAllowedExt);
+        }
+
+        return false;
     }
 
     /**
