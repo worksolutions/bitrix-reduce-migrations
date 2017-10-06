@@ -246,7 +246,7 @@ $tableBuilder = new TableBuilder();
 $tableBuilder->addColumn('favorite_table', 'user_id', 'int');
 ```
 
-Метод ```addColumn(table, name, typy)``` добавляет колонку в таблицу, принимает следующие аргументы:
+Метод ```addColumn(table, name, type)``` добавляет колонку в таблицу, принимает следующие аргументы:
 * ```table``` - строковое название таблицы в базе данных
 * ```name``` - строковое название поля
 * ```type``` - строковое название типа поля (```text, varchar(100), date```)
