@@ -11,3 +11,5 @@ require(__DIR__ . '/../install/index.php');
 
 $module = new ws_reducemigrations();
 $module->DoInstall(array('catalog' => '/reducemigrations'));
+
+echo 'ok';
