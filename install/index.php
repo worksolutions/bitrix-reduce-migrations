@@ -22,12 +22,16 @@ class ws_reducemigrations extends CModule{
         $this->MODULE_VERSION_DATE = $arModuleVersion['VERSION_DATE'];
 
         $localization = \WS\ReduceMigrations\Module::getInstance()->getLocalization('info');
-        $needToConvert = LANG_CHARSET === 'UTF-8' && !$this->isUtfLangFiles();
+        $needToConvert = $this->needToConvertCharset();
         $this->MODULE_NAME = $this->message($localization->getDataByPath('name'), $needToConvert);
         $this->MODULE_DESCRIPTION = $this->message($localization->getDataByPath('description'), $needToConvert);
         $this->PARTNER_NAME = GetMessage('PARTNER_NAME');
         $this->PARTNER_NAME = $this->message($localization->getDataByPath('partner.name'), $needToConvert);
         $this->PARTNER_URI = 'http://worksolutions.ru';
+    }
+
+    private function needToConvertCharset() {
+        return (LANG_CHARSET === 'UTF-8' || LANG_CHARSET === 'utf-8') && !$this->isUtfLangFiles();
     }
 
     private function message($message, $needToConvert) {
@@ -69,7 +73,7 @@ class ws_reducemigrations extends CModule{
 
     public function DoInstall($extendData = array()) {
         global $APPLICATION, $data;
-        if (LANG_CHARSET === 'UTF-8' && !$this->isUtfLangFiles()) {
+        if ($this->needToConvertCharset()) {
             $this->convertLangFilesToUtf();
         }
         $loc = \WS\ReduceMigrations\Module::getInstance()->getLocalization('setup');
