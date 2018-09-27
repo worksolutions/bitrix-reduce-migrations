@@ -104,6 +104,16 @@ class IblockBuilder {
     }
 
     /**
+     * @param IblockPointer $pointer
+     * @param \Closure $callback
+     * @return Iblock
+     * @throws BuilderException
+     */
+    public function updateIblockByPointer(IblockPointer $pointer, $callback) {
+        return $this->updateIblock($this->getIblockIdByPointer($pointer), $callback);
+    }
+
+    /**
      * @param Iblock $iblock
      *
      * @return Iblock
@@ -200,6 +210,41 @@ class IblockBuilder {
     }
 
     /**
+     * @param IblockPointer $pointer
+     * @return integer
+     * @throws BuilderException
+     */
+    public function getIblockIdByPointer(IblockPointer $pointer) {
+        $filter = array();
+
+        if ($pointer->getType() === IblockPointer::TYPE_ID) {
+            $filter = array(
+                'ID' => (int) $pointer->getValue()
+            );
+        }
+        if ($pointer->getType() === IblockPointer::TYPE_CODE) {
+            $filter = array(
+                'CODE' => (string) $pointer->getValue(),
+            );
+        }
+        if ($pointer->getType() === IblockPointer::TYPE_NAME) {
+            $filter = array(
+                'NAME' => (string) $pointer->getValue(),
+            );
+        }
+
+        if (!$filter) {
+            throw new BuilderException('Type of pointer is not found');
+        }
+        $arIblock = \CIBlock::GetList(array(), $filter, false)->Fetch();
+        if (!$arIblock) {
+            throw new BuilderException("Iblock `{$pointer->getValue()}` doesn't exists");
+        }
+
+        return (int)$arIblock['ID'];
+    }
+
+    /**
      * @param $iblockType
      * @param $name
      *
@@ -222,6 +267,16 @@ class IblockBuilder {
         $iblock = $dbRes->Fetch();
 
         return $this->removeIblockById($iblock['ID']);
+    }
+
+    /**
+     * @param IblockPointer $pointer
+     * @return bool
+     * @throws BuilderException
+     */
+    public function removeIblockByPointer(IblockPointer $pointer) {
+        $id = $this->getIblockIdByPointer($pointer);
+        return $this->removeIblockById($id);
     }
 
     /**
