@@ -10,9 +10,11 @@ use WS\ReduceMigrations\Console\Command\History;
 use WS\ReduceMigrations\Console\Command\ListCommand;
 use WS\ReduceMigrations\Console\Command\RollbackCommand;
 use WS\ReduceMigrations\Console\Formatter\Output;
+use WS\ReduceMigrations\MessageOutputInterface;
+use WS\ReduceMigrations\Module;
 use WS\ReduceMigrations\TimeFormatter;
 
-class Console {
+class Console implements MessageOutputInterface {
     const OUTPUT_ERROR = 'error';
     const OUTPUT_PROGRESS = 'progress';
     const OUTPUT_SUCCESS = 'success';
@@ -57,6 +59,8 @@ class Console {
             'minutes' => 'min',
             'seconds' => 'sec'
         ));
+
+        Module::getInstance()->setScenariosMessageOutput($this);
     }
 
     /**
@@ -70,6 +74,34 @@ class Console {
         $str = $this->colorize($str, $type);
         fwrite($this->out, $str . "\n");
         return $this;
+    }
+
+    public function println($str) {
+        return $this->printInProgress($str);
+    }
+
+    /**
+     * @param $str
+     * @return Console
+     */
+    public function printError($str) {
+        return $this->printLine($str, self::OUTPUT_ERROR);
+    }
+
+    /**
+     * @param $str
+     * @return Console
+     */
+    public function printInProgress($str) {
+        return $this->printLine($str, self::OUTPUT_PROGRESS);
+    }
+
+    /**
+     * @param $str
+     * @return Console
+     */
+    public function printSuccess($str) {
+        return $this->printLine($str, self::OUTPUT_SUCCESS);
     }
 
     public function colorize($str, $type = false) {

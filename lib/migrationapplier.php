@@ -20,11 +20,16 @@ class MigrationApplier {
     private $skipOptional = false;
     private $setupLog;
     protected $migrationFileAllowedExt = array('php');
+    /**
+     * @var MessageOutputInterface
+     */
+    private $output;
 
-    public function __construct($scenarioDir) {
+    public function __construct($scenarioDir, MessageOutputInterface $output) {
         $this->scenarioDir = $scenarioDir;
         $userId = Module::getInstance()->getCurrentUser()->GetID();
         $this->userId = $userId ? : 0;
+        $this->output = $output;
     }
 
     /**
@@ -177,7 +182,7 @@ class MigrationApplier {
         is_callable($callback) && $callback($data, 'start');
         /** @var ScriptScenario $object */
         $applyFixLog = AppliedChangesLogModel::createByParams($setupLog, $class);
-        $object = new $class(array());
+        $object = new $class(array(), $this->output);
         try {
             $this->commitScenario($object);
             $applyFixLog->setUpdateData($object->getData());

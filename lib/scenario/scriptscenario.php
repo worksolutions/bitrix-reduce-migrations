@@ -2,6 +2,9 @@
 
 namespace WS\ReduceMigrations\Scenario;
 
+use WS\ReduceMigrations\DumbMessageOutput;
+use WS\ReduceMigrations\MessageOutputInterface;
+
 /**
  * Class ScriptScenario
  *
@@ -20,15 +23,25 @@ abstract class ScriptScenario {
      */
     private $data;
 
+    /**
+     * @var MessageOutputInterface
+     */
+    private $printer;
+
     public static function className() {
         return get_called_class();
     }
 
     /**
      * @param array $data
+     * @param MessageOutputInterface $printer
      */
-    public function __construct(array $data = array()) {
+    public function __construct(array $data = array(), MessageOutputInterface $printer = null) {
         $this->setData($data);
+        if ($printer === null) {
+            $printer = new DumbMessageOutput();
+        }
+        $this->printer = $printer;
     }
 
     /**
@@ -134,4 +147,10 @@ abstract class ScriptScenario {
         return self::PRIORITY_HIGH;
     }
 
+    /**
+     * @return MessageOutputInterface
+     */
+    protected function printer() {
+        return $this->printer;
+    }
 }
