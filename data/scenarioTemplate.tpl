@@ -22,14 +22,14 @@ class #class_name# extends \WS\ReduceMigrations\Scenario\ScriptScenario {
     /**
      * @return string hash
      */
-    static public function hash() {
+    public static function hash() {
         return '#hash#';
     }
 
     /**
      * @return int approximately time in seconds
      */
-    static public function approximatelyTime() {
+    public static function approximatelyTime() {
         return #time#;
     }
 
