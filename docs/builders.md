@@ -199,7 +199,9 @@ $tableBuilder->create('favorite_table', function (Table $table) {
         ->autoincrement()
         ->primary();
     $table->string('NAME');
-    $table->integer('ELEMENT_ID');
+    $table->integer('ELEMENT_ID')
+        ->required()
+        ->unique();
     $table->datetime('DATE_CREATE')->autoincrement();
 });
 ```
@@ -221,6 +223,8 @@ $tableBuilder->create('favorite_table', function (Table $table) {
 
 * ```primary()``` - устанавливает идентификатор записи (первичный ключ)
 * ```autoincrement()``` - автоматическая запись уникального значения
+* ```unique()``` - уникальность значения поля
+* ```required()``` - определяет обязательность заполнения
 
 ##### Удаление таблицы
 
