@@ -49,6 +49,28 @@ class FieldWrapper {
     }
 
     /**
+     * @param bool $unique
+     *
+     * @return $this
+     */
+    public function unique($unique = true) {
+        $this->field->configureUnique($unique);
+
+        return $this;
+    }
+
+    /**
+     * @param bool $required
+     *
+     * @return $this
+     */
+    public function required($required = true) {
+        $this->field->configureRequired($required);
+
+        return $this;
+    }
+
+    /**
      * @return ScalarField
      */
     public function getField() {
@@ -67,6 +89,20 @@ class FieldWrapper {
      */
     public function isPrimary() {
         return $this->primary;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isUnique() {
+        return $this->field->isUnique();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRequired() {
+        return $this->field->isRequired();
     }
 
 }
