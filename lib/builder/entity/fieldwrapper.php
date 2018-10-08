@@ -7,16 +7,10 @@ use Bitrix\Main\Entity\ScalarField;
 
 class FieldWrapper {
 
-    private $name;
     private $field;
-    /** @var  boolean */
-    private $autoincrement;
-    /** @var  boolean */
-    private $primary;
 
 
     public function __construct(ScalarField $field) {
-        $this->name = strtoupper($field->getColumnName());
         $this->field = $field;
     }
 
@@ -24,7 +18,7 @@ class FieldWrapper {
      * @return string
      */
     public function getName() {
-        return $this->name;
+        return strtoupper($this->field->getColumnName());
     }
 
     /**
@@ -33,7 +27,8 @@ class FieldWrapper {
      * @return $this
      */
     public function autoincrement($increment = true) {
-        $this->autoincrement = $increment;
+        $this->field->configureAutocomplete($increment);
+
         return $this;
     }
 
@@ -43,7 +38,7 @@ class FieldWrapper {
      * @return $this
      */
     public function primary($primary = true) {
-        $this->primary = $primary;
+        $this->field->configurePrimary($primary);
 
         return $this;
     }
@@ -81,14 +76,14 @@ class FieldWrapper {
      * @return bool
      */
     public function isAutoincrement() {
-        return $this->autoincrement;
+        return $this->field->isAutocomplete();
     }
 
     /**
      * @return bool
      */
     public function isPrimary() {
-        return $this->primary;
+        return $this->field->isPrimary();
     }
 
     /**
