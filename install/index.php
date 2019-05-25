@@ -1,7 +1,8 @@
 <?php
 use Bitrix\Main\Application;
+use Bitrix\Main\IO\Path;
 
-include __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'include.php';
+include __DIR__ . '/../include.php';
 
 class ws_reducemigrations extends CModule{
     const MODULE_ID = 'ws.reducemigrations';
@@ -164,7 +165,7 @@ class ws_reducemigrations extends CModule{
      * @return bool|string
      */
     public static function getModuleDir() {
-        return dirname(__DIR__.'../');
+        return dirname(Path::normalize(__DIR__).'../');
     }
 
     public function convertLangFilesToUtf() {

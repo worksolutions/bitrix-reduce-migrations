@@ -32,10 +32,12 @@ class Module {
     private $scenariosMessageOutput;
 
     private function __construct() {
-        $this->localizePath = __DIR__ . '/../lang/' . LANGUAGE_ID;
+        $langPath = Path::normalize(__DIR__) . '/../lang';
+
+        $this->localizePath = $langPath . '/' . LANGUAGE_ID;
 
         if (!file_exists($this->localizePath)) {
-            $this->localizePath = __DIR__ . '/../lang/' . self::FALLBACK_LOCALE;
+            $this->localizePath = $langPath . '/' . self::FALLBACK_LOCALE;
         }
 
         $this->scenariosMessageOutput = new DumbMessageOutput();
@@ -217,7 +219,7 @@ class Module {
      * @return string - module root directory
      */
     public function getModuleDir() {
-        return Path::getDirectory(__DIR__);
+        return Path::getDirectory(Path::normalize(__DIR__));
     }
 
     /**

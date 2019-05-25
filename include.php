@@ -1,5 +1,5 @@
 <?php
-$lib = __DIR__.'/lib';
+$lib = __DIR__ . DIRECTORY_SEPARATOR . 'lib';
 
 spl_autoload_register(function ($class) use ($lib) {
     $class = ltrim($class, '\\');
