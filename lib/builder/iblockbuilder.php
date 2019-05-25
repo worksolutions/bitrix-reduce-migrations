@@ -89,7 +89,7 @@ class IblockBuilder {
      * @throws BuilderException
      */
     public function updateIblock($id, $callback) {
-        $iblockData = \CIBlock::GetByID($id)->Fetch();
+        $iblockData = \CIBlock::GetList(array(), array('ID' => $id, 'CHECK_PERMISSIONS' => 'N'))->Fetch();
         if (!$iblockData) {
             throw new BuilderException("Iblock `{$id}` not found");
         }
@@ -210,6 +210,7 @@ class IblockBuilder {
         $dbRes = \CIBlock::GetList(null, array(
             'NAME' => $name,
             'TYPE' => $iblockType,
+            'CHECK_PERMISSIONS' => 'N',
         ));
         $count = $dbRes->SelectedRowsCount();
         if ($count == 0) {
