@@ -73,7 +73,7 @@ $form->AddEditField(
     $localization->getDataByPath('fields.catalog'),
     true,
     array(),
-    $options->catalogPath ?: '/reducemigrations'
+    $options->catalogPath ?: '/bitrix/php_interface/reducemigrations'
 );
 
 $form->Buttons(array('btnSave' => false, 'btnApply' => true));
