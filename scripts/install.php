@@ -10,6 +10,6 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.ph
 require(__DIR__ . '/../install/index.php');
 
 $module = new ws_reducemigrations();
-$module->DoInstall(array('catalog' => '/reducemigrations'));
+$module->DoInstall(array('catalog' => '/bitrix/php_interface/reducemigrations'));
 
 echo 'ok';
