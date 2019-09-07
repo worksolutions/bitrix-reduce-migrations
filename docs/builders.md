@@ -183,6 +183,26 @@ $builder->updateIblock($id, function (Iblock $iblock) {
 });
 ```
 
+##### Обновление инфоблока по ссылке
+
+```php
+<?php
+
+$builder = new \WS\ReduceMigrations\Builder\IblockBuilder();
+$builder->updateIblockByPointer(
+    \WS\ReduceMigrations\Builder\IblockPointer::byCode(DOMAIN_IBLOCK_NEWS),
+    function (\WS\ReduceMigrations\Builder\Entity\Iblock $iblock) {
+        $prop = $iblock->addProperty('Тип')
+            ->code('type')
+            ->typeDropdown();
+
+        $prop->addEnum('Главная новость')->xmlId('main');
+        $prop->addEnum('Срочная новость')->xmlId('hot');
+        $prop->addEnum('Эксклюзив')->xmlId('exclusive');
+    }
+);
+```
+
 ### 2. Работа с таблицами. ```TableBuilder``` <a name="TableBuilder"></a>
 
 ##### Добавление таблицы
