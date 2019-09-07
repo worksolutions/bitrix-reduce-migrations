@@ -57,3 +57,5 @@ $form->EndTab();
     $form->sButtonsContent = '<input type="submit" class="adm-btn-save" name="save" value="'.$localization->getDataByPath('button.create').'" title="'.$localization->getDataByPath('run').'"/>';
 $form->Show();
 ?></form>
+<?php
+require($_SERVER["DOCUMENT_ROOT"] . BX_ROOT . "/modules/main/include/epilog_admin_before.php");
