@@ -29,13 +29,20 @@ class Module {
 
     private $rollback;
 
+    private $scenariosMessageOutput;
+
     private function __construct() {
-        $this->localizePath = __DIR__ . '/../lang/' . LANGUAGE_ID;
+        $langPath = Path::normalize(__DIR__) . '/../lang';
+
+        $this->localizePath = $langPath . '/' . LANGUAGE_ID;
 
         if (!file_exists($this->localizePath)) {
-            $this->localizePath = __DIR__ . '/../lang/' . self::FALLBACK_LOCALE;
+            $this->localizePath = $langPath . '/' . self::FALLBACK_LOCALE;
         }
+
+        $this->scenariosMessageOutput = new DumbMessageOutput();
     }
+
 
     static public function getName($stripDots = false) {
         $res = static::$name;
@@ -212,7 +219,7 @@ class Module {
      * @return string - module root directory
      */
     public function getModuleDir() {
-        return Path::getDirectory(__DIR__);
+        return Path::getDirectory(Path::normalize(__DIR__));
     }
 
     /**
@@ -265,7 +272,7 @@ class Module {
         if ($this->applier) {
             return $this->applier;
         }
-        $this->applier = new MigrationApplier($this->getScenariosDir());
+        $this->applier = new MigrationApplier($this->getScenariosDir(), $this->scenariosMessageOutput);
         return $this->applier;
     }
 
@@ -276,8 +283,15 @@ class Module {
         if ($this->rollback) {
             return $this->rollback;
         }
-        $this->rollback = new MigrationRollback($this->getScenariosDir());
+        $this->rollback = new MigrationRollback($this->getScenariosDir(), $this->scenariosMessageOutput);
         return $this->rollback;
+    }
+
+    /**
+     * @param MessageOutputInterface $scenariosMessageOutput
+     */
+    public function setScenariosMessageOutput(MessageOutputInterface $scenariosMessageOutput) {
+        $this->scenariosMessageOutput = $scenariosMessageOutput;
     }
 }
 

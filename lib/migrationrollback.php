@@ -12,9 +12,14 @@ use WS\ReduceMigrations\Scenario\ScriptScenario;
 class MigrationRollback {
     private $runtimeFixCounter;
     private $scenarioDir;
+    /**
+     * @var MessageOutputInterface
+     */
+    private $output;
 
-    public function __construct($scenarioDir) {
+    public function __construct($scenarioDir, MessageOutputInterface $output) {
         $this->scenarioDir = $scenarioDir;
+        $this->output = $output;
     }
 
     /**
@@ -159,7 +164,7 @@ class MigrationRollback {
                 }
                 $data = $log->getUpdateData();
                 /** @var ScriptScenario $object */
-                $object = new $class($data);
+                $object = new $class($data, $this->output);
                 $object->rollback();
 
             } catch (\Exception $e) {

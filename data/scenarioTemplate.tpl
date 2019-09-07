@@ -6,42 +6,44 @@
 class #class_name# extends \WS\ReduceMigrations\Scenario\ScriptScenario {
 
     /**
-     * Name of scenario
+     * Scenario title
      **/
-    static public function name() {
-        return "#name#";
+    public static function name() {
+        return '#name#';
     }
 
     /**
      * Priority of scenario
      **/
-    static public function priority() {
+    public static function priority() {
         return #priority#;
     }
 
     /**
      * @return string hash
      */
-    static public function hash() {
-        return "#hash#";
+    public static function hash() {
+        return '#hash#';
     }
 
     /**
      * @return int approximately time in seconds
      */
-    static public function approximatelyTime() {
+    public static function approximatelyTime() {
         return #time#;
     }
 
     /**
-     * Write action by apply scenario. Use method `setData` for save need rollback data
+     * Writes action by apply scenario. Use method `setData` to save needed rollback data.
+     * For printing info into console use object from $this->printer() method.
      **/
     public function commit() {
         // my code
     }
 
     /**
-     * Write action by rollback scenario. Use method `getData` for getting commit saved data
+     * Write action by rollback scenario. Use method `getData` for getting commit saved data.
+     * For printing info into console use object from $this->printer() method.
      **/
     public function rollback() {
         // my code
