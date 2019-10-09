@@ -4,15 +4,15 @@ namespace WS\ReduceMigrations\Builder;
 
 use Bitrix\Highloadblock\HighloadBlockTable;
 use WS\ReduceMigrations\Builder\Entity\HighLoadBlock;
-use WS\ReduceMigrations\Builder\Entity\UserField;
+use WS\ReduceMigrations\Builder\Traits\OperateUserFieldEntityTrait;
 
 class HighLoadBlockBuilder {
+    use OperateUserFieldEntityTrait;
 
     public function __construct() {
         \CModule::IncludeModule('iblock');
         \CModule::IncludeModule('highloadblock');
     }
-
 
     /**
      * @param string $name
@@ -108,50 +108,6 @@ class HighLoadBlockBuilder {
      * @throws BuilderException
      */
     private function commitFields($highLoadBlock) {
-        global $APPLICATION;
-
-        $gw = new \CUserTypeEntity();
-        foreach ($highLoadBlock->getFields() as $field) {
-            $res = true;
-            if ($field->getId() > 0) {
-                $field->isDirty() && $res = $gw->Update($field->getId(), $field->getData());
-            } else {
-                $res = $gw->Add(array_merge($field->getData(), array(
-                    'ENTITY_ID' => 'HLBLOCK_' . $highLoadBlock->getId()
-                )));
-                if ($res) {
-                    $field->setId($res);
-                }
-            }
-            if (!$res) {
-                throw new BuilderException($APPLICATION->GetException()->GetString());
-            }
-
-            $this->commitEnum($field);
-        }
+        $this->commitUserFields($highLoadBlock->getFields(), "HLBLOCK_{$highLoadBlock->getId()}");
     }
-
-    /**
-     * @param UserField $field
-     * @throws BuilderException
-     */
-    private function commitEnum($field) {
-        global $APPLICATION;
-        $obEnum = new \CUserFieldEnum;
-        $values = array();
-        foreach ($field->getEnumVariants() as $key => $variant) {
-            $key = 'n' . $key;
-            if ($variant->getId() > 0) {
-                $key = $variant->getId();
-            }
-            $values[$key] = $variant->getData();
-        }
-        if (empty($values)) {
-            return;
-        }
-        if (!$obEnum->SetEnumValues($field->getId(), $values)) {
-            throw new BuilderException($APPLICATION->GetException()->GetString());
-        }
-    }
-
 }
