@@ -2,6 +2,7 @@
 
 namespace WS\ReduceMigrations\Builder\Entity;
 use WS\ReduceMigrations\Builder\BuilderException;
+use WS\ReduceMigrations\Builder\Traits\ContainUserFieldsTrait;
 
 /**
  * Class HighLoadBlock
@@ -12,9 +13,9 @@ use WS\ReduceMigrations\Builder\BuilderException;
  * @package WS\ReduceMigrations\Builder\Entity
  */
 class HighLoadBlock extends Base {
+    use ContainUserFieldsTrait;
 
     private $id;
-    private $fields;
 
     public function __construct($name, $tableName, $id = false) {
         $this->id = $id;
@@ -50,9 +51,7 @@ class HighLoadBlock extends Base {
      * @return UserField
      */
     public function addField($code) {
-        $field = new UserField($code);
-        $this->fields[] = $field;
-        return $field;
+        return $this->addUserField($code);
     }
 
     /**
@@ -61,39 +60,17 @@ class HighLoadBlock extends Base {
      * @throws BuilderException
      */
     public function updateField($code) {
-        $data = $this->findField($code);
-        $field = new UserField($code);
-        $field->setId($data['ID']);
-        $field->markClean();
-        $this->fields[] = $field;
-        return $field;
-    }
-
-    /**
-     * @param $code
-     * @return array
-     * @throws BuilderException
-     */
-    private function findField($code) {
         if (!$this->getId()) {
             throw new BuilderException('Set higloadBlock for continue');
         }
-        $field = \CUserTypeEntity::GetList(null, array(
-            'FIELD_NAME' => $code,
-            'ENTITY_ID' => "HLBLOCK_" . $this->getId(),
-        ))->Fetch();
 
-        if (empty($field)) {
-            throw new BuilderException("Field for `$code` not found");
-        }
-        return $field;
+        return $this->updateUserField($code, "HLBLOCK_{$this->getId()}");
     }
 
     /**
      * @return UserField[]
      */
     public function getFields() {
-        return $this->fields;
+        return $this->getUserFields();
     }
-
 }
