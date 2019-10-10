@@ -39,7 +39,7 @@ trait OperateUserFieldEntityTrait
                 throw new BuilderException($APPLICATION->GetException()->GetString());
             }
 
-            $this->commitEnum($field);
+            $this->commitUserFieldEnum($field);
         }
     }
 
@@ -47,7 +47,7 @@ trait OperateUserFieldEntityTrait
      * @param UserField $field
      * @throws BuilderException
      */
-    private function commitEnum($field) {
+    private function commitUserFieldEnum($field) {
         global $APPLICATION;
         $obEnum = new \CUserFieldEnum;
         $values = array();
