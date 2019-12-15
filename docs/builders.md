@@ -77,12 +77,13 @@ $builder->createIblockType('content', function (IblockType $type) {
 
 ##### Добавление инфоблока
 
-Пример добавления типа инфоблока с помощью объекта ```IblockBuilder```
+Пример добавления инфоблока с помощью объекта ```IblockBuilder```
 
 ```php
 <?php
 
 use WS\ReduceMigrations\Builder\Entity\Iblock;
+use WS\ReduceMigrations\Builder\Entity\UserField;
 use WS\ReduceMigrations\Builder\IblockBuilder;
 
 $builder = new IblockBuilder();
@@ -137,6 +138,29 @@ $iblock = $builder->createIblock('content', 'Новости', function (Iblock $
         ->typeDropdown();
     $property->addEnum('Новость дня')->xmlId('news_day');
     $property->addEnum('Акция')->xmlId('news_action');
+    
+    // Добавление свойства разделов типа 'Строка'
+    $iblock
+        ->addSectionField('uf_reference')
+        ->label(['ru' => 'Внешняя ссылка'])
+        ->type(UserField::TYPE_STRING);
+
+    // Добавление свойства разделов типа 'Да/Нет'
+    $iblock
+        ->addSectionField('uf_show_advert')
+        ->label(['ru' => 'Отображать рекламный блок'])
+        ->type(UserField::TYPE_BOOLEAN);
+
+    // Добавление свойства разделов типа 'Список'
+    $field = $iblock
+        ->addSectionField('uf_display_type')
+        ->sort(10)
+        ->label(['ru' => 'Тип отображения'])
+        ->type(UserField::TYPE_ENUMERATION);
+
+    $field->addEnum('Таблица')->xmlId('table');
+    $field->addEnum('Строки')->xmlId('lines');
+    $field->addEnum('Только заголовки')->xmlId('titles');
 });
 ```
 
@@ -156,14 +180,19 @@ $iblock = $builder->createIblock('content', 'Новости', function (Iblock $
     * ```typeDropdown(iblockId)``` - свойство типа 'Привязка к элементам'
     * ```typeHtml()``` - свойство типа 'HTML/текст'
     * ```typeFile()``` - свойство типа 'HTML/текст'
-        * ```->fileType(string)``` - стрововое значение типа файлов ```'png, jpg, gif'```
+        * ```->fileType(string)``` - строковое значение типа файлов ```'png, jpg, gif'```
     * ```typeDateTime()``` - свойство типа 'Дата/Время'
     * ```typeDate()``` - свойство типа 'Дата'
     * ```typeVideo()``` - свойство типа 'Видео'
     * ```typeVideo()``` - свойство типа 'Видео'
     * ```typeCheckbox()``` - свойство типа 'Checkbox'
+* ```addSectionField(name)``` - добавление свойства разделов. Принимает значение типа ```string```. Возвращает объект типа ```UserField```
+    * ```label(name)``` - строковое название поля. Принимает значение типа ```string```
+    * ```type(type)``` - строковое значение типа. Принимает значение типа ```string```
+    * ```required(boolean)``` - устанавливает обязательность поля. Принимает значение типа ```boolean```
+    * ```multiple(boolean)``` - устанавливает множественное значение для поля. Принимает значение типа ```boolean```
 
-Также для настроки инфоблока можно воспользоватся методом setAttribute()
+Также для настройки инфоблока можно воспользоватся методом setAttribute()
 
 ##### Обновление инфоблока
 

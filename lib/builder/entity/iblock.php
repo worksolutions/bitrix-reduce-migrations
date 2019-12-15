@@ -3,6 +3,7 @@
 namespace WS\ReduceMigrations\Builder\Entity;
 use Bitrix\Main\Type\DateTime;
 use WS\ReduceMigrations\Builder\BuilderException;
+use WS\ReduceMigrations\Builder\Traits\ContainUserFieldsTrait;
 
 /**
  * Class Iblock
@@ -25,6 +26,8 @@ use WS\ReduceMigrations\Builder\BuilderException;
  * @package WS\ReduceMigrations\Builder\Entity
  */
 class Iblock  extends Base {
+    use ContainUserFieldsTrait;
+
     const SECTION_CHOOSER_LIST = 'L';
     const SECTION_CHOOSER_DROPDOWN = 'D';
     const SECTION_CHOOSER_SEARCH_WINDOW = 'P';
@@ -217,4 +220,27 @@ class Iblock  extends Base {
         return $property;
     }
 
+    /**
+     * @param $code
+     * @return UserField
+     */
+    public function addSectionField($code) {
+        return $this->addUserField($code);
+    }
+
+    /**
+     * @param $code
+     * @return UserField
+     * @throws BuilderException
+     */
+    public function updateSectionField($code) {
+        return $this->updateUserField($code, "IBLOCK_{$this->getId()}_SECTION");
+    }
+
+    /**
+     * @return UserField[]
+     */
+    public function getSectionFields() {
+        return $this->getUserFields();
+    }
 }

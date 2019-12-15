@@ -6,8 +6,10 @@ use Bitrix\Main\Application;
 use WS\ReduceMigrations\Builder\Entity\Iblock;
 use WS\ReduceMigrations\Builder\Entity\IblockType;
 use WS\ReduceMigrations\Builder\Entity\Property;
+use WS\ReduceMigrations\Builder\Traits\OperateUserFieldEntityTrait;
 
 class IblockBuilder {
+    use OperateUserFieldEntityTrait;
 
     public function __construct() {
         \CModule::IncludeModule('iblock');
@@ -142,6 +144,8 @@ class IblockBuilder {
             $iblock->setId($iblockId);
 
             $this->commitProperties($iblock);
+            $this->commitSectionFields($iblock);
+
             $connection->commitTransaction();
         } catch (\Exception $e) {
             $connection->rollbackTransaction();
@@ -207,6 +211,15 @@ class IblockBuilder {
             }
         }
 
+    }
+
+    /**
+     * @param Iblock $iblock
+     *
+     * @throws BuilderException
+     */
+    private function commitSectionFields($iblock) {
+        $this->commitUserFields($iblock->getSectionFields(), "IBLOCK_{$iblock->getId()}_SECTION");
     }
 
     /**
