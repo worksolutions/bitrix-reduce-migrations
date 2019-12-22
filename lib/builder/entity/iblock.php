@@ -32,10 +32,10 @@ class Iblock  extends Base {
     const SECTION_CHOOSER_DROPDOWN = 'D';
     const SECTION_CHOOSER_SEARCH_WINDOW = 'P';
 
-    private $properties;
+    private $properties = [];
     private $id;
-    private $updateProperties;
-    private $deleteProperties;
+    private $updateProperties = [];
+    private $deleteProperties = [];
 
     const DEFAULT_SORT = 500;
 
