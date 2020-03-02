@@ -16,6 +16,14 @@ composer require worksolutions/bitrix-reduce-migrations
 composer run-script post-install-cmd -d bitrix/modules/ws.reducemigrations
 ```
 
+> для установки модуля в папку **/local/modules/**, необходимо в ваш **composer.json** добавить 
+> дополнительный параметр `bitrix-dir`:
+> ```json
+> "extra": {
+>   "bitrix-dir": "./local"
+> }
+> ```
+
 Результатом регистрации будут следующие пункты:
 1. Модуль будет зарегистрирован в системе;
 2. Будет создан каталог ```reducemigrations``` в папке на уровне bitrix;

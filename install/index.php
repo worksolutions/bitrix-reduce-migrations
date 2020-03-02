@@ -56,10 +56,28 @@ class ws_reducemigrations extends CModule{
         return true;
     }
 
+    public function createAdminGatewayFile($adminFilePath, $gatewayFileName)
+    {
+        $adminFileRelativePath = str_replace(
+            Application::getDocumentRoot(),
+            '',
+            $adminFilePath
+        );
+        $gatewayFilePath = Path::combine(
+            Application::getDocumentRoot(),
+            Application::getPersonalRoot(),
+            'admin',
+            $gatewayFileName
+        );
+        $gatewayFileContent = "<?php\r\nrequire_once \$_SERVER['DOCUMENT_ROOT'] . '{$adminFileRelativePath}';\r\n";
+        file_put_contents($gatewayFilePath, $gatewayFileContent);
+    }
+
     public function InstallFiles() {
-        $rootDir = Application::getDocumentRoot() . '/' . Application::getPersonalRoot();
-        $adminGatewayFile = '/admin/ws_reducemigrations.php';
-        copy(__DIR__ . $adminGatewayFile, $rootDir . $adminGatewayFile);
+        $this->createAdminGatewayFile(
+            Path::combine(static::getModuleDir(), 'admin', 'controller.php'),
+            'ws_reducemigrations.php'
+        );
 
         return true;
     }
@@ -153,8 +171,14 @@ class ws_reducemigrations extends CModule{
     }
 
     private function createCli() {
-        $dest = Application::getDocumentRoot() . '/' . Application::getPersonalRoot() . '/tools';
-        CopyDirFiles(__DIR__ . '/tools', $dest, false, true);
+        $path = Application::getDocumentRoot() . '/' . Application::getPersonalRoot() . '/tools/migrate';
+        $relativePath = str_replace(
+            Application::getDocumentRoot(),
+            '',
+            Path::combine(static::getModuleDir(), 'admin', 'cli.php')
+        );
+        $fileContent = "<?php\r\n\$_SERVER['DOCUMENT_ROOT'] = realpath(__DIR__ . '/../../') . '/';\r\nrequire_once \$_SERVER['DOCUMENT_ROOT'] . '{$relativePath}';\r\n";
+        file_put_contents($path, $fileContent);
     }
 
     private function removeCli() {
