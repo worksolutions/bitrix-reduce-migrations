@@ -190,20 +190,15 @@ class ws_reducemigrations extends CModule{
         return rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/';
     }
 
+    /**
+     * @param string $dir
+     * @return bool
+     */
     private function createDir($dir) {
-        $parts = explode('/', $dir);
-        $dir = rtrim($_SERVER['DOCUMENT_ROOT'], '/');
-        foreach ($parts as $part) {
-            if (!$part) {
-                continue;
-            }
-            $dir .= '/' . $part;
-            if (!mkdir($dir)) {
-                return false;
-            }
-            chmod($dir, 0777);
-        }
-
-        return true;
+        return mkdir(
+            Path::combine($this->docRoot(), $dir),
+            BX_DIR_PERMISSIONS,
+            true
+        );
     }
 }
